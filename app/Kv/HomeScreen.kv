@@ -1,0 +1,16 @@
+<HomeScreen>:
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: "24dp"
+        spacing: "16dp"
+
+        MDLabel:
+            text: "FlashCard App"
+            halign: "center"
+            font_style: "H4"
+
+        MDRaisedButton:
+            text: "menu"
+            pos_hint: {"center_x": .5}
+            on_release:
+                root.manager.current = "Menu"

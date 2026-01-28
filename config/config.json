@@ -1,0 +1,8 @@
+{
+    "database": {
+      "driver": "sqlServer",
+      "dBName" : "Flashcard",
+      "server" : "localhost"
+    }
+  }
+  

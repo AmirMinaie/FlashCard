@@ -1,0 +1,12 @@
+<Menu>:
+    name: "Menu"
+    MDBoxLayout:
+        orientation: "vertical"
+
+        MDTopAppBar:
+            title: "Menu"
+            left_action_items: [["arrow-left", lambda x: app.go_home()]]
+
+        ScrollView:
+            MDList:
+                id: menu_list

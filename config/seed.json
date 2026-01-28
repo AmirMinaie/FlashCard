@@ -1,0 +1,27 @@
+{
+  "constants": [
+    { "id": 1, "Name": "Vocabulary", "Caption": "Vocabulary FlashCard", "Type": "FlashCard" },
+    { "id": 2, "Name": "Grammar", "Caption": "Grammar FlashCard", "Type": "FlashCard" },
+
+    { "id": 3, "Name": "Box0", "Caption": "Unscheduled", "Type": "Box" },
+    { "id": 4, "Name": "Box1", "Caption": "First Review Box", "Type": "Box" },
+    { "id": 5, "Name": "Box2", "Caption": "Second Review Box", "Type": "Box" }
+  ],
+
+  "flashcards": [
+    {
+      "title": "Hello",
+      "description": "A common greeting word",
+      "example": "Hello, how are you?",
+      "type_Id": 1,
+      "box_Id": 3
+    },
+    {
+      "title": "Present Simple",
+      "description": "Basic grammar tense",
+      "example": "I play football.",
+      "type_Id": 2,
+      "box_Id": 3
+    }
+  ]
+}
