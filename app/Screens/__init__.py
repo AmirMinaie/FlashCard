@@ -6,7 +6,7 @@ from kivymd.uix.screen import MDScreen
 
 __all__ = []
 
-screen_dir = resource_path("app","Screens" )
+screen_dir = resource_path("Screens" )
 for file in os.listdir(screen_dir):
     if file.endswith(".py") and file != "__init__.py":
         screen_name = f"{__name__}.{file[:-3]}"

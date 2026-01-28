@@ -1,16 +1,38 @@
-<HomeScreen>:
+<BaseMDNavigationItem>
+    MDNavigationItemIcon:
+        icon: root.icon
+        MDBadge:
+            text: root.badge_text
+            opacity: 1 if root.show_badge else 0 
+            size_hint: None, None
+            size: "20dp", "20dp"
+            radius: [100,]
+
+    MDNavigationItemLabel:
+        text: root.text
+
+<HomeScreen>
+    name: "HomeScreen"
     MDBoxLayout:
         orientation: "vertical"
-        padding: "24dp"
-        spacing: "16dp"
+        md_bg_color: self.theme_cls.backgroundColor
 
-        MDLabel:
-            text: "FlashCard App"
-            halign: "center"
-            font_style: "H4"
+        MDScreenManager:
+            id: screen_manager
 
-        MDRaisedButton:
-            text: "menu"
-            pos_hint: {"center_x": .5}
-            on_release:
-                root.manager.current = "Menu"
+            FlashCardListScreen:
+            ReviewTodayScreen:
+
+        MDNavigationBar:
+            on_switch_tabs: root.on_switch_tabs(*args)
+
+            BaseMDNavigationItem
+                icon: "gmail"
+                text: "Review Today"
+                screen_Name : "ReviewTodayScreen"
+                active: True
+            
+            BaseMDNavigationItem
+                icon: "add"
+                screen_Name : "FlashCardListScreen"
+                text: "List Cards"
