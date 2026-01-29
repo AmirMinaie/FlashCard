@@ -1,0 +1,114 @@
+<MDCardA>:
+    orientation: "vertical"
+    size_hint_y: None
+    height: self.minimum_height
+    padding: dp(15)
+    spacing: dp(10)
+    elevation: 4
+    radius: [dp(15),]
+    
+    MDBoxLayout:
+        orientation: "vertical" 
+        size_hint_y: None
+        height: self.minimum_height
+        spacing: dp(10)
+        
+        #Row1 Title
+        MDBoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(10)
+            
+            MDLabelA:
+                text: root.title
+                style: "title"
+                bold: True
+                theme_text_color: "Primary"
+                size_hint_x: 0.7
+
+        #Row2 pronunciation
+        MDBoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: dp(30)
+            
+            MDLabelA:
+                text: root.pronunciation
+                style: "subtitle"
+                size_hint_x: 0.8
+                haligna: "right"
+                theme_text_color: "Secondary"
+        
+        # Row2 partOfSpeach type level box
+        MDBoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: dp(40)
+            spacing: dp(10)
+            
+            MDLabelA:
+                text: root.partOfSpeach
+            
+            MDLabelA:
+                text: root.type_
+            
+            MDLabelA:
+                text: root.level
+                
+            MDLabelA:
+                text: root.box
+  
+        #Row4 Exampl
+        MDBoxLayout:
+            orientation: "vertical"
+            size_hint_y: None
+            height: self.minimum_height
+            spacing: dp(5)
+            
+            MDLabelA:
+                text: "Exampl"
+                style: "subtitle"
+                bold: True
+                size_hint_y: None
+                height: dp(20)
+            
+            MDCard:
+                size_hint_y: None
+                height: dp(80)
+                elevation: 1
+                padding: dp(10)
+                md_bg_color: [0.95, 0.95, 0.95, 1] if app.theme_cls.theme_style == "Light" else [0.1, 0.1, 0.1, 1]
+                
+                MDLabelA:
+                    text: root.example
+                    style: "subtitle"
+                    haligna: "justify"
+                    valign: "top"
+        
+        #Row5 Collocation
+        MDBoxLayout:
+            orientation: "vertical"
+            size_hint_y: None
+            height: self.minimum_height
+            spacing: dp(5)
+            
+            MDLabelA:
+                text: "Collocation:"
+                style: "subtitle"
+                bold: True
+                size_hint_y: None
+                height: dp(20)
+            
+            MDCard:
+                size_hint_y: None
+                height: dp(60)
+                elevation: 1
+                padding: dp(10)
+                md_bg_color: [0.95, 0.95, 0.95, 1] if app.theme_cls.theme_style == "Light" else [0.1, 0.1, 0.1, 1]
+                
+                MDLabelA:
+                    text: root.collocation
+                    style: "subtitle"
+                    haligna: "justify"
+                    valign: "top"

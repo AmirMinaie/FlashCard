@@ -1,7 +1,0 @@
-{
-    "database": {
-      "driver": "sqlite",
-      "DBName": "Flashcard.db"
-    }
-  }
-  

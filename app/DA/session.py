@@ -1,12 +1,15 @@
 from sqlalchemy.orm import sessionmaker, Session
-from . import engine
+from .engine import create_db_engine
+
+_engine = create_db_engine()
 
 # Session Factory
 SessionLocal = sessionmaker(
-    bind=engine,
+    bind=_engine,
     autocommit=False,
     autoflush=False
 )
 
 def get_session() -> Session:
-    return SessionLocal()
+    db = SessionLocal()
+    return db

@@ -1,6 +1,11 @@
 <FlashCardListScreen>:
     name: "FlashCardListScreen"
-    MDLabelA:
-        text: "FlashCardListScreen"
-        halign: "center"
-
+    
+    ScrollView:
+        MDGridLayout:
+            id: grid
+            cols: 2            
+            spacing: "12dp"
+            padding: "12dp"
+            size_hint_y: None
+            adaptive_height: True

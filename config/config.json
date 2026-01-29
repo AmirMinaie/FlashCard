@@ -1,8 +1,7 @@
 {
     "database": {
-      "driver": "sqlServer",
-      "dBName" : "Flashcard",
-      "server" : "localhost"
+      "driver": "sqlite",
+      "DBName": "Flashcard.db"
     }
   }
   

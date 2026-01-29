@@ -1,10 +1,8 @@
 from DA.session import get_session
-from DA.models import flashcardDA  
+from DA.models import flashcardDA 
+from sqlalchemy.orm import selectinload
 
 class FlashCardBL:
-    def __init__(self):
-        self.session_factory = get_session()
-
     def add_card(self, title, type_Id , description , example ):
         session = self.session_factory
         
@@ -16,8 +14,13 @@ class FlashCardBL:
         return id
 
     def get_cards(self):
-        session = self.session_factory
-        cards = session.query(flashcardDA).all()
+        session = get_session()
+        cards = session.query(flashcardDA).options(
+            selectinload(flashcardDA.pos),
+            selectinload(flashcardDA.type_),
+            selectinload(flashcardDA.box),
+            selectinload(flashcardDA.level),
+        ).all()
         session.close()
         return cards
     

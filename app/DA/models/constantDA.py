@@ -1,9 +1,13 @@
 from ..base import Base
-from sqlalchemy import Column, Integer, Text
+from sqlalchemy import Column, Integer, Text , Index
 
 class constantDA(Base):
     __tablename__ = "constant"
     id = Column(Integer, primary_key=True)
-    Name = Column(Text, nullable=False)
-    Caption = Column(Text, nullable=False)
-    Type = Column(Text, nullable=False)
+    name = Column(Text, nullable=False)
+    caption = Column(Text, nullable=False)
+    type = Column(Text, nullable=False)
+
+    __table_args__ = (
+        Index('idx_unique_Name', 'name', unique=True),
+    )

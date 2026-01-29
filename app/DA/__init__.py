@@ -1,28 +1,22 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from .base import Base
-from .models import * 
-from cmn.config_reader import ConfigReader , Base_dir , get_dir
+from sqlalchemy.orm import declarative_base
+from .engine import create_db_engine
 
-config_reader = ConfigReader("config.json")
-db_config = config_reader.get("database")
-driver = db_config["driver"]
-conectionString = ""
+Base = declarative_base()
 
-if driver == 'sqlite':
-    DB_PATH = get_dir( 'app', db_config['DBName'] )
-    conectionString = f"sqlite:///{DB_PATH}"
+__all__ = [
+    'Base',
+    'SessionLocal', 
+    'get_db',
+    'get_session',
+    'create_db_engine',
+    'init_db'
+]
 
-elif driver == 'sqlServer':
-    server = db_config['server'] 
-    database = db_config['dBName']  
-    conectionString = f"mssql+pyodbc://{server}/{database}"
-else:
-    NotImplementedError
-
-engine = create_engine(conectionString, echo=True)
-SessionLocal = sessionmaker(bind=engine)
 
 def init_db():
+    from .base import Base
+    from .models import constantDA, flashcardDA , reviewFlashcardDA , fileFlashcardDA
+    from .seed import Create_SeedData
+    engine = create_db_engine()
     Base.metadata.create_all(bind=engine)
-
+    Create_SeedData(engine)

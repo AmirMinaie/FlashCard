@@ -1,10 +1,10 @@
 import json
-from .resource_helper import *
+from .resource_helper import resource_path
 from pathlib import Path
 
 class ConfigReader:
     def __init__(self, file_name="config.json"):
-        self.config_path = Path(get_dir("config" , file_name ))
+        self.config_path = Path(resource_path("config" , file_name ))
         self._config = None
 
     def load(self):
