@@ -2,8 +2,6 @@ from ..base import Base
 from sqlalchemy import Column, Integer, Text , Index
 
 class constantDA(Base):
-    __tablename__ = "constant"
-    id = Column(Integer, primary_key=True)
     name = Column(Text, nullable=False)
     caption = Column(Text, nullable=False)
     type = Column(Text, nullable=False)

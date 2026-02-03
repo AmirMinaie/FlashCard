@@ -1,7 +1,7 @@
 {
-    "database": {
-      "driver": "sqlite",
-      "DBName": "Flashcard.db"
-    }
-  }
-  
+  "database": {
+    "driver": "sqlite",
+    "DBName": "Flashcard.db"
+  },
+  "loadSeedData": 0
+}

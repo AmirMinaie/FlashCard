@@ -1,0 +1,147 @@
+<MDTextFieldA@MDTextField>:
+    text_h: ""
+    icon: ""
+    is_required: False
+    required_color: 1, 0, 0, 1
+
+    hint_text: root.text_h + (" *" if root.is_required else "")
+    icon_left: root.icon
+    
+    hint_text_color: root.required_color if root.is_required and not self.text else (0.5, 0.5, 0.5, 1)
+    line_color_normal: root.required_color if root.is_required and not self.text else (0, 0, 0, 1)
+    
+    text_color: 0, 0, 0, 1
+    line_color_focus: app.theme_cls.primary_color
+    size_hint_y: None
+    height: dp(60)
+
+<AddFlashCardScreen>:
+    name: "AddFlashCardScreen"
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: 0
+        spacing: 0
+
+        ScrollView:
+            MDBoxLayout:
+                orientation: "vertical"
+                spacing: "15dp"
+                padding: ["20dp", "10dp", "20dp", "80dp"]  
+                size_hint_y: None
+                height: self.minimum_height
+
+                MDLabel:
+                    text: "Add New FlashCard"
+                    font_style: "H5"
+                    halign: "center"
+                    size_hint_y: None
+                    height: dp(50)
+
+                MDTextFieldA:
+                    id: title_field
+                    text_h: "Word/Title"
+                    icon: "alphabetical"
+                    is_required: True
+
+                MDTextFieldA:
+                    id: pronunciation_field
+                    text_h: "Pronunciation"
+                    icon: "volume-high"
+                    is_required: True
+
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    size_hint_y: None
+                    height: dp(60) 
+                    spacing: "10dp" 
+
+                    MDTextFieldA:
+                        id: pastParticiple_field
+                        text_h: "pastParticiple"
+                        icon: "volume-high"
+
+                    MDTextFieldA:
+                        id: pastTense_field
+                        text_h: "pastTense"
+                        icon: "volume-high"
+
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    size_hint_y: None
+                    height: dp(60) 
+                    spacing: "10dp" 
+
+                    DropDownA:
+                        id: part_of_speech_field
+                        text_h: "Part of Speech"
+                        icon: "alphabetical-variant"
+                        selected_value: ""
+                        is_required: True
+                        menu_callback: root.show_menu_pos
+
+                    DropDownA:
+                        id: type_field
+                        text_h: "type"
+                        icon: "format-list-bulleted-type"
+                        selected_value: ""
+                        menu_callback: root.show_menu_type
+                        is_required: True
+                    
+                    DropDownA:
+                        id: level_field
+                        text_h: "level"
+                        icon: "chart-bar"
+                        selected_value: ""
+                        menu_callback: root.show_menu_level
+                    
+                    DropDownA:
+                        id: box_field
+                        text_h: "box"
+                        icon: "package-variant"
+                        selected_value: ""
+                        menu_callback: root.show_menu_box
+                        is_required: True
+
+                MDTextFieldA:
+                    id: example_field
+                    text_h: "Example Sentence"
+                    icon: "format-quote-open"
+                    multiline: True
+                    mode: "rectangle"
+                    size_hint_y: None
+                    height: dp(100)
+                
+                MDTextFieldA:
+                    id: definition_field
+                    text_h: "Definition"
+                    icon: "format-quote-open"
+                    multiline: True
+                    mode: "rectangle"
+                    size_hint_y: None
+                    height: dp(100)
+
+                MDTextFieldA:
+                    id: collocation_field
+                    text_h: "Collocations"
+                    icon: "link-variant"
+                    multiline: True
+                    mode: "rectangle"
+                    size_hint_y: None
+                    height: dp(100)
+
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'bottom'
+            size_hint_y: None
+            height: dp(70)
+            padding: ["10dp", "0dp", "10dp", "10dp"]
+
+            MDRaisedButton:
+                text: "Save FlashCard"
+                icon: "plus"
+                size_hint_x: 1  
+                height: dp(56)
+                on_release: root.Save_info()
+                md_bg_color: app.theme_cls.primary_color
+                text_color: 1, 1, 1, 1

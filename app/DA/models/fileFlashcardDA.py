@@ -4,9 +4,7 @@ from sqlalchemy.orm import relationship
 import datetime
 
 class fileFlashcardDA(Base):
-    __tablename__ = "fileFlashcard"
 
-    id = Column(Integer, primary_key=True)
     flashcard_id = Column(Integer, ForeignKey("flashcard.id"), nullable=True)
     file_path = Column(Text, default=datetime.datetime.utcnow)
     type_id = Column(Integer, ForeignKey("constant.id"), nullable=True)

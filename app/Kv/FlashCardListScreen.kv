@@ -1,11 +1,19 @@
 <FlashCardListScreen>:
     name: "FlashCardListScreen"
     
-    ScrollView:
-        MDGridLayout:
-            id: grid
-            cols: 2            
-            spacing: "12dp"
-            padding: "12dp"
+    RecycleView:
+        id: RV
+        viewclass: 'MDCardA'
+        scroll_type: ['bars', 'content']
+        bar_width: dp(10)
+
+        RecycleBoxLayout:
+            orientation: 'vertical'
+            spacing: dp(15)
+            padding: dp(10)
+
             size_hint_y: None
-            adaptive_height: True
+            height: self.minimum_height
+
+            default_size_hint: 1, None
+            default_size: None, dp(375)

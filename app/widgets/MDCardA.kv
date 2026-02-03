@@ -1,114 +1,149 @@
+<MDChipA@MDChip>
+    # Custom attribute.
+    text: ""
+    icon: ""
+
+    # Chip attribute.
+    type: "assist"
+    theme_bg_color: "Custom"
+    md_bg_color: "#d4d0d0"
+    theme_line_color: "Custom"
+    line_color: "grey"
+    theme_elevation_level: "Custom"
+    elevation_level: 1
+    theme_shadow_softness: "Custom"
+    shadow_softness: 2
+
+    MDChipLeadingIcon:
+        icon: root.icon
+        theme_text_color: "Custom"
+        text_color: "#0697f7"
+
+    MDChipText:
+        text: root.text
+        theme_text_color: "Custom"
+        text_color: "#000000"
+
 <MDCardA>:
     orientation: "vertical"
     size_hint_y: None
-    height: self.minimum_height
-    padding: dp(15)
-    spacing: dp(10)
+    height: dp(350)
+    padding: dp(10)
+    spacing: dp(5)
     elevation: 4
-    radius: [dp(15),]
+    radius: [dp(12),]
     
     MDBoxLayout:
         orientation: "vertical" 
         size_hint_y: None
-        height: self.minimum_height
-        spacing: dp(10)
+        height: dp(330)
+        spacing: dp(8)
         
         #Row1 Title
         MDBoxLayout:
             orientation: "horizontal"
             size_hint_y: None
-            height: dp(50)
+            height: dp(35)
             spacing: dp(10)
             
             MDLabelA:
+                id: title_label
                 text: root.title
-                style: "title"
+                font_style: "H6"
                 bold: True
                 theme_text_color: "Primary"
                 size_hint_x: 0.7
+                size_hint_y: None
+                height: dp(40)
 
         #Row2 pronunciation
         MDBoxLayout:
             orientation: "horizontal"
             size_hint_y: None
-            height: dp(30)
-            
+            height: dp(25)
+            padding: [0, 0, 0, dp(5)]
+
             MDLabelA:
+                id: pronunciation_label
                 text: root.pronunciation
-                style: "subtitle"
+                font_style: "Subtitle1"
                 size_hint_x: 0.8
-                haligna: "right"
+                halign: "left"
                 theme_text_color: "Secondary"
+                size_hint_y: None
+                height: dp(30)
         
-        # Row2 partOfSpeach type level box
+        # Row3 partOfSpeach type level box
         MDBoxLayout:
             orientation: "horizontal"
             size_hint_y: None
-            height: dp(40)
-            spacing: dp(10)
+            height: dp(30)
+            spacing: dp(3)
+            padding: [0, 0, 0, dp(3)]
             
-            MDLabelA:
+            MDChipA:
+                id: pos_chip
                 text: root.partOfSpeach
+                icon: "alphabetical-variant"
             
-            MDLabelA:
+            MDChipA:
+                id: type_chip
                 text: root.type_
+                icon: "format-list-bulleted-type"
             
-            MDLabelA:
+            MDChipA:
+                id: level_chip
                 text: root.level
+                icon: "chart-bar"
                 
-            MDLabelA:
+            MDChipA:
+                id: box_chip
                 text: root.box
+                icon: "package-variant"
   
-        #Row4 Exampl
+        #Row4 Example
         MDBoxLayout:
             orientation: "vertical"
             size_hint_y: None
-            height: self.minimum_height
-            spacing: dp(5)
+            height: dp(90)
+            spacing: dp(3)
             
             MDLabelA:
-                text: "Exampl"
-                style: "subtitle"
+                id: example_title
+                text: "Example:"
+                font_style: "Subtitle1"
                 bold: True
                 size_hint_y: None
                 height: dp(20)
             
-            MDCard:
+            MDLabelA:
+                id: example_label
+                text: root.example
+                font_style: "Body1"
+                halign: "left"
+                valign: "top"
                 size_hint_y: None
-                height: dp(80)
-                elevation: 1
-                padding: dp(10)
-                md_bg_color: [0.95, 0.95, 0.95, 1] if app.theme_cls.theme_style == "Light" else [0.1, 0.1, 0.1, 1]
-                
-                MDLabelA:
-                    text: root.example
-                    style: "subtitle"
-                    haligna: "justify"
-                    valign: "top"
+                height: self.texture_size[1] + dp(10)
         
         #Row5 Collocation
         MDBoxLayout:
             orientation: "vertical"
             size_hint_y: None
-            height: self.minimum_height
+            height: dp(130)
             spacing: dp(5)
             
             MDLabelA:
+                id: collocation_title
                 text: "Collocation:"
-                style: "subtitle"
+                font_style: "Subtitle1"
                 bold: True
                 size_hint_y: None
-                height: dp(20)
-            
-            MDCard:
+                height: dp(25)
+
+            MDLabelA:
+                id: collocation_label
+                text: root.collocation
+                halign: "left"
+                valign: "top"
                 size_hint_y: None
-                height: dp(60)
-                elevation: 1
-                padding: dp(10)
-                md_bg_color: [0.95, 0.95, 0.95, 1] if app.theme_cls.theme_style == "Light" else [0.1, 0.1, 0.1, 1]
-                
-                MDLabelA:
-                    text: root.collocation
-                    style: "subtitle"
-                    haligna: "justify"
-                    valign: "top"
+                height: self.texture_size[1] + dp(10)

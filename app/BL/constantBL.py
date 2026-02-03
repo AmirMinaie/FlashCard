@@ -7,6 +7,6 @@ class constantBL:
 
     def get_constant(self , constantType):
         session = self.session_factory
-        cards = session.query(constantDA).filter(constantDA.Type == constantType).all()
+        cards = session.query(constantDA).filter(constantDA.type == constantType).all()
         session.close()
         return cards

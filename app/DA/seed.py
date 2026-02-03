@@ -5,11 +5,15 @@ from .base import Base
 def Create_SeedData(engine):
     
     data = ConfigReader("seed.json").load()
-    for table_name, rows in data.items():
-        with engine.begin() as conn:
-            metadata = Base.metadata
-            metadata.reflect(bind=engine, only=[t for t in data.keys() if t not in metadata.tables])
-            seed_table(conn, metadata, table_name, rows)
+    loadSeedData = ConfigReader("config.json").get("loadSeedData" , 1 )
+    if loadSeedData == 1:
+        for table_name, rows in data.items():
+            with engine.begin() as conn:
+                metadata = Base.metadata
+                metadata.reflect(bind=engine, only=[t for t in data.keys() if t not in metadata.tables])
+                seed_table(conn, metadata, table_name, rows)
+        
+        ConfigReader("config.json").set("loadSeedData" , 0 )
 
 def seed_table(conn, metadata, table_name, rows):
     table = metadata.tables[table_name]
@@ -43,8 +47,7 @@ def insert_row(row ,conn, metadata, table , table_name):
         if ref_id is not None:
             processed_data[id_field_name] = ref_id
         else:
-            raise ValueError(f"مقدار '{ref_value}' در جدول reference برای فیلد '{id_field_name}' یافت نشد")
-
+            ValueError(f"Value '{ref_value}' not found in the reference table for field '{id_field_name}'")
     try:
         insertTable = insert(table).values(**processed_data)
         result = conn.execute(insertTable)
@@ -69,28 +72,22 @@ def resolve_reference(conn, metadata: MetaData, source_table, id_field_name: str
     if hasattr(source_table.c, id_field_name):
         id_column = getattr(source_table.c, id_field_name)
     else:
-        # اگر نام دقیق ستون را نداریم، به دنبالش بگردیم
         for column in source_table.columns:
             if column.name == id_field_name:
                 id_column = column
                 break
         else:
-            raise ValueError(f"ستون '{id_field_name}' در جدول '{source_table.name}' یافت نشد")
-    
-    # بررسی اینکه آیا این ستون Foreign Key است
+            raise ValueError(f"Column '{id_field_name}' not found in table '{source_table.name}'")
+
     if not id_column.foreign_keys:
-        raise ValueError(f"ستون '{id_field_name}' یک Foreign Key نیست")
+        raise ValueError(f"Column '{id_field_name}' is not a Foreign Key")
     
-    # گرفتن اطلاعات جدول مقصد از اولین foreign key
     fk = next(iter(id_column.foreign_keys))
     target_table_name = fk.column.table.name
-    target_column_name = fk.column.name  # معمولاً 'id'
+    target_column_name = fk.column.name  
     
-    # پیدا کردن جدول مقصد
     target_table = metadata.tables[target_table_name]
-    
-    # پیدا کردن ستون name در جدول مقصد
-    # فرض می‌کنیم ستون 'name' وجود دارد
+
     name_column = None
     for column in target_table.columns:
         if column.name.lower() in ['name', 'title', 'label']:
@@ -98,16 +95,14 @@ def resolve_reference(conn, metadata: MetaData, source_table, id_field_name: str
             break
     
     if name_column is None:
-        raise ValueError(f"ستون 'name' در جدول '{target_table_name}' یافت نشد")
+        raise ValueError(f"Column 'name' not found in table '{target_table_name}'")
     
-    # جستجو در جدول مقصد بر اساس نام
     stmt = select(target_table.c[target_column_name]).where(name_column == ref_value)
     result = conn.execute(stmt).fetchone()
     
     if result:
         return result[0]
     else:
-        # اگر پیدا نشد، رکورد جدید ایجاد کن
         insert_stmt = insert(target_table).values({name_column.name: ref_value})
         result = conn.execute(insert_stmt)
         return result.inserted_primary_key[0]

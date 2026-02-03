@@ -1,38 +1,25 @@
-<BaseMDNavigationItem>
-    MDNavigationItemIcon:
-        icon: root.icon
-        MDBadge:
-            text: root.badge_text
-            opacity: 1 if root.show_badge else 0 
-            size_hint: None, None
-            size: "20dp", "20dp"
-            radius: [100,]
-
-    MDNavigationItemLabel:
-        text: root.text
-
 <HomeScreen>
     name: "HomeScreen"
-    MDBoxLayout:
-        orientation: "vertical"
-        md_bg_color: self.theme_cls.backgroundColor
 
-        MDScreenManager:
-            id: screen_manager
+    MDBottomNavigation:
 
-            FlashCardListScreen:
+        MDBottomNavigationItem:
+            name: "review_tab"
+            icon: "clipboard-check"
+            text: "Review Today"
+
             ReviewTodayScreen:
 
-        MDNavigationBar:
-            on_switch_tabs: root.on_switch_tabs(*args)
+        MDBottomNavigationItem:
+            name: "add_tab"
+            icon: "note-plus"
+            text: "Add Cards"
 
-            BaseMDNavigationItem
-                icon: "gmail"
-                text: "Review Today"
-                screen_Name : "ReviewTodayScreen"
-                active: True
-            
-            BaseMDNavigationItem
-                icon: "add"
-                screen_Name : "FlashCardListScreen"
-                text: "List Cards"
+            AddFlashCardScreen:
+
+        MDBottomNavigationItem:
+            name: "list_tab"
+            icon: "format-list-bulleted"
+            text: "List Cards"
+
+            FlashCardListScreen:

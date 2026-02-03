@@ -4,11 +4,8 @@ from sqlalchemy.orm import relationship
 import datetime
 
 class reviewFlashcardDA(Base):
-    __tablename__ = "reviewFlashcard"
 
-    id = Column(Integer, primary_key=True)
     flashcard_id = Column(Integer, ForeignKey("flashcard.id"), nullable=True)
-    reviewAt = Column(DateTime, default=datetime.datetime.utcnow)
     status_id = Column(Integer, ForeignKey("constant.id"), nullable=True)
     box_id = Column(Integer, ForeignKey("constant.id"), nullable=True)
     

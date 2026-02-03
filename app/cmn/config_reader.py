@@ -19,3 +19,10 @@ class ConfigReader:
         if self._config is None:
             self.load()
         return self._config.get(key, default)
+
+    def set(self, key , value):
+        if self._config is None:
+            self.load()
+        self._config[key] = value
+        with open(self.config_path , "w", encoding="utf-8") as f:
+            json.dump(self._config, f, ensure_ascii=False, indent=2)
