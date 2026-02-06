@@ -1,6 +1,7 @@
 from ..base import Base
 from sqlalchemy import Column, Integer, Text , DateTime , ForeignKey , Index
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_property
 import datetime
 
 class flashcardDA(Base):
@@ -48,3 +49,25 @@ class flashcardDA(Base):
     __table_args__ = (
         Index('idx_unique_title', 'title', unique=True),
     )
+
+    files = relationship("fileFlashcardDA", 
+                         back_populates="flashcard",
+                         cascade="all, delete-orphan")
+
+    reviews = relationship("reviewFlashcardDA",
+                            back_populates="flashcard",
+                            order_by= "desc(reviewFlashcardDA.review_date)",
+                            lazy= 'dynamic'
+                        )
+    @property
+    def last_review(self):
+        if self.reviews:
+            return self.reviews[0]
+        return None
+    
+    @hybrid_property
+    def last_review_date(self):
+        """تاریخ آخرین review (برای استفاده در Python)"""
+        if self.reviews:
+            return self.reviews[0].review_date
+        return None

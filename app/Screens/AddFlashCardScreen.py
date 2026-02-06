@@ -2,33 +2,32 @@ from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from cmn.resource_helper import *
 from widgets.MDLabelA import MDLabelA
-from kivymd.uix.menu import MDDropdownMenu
-from kivy.metrics import dp
-from BL.constantBL import constantBL
 from widgets.DropDownA import DropDownA
+from BL.constantBL import constantBL
 from BL.FlashCardBL import FlashCardBL
 from kivymd.app import MDApp
+from kivymd.uix.list import OneLineIconListItem
+from kivymd.uix.button import MDIconButton
+from kivymd.uix.textfield import MDTextField
+from kivymd.uix.dialog import MDDialog
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.button import MDFlatButton
+from ffpyplayer.player import MediaPlayer
+import time
 
 Builder.load_file(resource_path("app/kv/AddFlashCardScreen.kv"))
 
 class AddFlashCardScreen(MDScreen):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.dialog_add_song = None
+        self.song_list = []
+        self.player = None
     
     def load_constant(self , type):
         constant_pos = constantBL().get_constant(type)
         data = [{"caption":pos.caption, "id" :  pos.id } for pos in constant_pos]
         return data
-
-    def show_menu_pos(self , instans):
-        return self.load_constant('POS')
-
-    def show_menu_type(self , instans):
-        return self.load_constant('FlashCardtype')
-
-    def show_menu_level(self , instans):
-        return self.load_constant('Level')
-    
-    def show_menu_box(self , instans):
-        return self.load_constant('Box')
 
     def Save_info(self):
         from kivymd.app import MDApp
@@ -134,6 +133,7 @@ class AddFlashCardScreen(MDScreen):
             'type_id': self.ids.type_field.selected_Id or 0,
             'box_id': self.ids.box_field.selected_Id or 0,
             'level_id': self.ids.level_field.selected_Id or 0,
+            'files': self.song_list,
         }
 
     def show_success_message(self, saved_card):
@@ -189,6 +189,144 @@ ID: #{saved_card['id']}
             duration=5
         )
 
+    def show_add_song_dialog(self):
+        """Show dialog for adding new item"""
+        if not self.dialog_add_song:
+            # Create content layout
+            content = MDBoxLayout(
+                orientation="vertical",
+                spacing="12dp",
+                size_hint_y=None,
+                height="120dp"
+            )
+            
+            # add file from DropDown
+            self.from_DropDown_field = DropDownA(
+                    text_h = "from",
+                    selected_value = "",
+                    is_required = True,
+                    item_menu = self.load_constant('source_type')
+                    )
+            
+            content.add_widget(self.from_DropDown_field)
+
+            # Text field for item name
+            self.value_field = MDTextField(
+                hint_text="value",
+                mode="rectangle",
+                size_hint_x=None,
+                width="300dp"
+            )
+            content.add_widget(self.value_field)
+            
+            # Create dialog
+            self.dialog_add_song = MDDialog(
+                title="Add New Item",
+                type="custom",
+                content_cls=content,
+                buttons=[
+                    MDFlatButton(
+                        text="CANCEL",
+                        theme_text_color="Custom",
+                        text_color=self.theme_cls.primary_color,
+                        on_release=self.close_dialog_add_song
+                    ),
+                    MDFlatButton(
+                        text="ADD",
+                        theme_text_color="Custom",
+                        text_color=self.theme_cls.primary_color,
+                        on_release=self.add_new_song_item
+                    ),
+                ],
+            )
+        
+        # Clear text field and open dialog
+        self.value_field.text = ""
+        self.from_DropDown_field.clear_selection()
+        self.dialog_add_song.open()
+    
+    def close_dialog_add_song(self , *args):
+        """Close the dialog"""
+        if self.dialog_add_song:
+            self.dialog_add_song.dismiss()
+
+    def add_new_song_item(self , *args):
+        item={
+                "from_type_Id": self.from_DropDown_field.selected_Id,
+                "from_type_caption": self.from_DropDown_field.selected_value,
+                "value":self.value_field.text
+            }
+        self.add_List_song(item)
+        self.close_dialog_add_song()
+        pass
+
+    def add_List_song(self, item):
+        """Add a song item to the list"""
+        if 'id' not in item:
+            item['id'] = len(self.song_list) + 1
+
+        self.song_list.append(item)
+
+        list_item = OneLineIconListItem(
+            text=f"{item['value']} ({item['from_type_caption']})"
+        )
+        list_item.item_data = item
+
+        delete_btn = MDIconButton(
+            icon="delete",
+            pos_hint={"center_y": 0.5},
+            theme_text_color="Error"
+        )
+
+        delete_btn.bind(on_press=self.delete_song_item)            
+        list_item.bind(on_release=lambda x: self.play_song_item(list_item))
+        list_item.add_widget(delete_btn)
+        self.ids.song_list.add_widget(list_item)
+
+    def delete_song_item(self ,instance):
+        """حذف آیتم"""
+        parent = instance.parent
+        if parent:
+        
+            item_to_delete = parent.item_data
+            self.song_list = [song for song in self.song_list 
+                                if song.get('id') != item_to_delete.get('id')]
+
+            self.ids.song_list.remove_widget(parent)
+            self.ids.song_list.height = self.ids.song_list.minimum_height
+
+        return True
+
+    def play_song_item(self, instance):
+        item_data = instance.item_data
+        if hasattr(self, 'player') and self.player is not None:
+            try:
+                self.player.set_pause(True)
+                time.sleep(0.02)
+                self.player.close()
+                time.sleep(0.02)
+            except:
+                pass
+            finally:
+                self.player = None
+        try:
+            time.sleep(0.05)
+            self.player = MediaPlayer(
+            item_data['value'],
+            ff_opts={
+                'paused': False,
+                'sync': 'audio',
+                'buffer_size': '512000',
+                'rtbufsize': '1024000',
+                'infbuf': 1,
+                'reconnect': 1,
+                'reconnect_delay_max': 5
+            }
+        )
+        
+        except Exception as e:
+            self.show_generic_error(e)
+
     def reset_form(self):
         text_fields = [
             'title_field', 'definition_field', 'example_field', 
@@ -213,3 +351,6 @@ ID: #{saved_card['id']}
             field = self.ids.get(field_id)
             if field and hasattr(field, 'clear_selection'):
                 field.clear_selection()
+        
+        self.song_list = []
+        self.ids.song_list.clear_widgets()

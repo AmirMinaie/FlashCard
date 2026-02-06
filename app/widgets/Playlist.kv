@@ -1,0 +1,147 @@
+<Playlist>:
+    orientation: "vertical"
+    padding: dp(20)
+    spacing: dp(10)
+    size_hint: 1, 1
+
+    MDBoxLayout:
+        orientation: "horizontal"
+        spacing: dp(10)
+        size_hint_y: None
+        height: dp(40) if root.time_slider_enabled else 0
+        pos_hint: {"center_x": 0.5}
+        disabled: not root.time_slider_enabled
+        opacity: 1 if root.time_slider_enabled else 0
+
+        MDLabel:
+            id: current_time_label
+            text: root.current_time
+            size_hint_x: None
+            width: dp(60)
+            halign: "center"
+            valign: "middle"
+            opacity: 1 if root.time_slider_enabled else 0
+
+        MDSlider:
+            id: progress_slider
+            min: 0
+            max: 100
+            value: root.progress_value
+            on_value: root.on_slider_value(self, self.value)
+            size_hint_x: 1
+            hint: False
+            disabled: not root.time_slider_enabled
+            opacity: 1 if root.time_slider_enabled else 0
+
+        MDLabel:
+            text: root.total_time
+            size_hint_x: None
+            width: dp(60)
+            halign: "center"
+            valign: "middle"
+            opacity: 1 if root.time_slider_enabled else 0
+
+    MDBoxLayout:
+        orientation: "horizontal"
+        size_hint_y: None
+        height: dp(70)
+        padding: [dp(10), 0] 
+        spacing: dp(0)  
+
+        MDBoxLayout:
+            orientation: "vertical"
+            size_hint_x: 0.4 
+            size_hint_y: 1
+            spacing: dp(2)
+            padding: [dp(5), dp(5), 0, dp(5)] 
+            pos_hint: {"center_y": 0.5}
+
+            MDLabel:
+                id: song_label
+                text: root.current_song if root.current_song else "No song selected"
+                halign: "left"
+                valign: "middle"
+                font_style: "Subtitle1"
+                theme_text_color: "Primary"
+                bold: True
+                size_hint_y: None
+                height: dp(30)
+                text_size: (self.width, None)
+                ellipsis: "end"
+                shorten: True
+                max_lines: 1
+                shorten_from: "right"
+
+        MDBoxLayout:
+            orientation: "horizontal"
+            size_hint_x: 0.35  
+            size_hint_y: 1
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            spacing: dp(15) 
+            padding: [0, dp(10)]
+
+            MDIconButton:
+                icon: "skip-previous"
+                icon_size: dp(30)
+                theme_icon_color: "Custom"
+                icon_color: root.theme_cls.primary_color
+                on_press: root.prev_song()
+                size_hint: None, None
+                size: dp(48), dp(48)
+                pos_hint: {"center_y": 0.5}
+
+            MDFloatingActionButton:
+                id: play_button
+                icon: "play" if not root.is_playing else "pause"
+                md_bg_color: root.theme_cls.primary_color
+                on_press: root.toggle_play()
+                size_hint: None, None
+                size: dp(56), dp(56)
+                pos_hint: {"center_y": 0.5}
+                elevation_normal: 8
+
+            MDIconButton:
+                icon: "skip-next"
+                icon_size: dp(30)
+                theme_icon_color: "Custom"
+                icon_color: root.theme_cls.primary_color
+                on_press: root.next_song()
+                size_hint: None, None
+                size: dp(48), dp(48)
+                pos_hint: {"center_y": 0.5}
+
+        MDBoxLayout:
+            orientation: "horizontal"
+            size_hint_x: 0.25  
+            size_hint_y: 1
+            spacing: dp(5)
+            padding: [dp(5), dp(5), dp(10), dp(5)]  
+            pos_hint: {"center_y": 0.5}
+            opacity: 1 if root.volume_slider_enabled else 0
+            disabled: not root.volume_slider_enabled
+
+            MDIconButton:
+                id: volume_icon
+                icon: "volume-high" if root.volume_level > 0 else "volume-off"
+                theme_icon_color: "Custom"
+                icon_color: root.theme_cls.primary_color
+                on_press: root.toggle_mute()
+                size_hint: None, None
+                size: dp(40), dp(40)
+                pos_hint: {"center_y": 0.5}
+
+            MDSlider:
+                id: volume_slider
+                min: 0
+                max: 100
+                value: root.volume_level
+                on_value: root.set_volume(self.value)
+                size_hint_x: 1
+                size_hint_y: None
+                height: dp(40)
+                pos_hint: {"center_y": 0.5}
+                disabled: not root.volume_slider_enabled
+                opacity: 1 if root.volume_slider_enabled else 0
+
+    Widget:
+        size_hint_y: 0.1

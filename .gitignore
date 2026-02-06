@@ -20,5 +20,7 @@ Thumbs.db
 *.db
 
 #test 
-test.py
+test*
 run test.bat
+
+files/

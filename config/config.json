@@ -3,5 +3,49 @@
     "driver": "sqlite",
     "DBName": "Flashcard.db"
   },
-  "loadSeedData": 0
+  "loadSeedData": 0,
+  "Valid_file_format_mapping": [
+    {
+      "extension": ".jpg",
+      "format_name": "JPEG",
+      "category": "image",
+      "mime_type": "image/jpeg",
+      "description": "Joint Photographic Experts Group"
+    },
+    {
+      "extension": ".jpeg",
+      "format_name": "JPEG",
+      "category": "image",
+      "mime_type": "image/jpeg",
+      "description": "Joint Photographic Experts Group"
+    },
+    {
+      "extension": ".png",
+      "format_name": "PNG",
+      "category": "image",
+      "mime_type": "image/png",
+      "description": "Portable Network Graphics"
+    },
+    {
+      "extension": ".mp3",
+      "format_name": "MP3",
+      "category": "audio",
+      "mime_type": "audio/mpeg",
+      "description": "MPEG Audio Layer III"
+    },
+    {
+      "extension": ".wav",
+      "format_name": "WAV",
+      "category": "audio",
+      "mime_type": "audio/wav",
+      "description": "Waveform Audio File Format"
+    },
+    {
+      "extension": ".mp4",
+      "format_name": "MP4",
+      "category": "video",
+      "mime_type": "video/mp4",
+      "description": "MPEG-4 Part 14"
+    }
+  ]
 }

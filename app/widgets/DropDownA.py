@@ -50,7 +50,7 @@ class DropDownA(MDBoxLayout):
     icon = StringProperty("message")
     selected_value = StringProperty("")
     selected_Id = NumericProperty(0)
-    menu_callback = ObjectProperty(None)
+    item_menu = ObjectProperty(None)
     is_required = BooleanProperty(False)
     
     def __init__(self, **kwargs):
@@ -64,8 +64,8 @@ class DropDownA(MDBoxLayout):
         pass
     
     def on_dropdown_click(self):
-        if self.menu_callback:
-            items = self.menu_callback(self)
+        if self.item_menu:
+            items = self.item_menu
             
             if not items:
                 return

@@ -3,6 +3,9 @@
     { "name": "vocabulary", "caption": "Vocab", "type": "FlashCardtype" },
     { "name": "grammar", "caption": "Grammar", "type": "FlashCardtype" },
 
+    { "name": "online", "caption": "online", "type": "source_type" },
+    { "name": "local", "caption": "local", "type": "source_type" },
+
     { "name": "box0", "caption": "No box", "type": "Box" },
     { "name": "box1", "caption": "First Box", "type": "Box" },
     { "name": "box2", "caption": "Second Box", "type": "Box" },
@@ -45,8 +48,8 @@
     { "name": "fail", "caption": "Failed", "type": "ReviewStatus" },
 
     { "name": "image", "caption": "Image File", "type": "Filetype" },
-    { "name": "mainPronunciation", "caption": "Main Pronunciation", "type": "Filetype" },
-    { "name": "example", "caption": "Example", "type": "Filetype" }
+    { "name": "audio", "caption": "audio", "type": "Filetype" },
+    { "name": "video", "caption": "video", "type": "Filetype" }
   ],
 
 
