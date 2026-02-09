@@ -1,19 +1,55 @@
 <FlashCardListScreen>:
     name: "FlashCardListScreen"
     
-    RecycleView:
-        id: RV
-        viewclass: 'MDCardA'
-        scroll_type: ['bars', 'content']
-        bar_width: dp(10)
-
-        RecycleBoxLayout:
+    BoxLayout:
+        orientation: 'vertical'
+        
+        # بخش بالایی (ثابت) - جستجو و فیلترها
+        BoxLayout:
             orientation: 'vertical'
-            spacing: dp(15)
-            padding: dp(10)
-
             size_hint_y: None
-            height: self.minimum_height
+            height: dp(110)  # ارتفاع کل بخش بالایی
+            spacing: dp(5)
+            padding: [dp(10), dp(10), dp(10), 0]
+            
+            # بخش جستجو
+            MDTextField:
+                id: search_field
+                hint_text: "search"
+                mode: "rectangle"
+                size_hint_y: None
+                height: dp(50)
+                on_text: root.search_flashcards(self.text)
+                icon_left: "magnify"
+                line_color_focus: app.theme_cls.primary_color
+            
+            # بخش فیلترها
+            ScrollView:
+                size_hint_y: None
+                height: dp(50)
+                do_scroll_x: True
+                do_scroll_y: False
+                
+                MDBoxLayout:
+                    id: filter_chips_container
+                    adaptive_width: True
+                    spacing: dp(5)
+                    padding: dp(5)
+        
+        # بخش پایینی (اسکرول) - لیست فلش کارت‌ها
+        RecycleView:
+            id: RV
+            viewclass: 'MDCardA'
+            scroll_type: ['bars', 'content']
+            bar_width: dp(10)
 
-            default_size_hint: 1, None
-            default_size: None, dp(375)
+            RecycleBoxLayout:
+                orientation: 'vertical'
+                spacing: dp(15)
+                padding: dp(10)
+
+                size_hint_y: None
+                height: self.minimum_height
+
+                default_size_hint: 1, None
+                default_size: None, dp(375)

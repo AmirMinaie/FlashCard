@@ -25,7 +25,7 @@ Builder.load_file(resource_path("app" , "widgets","Playlist.kv"))
 
 
 class Playlist(MDBoxLayout):
-    current_song = StringProperty('ssssss')
+    current_song = StringProperty('unknow')
     current_time = StringProperty("00:00")
     total_time = StringProperty("00:00")
     progress_value = NumericProperty(0)

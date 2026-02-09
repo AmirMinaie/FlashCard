@@ -16,7 +16,8 @@ class FlashCardApp (MDApp):
         super().__init__(**kwargs)
 
     def build(self):
-        Builder.load_file(resource_path("app/kv/HomeScreen.kv"))
+        self.theme_cls.primary_palette = "Teal"
+        Builder.load_file(resource_path("app/Kv/HomeScreen.kv"))
         sm = ScreenManager()
         sm.add_widget(HomeScreen(name="HomeScreen"))
         sm.current = "HomeScreen"

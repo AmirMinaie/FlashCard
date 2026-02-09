@@ -1,7 +1,9 @@
 from ..base import Base
-from sqlalchemy import Column, Integer, Text , DateTime , ForeignKey , Index
+from .reviewFlashcardDA import reviewFlashcardDA
+from sqlalchemy import Column, Integer, Text , DateTime , ForeignKey , Index , desc
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import select, func
 import datetime
 
 class flashcardDA(Base):
@@ -22,43 +24,45 @@ class flashcardDA(Base):
         "constantDA",
         foreign_keys=[type_id],
         backref="type_flashcards", 
-        lazy='joined'
-    )
+        lazy='joined')
 
     box = relationship(
         "constantDA",
         foreign_keys=[box_id],
         backref="box_flashcards", 
-        lazy='joined'
-    )
+        lazy='joined')
 
     pos = relationship(
         "constantDA",
         foreign_keys=[pos_id],
         backref="pos_flashcards", 
-        lazy='joined'
-    )
+        lazy='joined')
 
     level = relationship(
         "constantDA",
         foreign_keys=[level_id],
         backref="level_flashcards", 
-        lazy='joined'
-    )
+        lazy='joined')
 
     __table_args__ = (
         Index('idx_unique_title', 'title', unique=True),
     )
 
-    files = relationship("fileFlashcardDA", 
+    files = relationship("fileFlashcardDA",
+                         foreign_keys="[fileFlashcardDA.flashcard_id]",
+                         cascade="all, delete-orphan",
+                         overlaps="fileFlashcard",
                          back_populates="flashcard",
-                         cascade="all, delete-orphan")
-
-    reviews = relationship("reviewFlashcardDA",
-                            back_populates="flashcard",
-                            order_by= "desc(reviewFlashcardDA.review_date)",
-                            lazy= 'dynamic'
                         )
+
+    reviews = relationship(
+        reviewFlashcardDA,
+        foreign_keys=[reviewFlashcardDA.flashcard_id], 
+        order_by=reviewFlashcardDA.review_date.desc(),
+        lazy='joined',
+        overlaps="reviewFlashcard"
+    )
+
     @property
     def last_review(self):
         if self.reviews:
@@ -67,7 +71,32 @@ class flashcardDA(Base):
     
     @hybrid_property
     def last_review_date(self):
-        """تاریخ آخرین review (برای استفاده در Python)"""
+        """تاریخ رویو بعدی (برای استفاده در Python)"""
         if self.reviews:
             return self.reviews[0].review_date
         return None
+    
+    @last_review_date.expression
+    def last_review_date(cls):
+        """ "تاریخ رویو بعدی"""
+        # این expression برای استفاده در query
+        return select(func.max(reviewFlashcardDA.review_date))\
+            .where(reviewFlashcardDA.flashcard_id == cls.id)\
+            .correlate(cls)\
+            .scalar_subquery()
+    
+
+    @hybrid_property
+    def last_reviewed_date(self):
+        """ تاریخ آخرین رویو (برای استفاده در Python)"""
+        if self.reviews:
+            return self.reviews[0].createAt
+        return None
+    
+    @last_review_date.expression
+    def last_reviewed_date(cls):
+        # این expression برای استفاده در query
+        return select(func.max(reviewFlashcardDA.createAt))\
+            .where(reviewFlashcardDA.flashcard_id == cls.id)\
+            .correlate(cls)\
+            .scalar_subquery()

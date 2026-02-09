@@ -6,7 +6,7 @@ from typing import List, Optional
 from sqlalchemy import asc, desc, and_, or_
 from  BL.fileManager import FileManager
 from sqlalchemy import func
-from datetime import datetime, date
+from datetime import datetime, date , timedelta
 from .SM2Algorithm import SM2Algorithm
 
 @dataclass
@@ -84,7 +84,7 @@ class FlashCardBL:
         session.close()
         return card_saved
 
-    def get_cards(self , order_config: Optional[list[OrderByConfig]] = None):
+    def get_cards(self , order = None , SearchText = '',where = None ):
         session = get_session()
         query = session.query(flashcardDA).options(
             selectinload(flashcardDA.pos),
@@ -92,9 +92,18 @@ class FlashCardBL:
             selectinload(flashcardDA.box),
             selectinload(flashcardDA.level),
         )
-        order_expressions= self._get_order_expressions(order_config)
+        order_expressions= self._get_order_expressions(order)
         if order_expressions:
             query = query.order_by(*order_expressions)
+        
+        where_expressions= self._get_where_expressions(where)
+        if order_expressions:
+            query = query.where(*where_expressions)
+        
+        text_expressions= self._get_text_expressions(SearchText)
+        if order_expressions:
+            query = query.where(*text_expressions)
+        
 
         cards= query.all()
         session.close()
@@ -103,9 +112,19 @@ class FlashCardBL:
     def get_next_card_for_review(self):
         try:
             session = get_session()
-            card_data = self._get_query_review_today(session).\
-            order_by(func.random()).\
-            first()
+            today = date.today()
+            
+            card_data = session.query(flashcardDA).\
+                options(
+                    selectinload(flashcardDA.pos),
+                    selectinload(flashcardDA.type_),
+                    selectinload(flashcardDA.box),
+                    selectinload(flashcardDA.level),
+                    selectinload(flashcardDA.files),
+                ).filter(or_(
+                    flashcardDA.last_review_date <= today,
+                    flashcardDA.last_review_date == None                  
+                )).order_by(func.random()).first()
             session.close()
             return card_data
         
@@ -116,16 +135,23 @@ class FlashCardBL:
     def mark_card_reviewed(self, card_id, quality_Answer):
         try:
             session=get_session()
-            laste_review = session.query(reviewFlashcardDA).\
-                where(reviewFlashcardDA.flashcard_id == card_id).\
-                order_by(desc(reviewFlashcardDA.updatedAt)).first()
-            
-            reviewCalc = SM2Algorithm.calculate_review(
-                current_ease= laste_review.ease_factor,
-                current_interval=laste_review.interval,
-                current_repetitions=laste_review.repetitions,
-                quality= quality_Answer
+            if last_review := session.query(reviewFlashcardDA).\
+            where(reviewFlashcardDA.flashcard_id == card_id).\
+            order_by(desc(reviewFlashcardDA.updatedAt)).first():
+
+                reviewCalc = SM2Algorithm.calculate_review(
+                current_ease=last_review.ease_factor,
+                current_interval=last_review.interval,
+                current_repetitions=last_review.repetitions,
+                quality=quality_Answer
             )
+            else:
+                reviewCalc = SM2Algorithm.calculate_review(
+                    current_ease=2.5,
+                    current_interval=0,
+                    current_repetitions=0,
+                    quality=quality_Answer
+                )
 
             reviewCard = reviewFlashcardDA(
                     flashcard_id = card_id,
@@ -149,10 +175,13 @@ class FlashCardBL:
     def get_today_review_count(self):
         """گرفتن تعداد مرورهای امروز"""
         try:
+            today = date.today()
             session = get_session()
-            query = self._get_query_review_today(session)
-            count = session.query(func.count('*')).\
-                select_from(query.subquery()).scalar()
+            count = session.query(func.count(flashcardDA.id)).\
+                filter(or_(
+                    flashcardDA.last_review_date <= today,
+                    flashcardDA.last_review_date == None                  
+                )).scalar()
             session.close()
             if count:
                 return count
@@ -162,7 +191,7 @@ class FlashCardBL:
             print(f"Error getting today's review count: {e}")
             return 0
 
-    def _get_order_field(self, field_name):
+    def _get_field(self, field_name):
         field_mapping = {
             "id": flashcardDA.id,
             "title": flashcardDA.title,
@@ -176,32 +205,131 @@ class FlashCardBL:
             "type_id": flashcardDA.type_id,
             "box_id": flashcardDA.box_id,
             "level_id": flashcardDA.level_id,
-            "created_at": getattr(flashcardDA, 'created_at', flashcardDA.id),
-            "updated_at": getattr(flashcardDA, 'updated_at', flashcardDA.id),
+            "last_review_date":flashcardDA.last_review_date,
+            "created_at": getattr(flashcardDA, 'createAt', flashcardDA.id),
+            "updated_at": getattr(flashcardDA, 'updatedAt', flashcardDA.id),
         }
         return field_mapping.get(field_name.lower(), flashcardDA.id)
+    
+    def _get_order_expressions(self, order):
+        """
+        order: list[dict] | None
+        """
+        if not order:
+            return []
 
-    def _get_order_expressions(self , order_config):
-        order_expressions= []
-        if order_config:
-            for order in order_config:
-                if order.is_valid():
-                    field = self._get_order_field(order.field )
-                    if order.direction.lower() == 'desc':
-                        order_expressions.append(desc(field))
-                    else:
-                        order_expressions.append(asc(field))
-        return order_expressions
+        expressions = []
+        for item in order:
+            field = self._get_field(item.get("field"))
+            direction = item.get("direction", "asc").lower()
 
-    def _get_query_review_today(self , session ):
+            if direction == "desc":
+                expressions.append(desc(field))
+            else:
+                expressions.append(asc(field))
+
+        return expressions
+
+    def _get_where_expressions(self, where):
+        if not where:
+            return []
+
+        expressions = []
+
+        for item in where:
+            field = self._get_field(item.get("field"))
+            op = item.get("op")
+            value = self._normalize_where_value(item.get("value"))
+
+            if op == "eq":
+                expressions.append(field == value)
+
+            elif op == "ne":
+                expressions.append(field != value)
+
+            elif op == "gt":
+                expressions.append(field > value)
+
+            elif op == "gte":
+                expressions.append(field >= value)
+
+            elif op == "lt":
+                expressions.append(field < value)
+
+            elif op == "lte":
+                expressions.append(field <= value)
+
+            elif op == "like":
+                expressions.append(field.ilike(f"%{value}%"))
+
+            elif op == "in" and isinstance(value, list):
+                expressions.append(field.in_(value))
+
+            elif op == "is_null":
+                expressions.append(field.is_(None))
+
+            elif op == "is_not_null":
+                expressions.append(field.is_not(None))
+
+        return expressions
+
+    def _get_text_expressions(self, search_text):
+        """
+        search_text: str
+        """
+        if not search_text:
+            return []
+
+        search_text = f"%{search_text}%"
+
+        return [
+            or_(
+                flashcardDA.title.ilike(search_text),
+                flashcardDA.definition.ilike(search_text),
+                flashcardDA.example.ilike(search_text),
+                flashcardDA.collocation.ilike(search_text),
+            )
+        ]
+
+    def _normalize_where_value(self, value):
+        """
+        تبدیل value های semantic به date/datetime
+        """
+        if not isinstance(value, str):
+            return value
+
         today = date.today()
-        query = session.query(flashcardDA).options(
-            selectinload(flashcardDA.pos),
-            selectinload(flashcardDA.type_),
-            selectinload(flashcardDA.box),
-            selectinload(flashcardDA.level),
-            selectinload(flashcardDA.files),
-            ).where(
-                 func.date(reviewFlashcardDA.review_date) <= today
-                )
-        return query
+
+        if value == "today":
+            return today
+
+        if value == "tomorrow":
+            return today + timedelta(days=1)
+
+        if value == "yesterday":
+            return today - timedelta(days=1)
+
+        if value == "today_start":
+            return datetime.combine(today, datetime.min.time())
+
+        if value == "today_end":
+            return datetime.combine(today, datetime.max.time())
+
+        # اگر ISO date فرستاده شد
+        try:
+            return datetime.fromisoformat(value)
+        except Exception:
+            return value
+
+    def get_today_reviewed_count(self):
+        try:
+            today = date.today()
+            session = get_session()
+            count = session.query(func.count(flashcardDA.id)).\
+                filter(func.date(flashcardDA.last_reviewed_date) == today).scalar()
+            session.close()
+            return count or 0
+            
+        except Exception as e:
+            print(f"Error getting today's review count: {e}")
+            return 0

@@ -15,7 +15,7 @@ from kivymd.uix.button import MDFlatButton
 from ffpyplayer.player import MediaPlayer
 import time
 
-Builder.load_file(resource_path("app/kv/AddFlashCardScreen.kv"))
+Builder.load_file(resource_path("app/Kv/AddFlashCardScreen.kv"))
 
 class AddFlashCardScreen(MDScreen):
     def __init__(self, *args, **kwargs):

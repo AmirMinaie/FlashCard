@@ -8,13 +8,15 @@ Builder.load_string('''
     icon: ""
     type: "assist"
     theme_bg_color: "Custom"
-    md_bg_color: "#d4d0d0"
+    md_bg_color: "#d4d0d02e"
     theme_line_color: "Custom"
     line_color: "grey"
     theme_elevation_level: "Custom"
     elevation_level: 1
     theme_shadow_softness: "Custom"
     shadow_softness: 2
+    line_width: dp(0.1)
+                        
 
     MDChipLeadingIcon:
         icon: root.icon

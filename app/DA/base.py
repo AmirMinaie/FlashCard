@@ -35,11 +35,6 @@ class Base:
         doc='time Of Update row'
     )
     
-#    @declared_attr
-#    def __mapper_args__(cls):
-#        return {
-#            'order_by': cls.createdAt.desc() 
-#        }
     
     def update(self, **kwargs):
         for key, value in kwargs.items():

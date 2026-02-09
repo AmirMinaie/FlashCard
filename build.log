@@ -1,0 +1,51 @@
+# Check configuration tokens
+# Ensure build layout
+# Check configuration tokens
+# Preparing build
+# Check requirements for android
+# Search for Git (git)
+#  -> found at /usr/bin/git
+# Search for Cython (cython)
+#  -> found at /home/amirminaie/.local/bin/cython
+# Search for Java compiler (javac)
+#  -> found at /usr/lib/jvm/java-17-openjdk-amd64/bin/javac
+# Search for Java keytool (keytool)
+#  -> found at /usr/lib/jvm/java-17-openjdk-amd64/bin/keytool
+# Install platform
+# Run ['git', 'config', '--get', 'remote.origin.url']
+# Cwd /media/amirminaie/524ABA454ABA261F/MyFiles/Desktop/FlashCard/FlashCard-Dev/.buildozer/android/platform/python-for-android
+https://github.com/kivy/python-for-android.git
+# Run ['git', 'branch', '-vv']
+# Cwd /media/amirminaie/524ABA454ABA261F/MyFiles/Desktop/FlashCard/FlashCard-Dev/.buildozer/android/platform/python-for-android
+* master 957a3e5f [origin/master] Merge pull request #2959 from kivy/release-2024.01.21
+# Run ['/usr/bin/python3', '-m', 'pip', 'install', '-q', 'appdirs', 'colorama>=0.3.3', 'jinja2', 'sh>=1.10, <2.0; sys_platform!="win32"', 'build', 'toml', 'packaging', 'setuptools']
+# Cwd None
+# Apache ANT found at /home/amirminaie/.buildozer/android/platform/apache-ant-1.9.4
+# Android SDK found at /home/amirminaie/.buildozer/android/platform/android-sdk
+# Recommended android's NDK version by p4a is: 25b
+# Android NDK is missing, downloading
+# Downloading https://dl.google.com/android/repository/android-ndk-r25b-linux.zip
+- Download 0.00%Traceback (most recent call last):
+  File "/home/amirminaie/.local/bin/buildozer", line 6, in <module>
+    sys.exit(main())
+  File "/home/amirminaie/.local/lib/python3.10/site-packages/buildozer/scripts/client.py", line 13, in main
+    Buildozer().run_command(sys.argv[1:])
+  File "/home/amirminaie/.local/lib/python3.10/site-packages/buildozer/__init__.py", line 1024, in run_command
+    self.target.run_commands(args)
+  File "/home/amirminaie/.local/lib/python3.10/site-packages/buildozer/target.py", line 93, in run_commands
+    func(args)
+  File "/home/amirminaie/.local/lib/python3.10/site-packages/buildozer/target.py", line 103, in cmd_debug
+    self.buildozer.prepare_for_build()
+  File "/home/amirminaie/.local/lib/python3.10/site-packages/buildozer/__init__.py", line 172, in prepare_for_build
+    self.target.install_platform()
+  File "/home/amirminaie/.local/lib/python3.10/site-packages/buildozer/targets/android.py", line 615, in install_platform
+    self._install_android_ndk()
+  File "/home/amirminaie/.local/lib/python3.10/site-packages/buildozer/targets/android.py", line 438, in _install_android_ndk
+    self.buildozer.download(url,
+  File "/home/amirminaie/.local/lib/python3.10/site-packages/buildozer/__init__.py", line 658, in download
+    urlretrieve(url, filename, report_hook)
+  File "/usr/lib/python3.10/urllib/request.py", line 1853, in retrieve
+    block = fp.read(bs)
+  File "/usr/lib/python3.10/tempfile.py", line 638, in func_wrapper
+    return func(*args, **kwargs)
+ValueError: read of closed file

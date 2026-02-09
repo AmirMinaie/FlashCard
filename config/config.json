@@ -4,6 +4,83 @@
     "DBName": "Flashcard.db"
   },
   "loadSeedData": 0,
+
+  "filters_FlashCard_List": [
+    {
+      "id": "today_review",
+      "icon": "calendar-today",
+      "text": "today review",
+      "color": "primary",
+      "order": [
+        { "field": "id", "direction": "desc" }
+      ],
+      "where": [
+        {
+          "field": "last_review_date",
+          "op": "lte",
+          "value": "today"
+        }
+      ]
+    },
+    {
+      "id": "tomorrow_review",
+      "icon": "calendar-arrow-right",
+      "text": "tomorrow review",
+      "color": "accent",
+      "order": [
+        { "field": "id", "direction": "desc" }
+      ],
+      "where": [
+        {
+          "field": "last_review_date",
+          "op": "eq",
+          "value": "tomorrow"
+        }
+      ]
+    },
+    {
+      "id": "all_cards",
+      "icon": "format-list-bulleted",
+      "text": "all cards",
+      "color": "success",
+      "order": [
+        { "field": "id", "direction": "desc" }
+      ]
+    },
+    {
+      "id": "today_added",
+      "icon": "plus-circle",
+      "text": "today added",
+      "color": "warning",
+      "order": [
+        { "field": "id", "direction": "desc" }
+      ],
+      "where": [
+        {
+          "field": "created_at",
+          "op": "gte",
+          "value": "today_start"
+        }
+      ]
+    },
+    {
+      "id": "no_review",
+      "icon": "alert-circle",
+      "text": "no review",
+      "color": "error",
+      "order": [
+        { "field": "id", "direction": "desc" }
+      ],
+      "where": [
+        {
+          "field": "last_review_date",
+          "op": "is_null",
+          "value": null
+        }
+      ]
+    }
+  ],
+  "Defulte_filters_FlashCard_List" : "all_cards",
   "Valid_file_format_mapping": [
     {
       "extension": ".jpg",

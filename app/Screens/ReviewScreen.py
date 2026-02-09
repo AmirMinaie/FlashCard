@@ -15,12 +15,11 @@ from kivy.clock import Clock
 from kivy.metrics import dp
 from widgets.Playlist import Playlist
 
-Builder.load_file(resource_path("app/kv/ReviewScreen.kv"))
+Builder.load_file(resource_path("app/Kv/ReviewScreen.kv"))
 
 class ReviewScreen(MDScreen):
     show_answer = BooleanProperty(False)
     current_card = None
-    current_card_index = NumericProperty(0)
     total_today_reviews = NumericProperty(0)
     session_completed = BooleanProperty(False)
     
@@ -35,8 +34,7 @@ class ReviewScreen(MDScreen):
         """هر بار که وارد صفحه می‌شود"""
         self.show_answer = False
         self.session_completed = False
-        self.current_card_index = 0
-        self.total_today_reviews = self.flashcard_bl.get_today_review_count()
+        self.total_today_reviews = self.flashcard_bl.get_today_reviewed_count()
         self.load_next_card()
     
     def load_next_card(self):
@@ -51,7 +49,6 @@ class ReviewScreen(MDScreen):
             self.current_card = self.flashcard_bl.get_next_card_for_review()
             
             if self.current_card:
-                self.current_card_index += 1
                 
                 # تنظیم دکمه‌ها
                 self.ids.button_box.opacity = 1
@@ -65,7 +62,6 @@ class ReviewScreen(MDScreen):
                 
                 self.update_counter()
                 
-                self.ids.daily_stats_label.text = f"Today: {self.total_today_reviews + self.current_card_index}"
             else:
                 # اگر کارتی برای مرور نبود
                 self.show_session_completed()
@@ -200,7 +196,7 @@ class ReviewScreen(MDScreen):
         # نمایش پیام در کارت
         card = self.ids.flashcard
         card.ids.title_label.text = "Session Completed!"
-        card.ids.pronunciation_label.text = f"You reviewed {self.current_card_index} cards today"
+        card.ids.pronunciation_label.text = f"You reviewed {self.total_today_reviews} cards today"
         card.ids.collocation_label.text = "Great job! Come back later for more reviews."
     
     def reset_all_fields(self):
@@ -222,7 +218,7 @@ class ReviewScreen(MDScreen):
     
     def update_counter(self):
         """آپدیت شمارنده کارت‌ها"""
-        counter_text = f"Card #{self.current_card_index}"
+        counter_text = f"Card #{self.total_today_reviews}"
         self.ids.counter_label.text = counter_text
     
     def stop_playlist(self):
@@ -234,7 +230,6 @@ class ReviewScreen(MDScreen):
     
     def refresh_session(self):
         """تازه‌سازی جلسه مرور"""
-        self.current_card_index = 0
         self.show_answer = False
         self.session_completed = False
         self.stop_playlist()

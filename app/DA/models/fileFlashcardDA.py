@@ -15,7 +15,8 @@ class fileFlashcardDA(Base):
     flashcard = relationship(
         "flashcardDA",
         foreign_keys=[flashcard_id],
-        backref="fileFlashcard"
+        backref="fileFlashcard",
+        overlaps="files"
     )
 
     type = relationship(
@@ -26,6 +27,6 @@ class fileFlashcardDA(Base):
 
     sourceType = relationship(
         "constantDA",
-        foreign_keys=[type_id],
+        foreign_keys=[sourceType_id],
         backref="sourceType_fileFlashcard"
     )
