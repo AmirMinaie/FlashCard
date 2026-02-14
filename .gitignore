@@ -23,4 +23,6 @@ Thumbs.db
 test*
 run test.bat
 
+#file
 files/
+data_importer/

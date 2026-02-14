@@ -13,17 +13,30 @@ from kivymd.uix.dialog import MDDialog
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
 from ffpyplayer.player import MediaPlayer
+from kivy.properties import StringProperty, NumericProperty, DictProperty, BooleanProperty , ObjectProperty 
 import time
 
 Builder.load_file(resource_path("app/Kv/AddFlashCardScreen.kv"))
 
 class AddFlashCardScreen(MDScreen):
+    mode = StringProperty("add")
+    card_id = NumericProperty(-1)
+
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.dialog_add_song = None
-        self.song_list = []
+        self.add_card = []
         self.player = None
+        self.song_list = []
     
+    def on_screen_current(self, instance, value):
+        """وقتی current صفحه تغییر می‌کند"""
+        if value == self.name:  # اگر این صفحه active شد
+            print("✅ صفحه فعال شد")
+            self.on_activate()
+
+
     def load_constant(self , type):
         constant_pos = constantBL().get_constant(type)
         data = [{"caption":pos.caption, "id" :  pos.id } for pos in constant_pos]
@@ -252,7 +265,7 @@ ID: #{saved_card['id']}
 
     def add_new_song_item(self , *args):
         item={
-                "from_type_Id": self.from_DropDown_field.selected_Id,
+                "from_type_id": self.from_DropDown_field.selected_Id,
                 "from_type_caption": self.from_DropDown_field.selected_value,
                 "value":self.value_field.text
             }

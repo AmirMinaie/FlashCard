@@ -19,7 +19,8 @@ class flashcardDA(Base):
     type_id = Column(Integer, ForeignKey("constant.id"), nullable=True)
     box_id  = Column(Integer, ForeignKey("constant.id"), nullable=True)
     level_id = Column(Integer, ForeignKey("constant.id"), nullable=True)
-
+    notion_content = Column(Text, nullable=True)
+    
     type_ = relationship(
         "constantDA",
         foreign_keys=[type_id],

@@ -9,6 +9,8 @@ from kivy.properties import StringProperty, ListProperty, DictProperty, BooleanP
 from BL.FlashCardBL import FlashCardBL , OrderByConfig
 from cmn.config_reader import ConfigReader
 from kivy.metrics import dp
+from kivymd.app import MDApp
+from .AddFlashCardScreen import AddFlashCardScreen
 
 Builder.load_file(resource_path("app/Kv/FlashCardListScreen.kv"))
 
@@ -68,6 +70,41 @@ class FlashCardListScreen(MDScreen):
         selected_chip.select()
         self.Curent_Filter_Id = selected_chip.filter_id
         self.load_flashcard()
+     
+    def edit_card(self , card_id):
+        current = self
+        while current.__class__.__name__ != "HomeScreen":
+            current = current.parent
+        home_screen = current
+        
+        bottom_nav = None
+        for child in home_screen.children:
+            if child.__class__.__name__ == "MDBottomNavigation":
+                bottom_nav = child
+                break
+        
+        if not bottom_nav:
+            return
+        
+        screen_manager = None
+        for child in bottom_nav.children:
+            if child.__class__.__name__ == "ScreenManager":
+                screen_manager = child
+                break
+        
+        if not screen_manager:
+            return
+        
+        add_screen =  screen_manager.get_screen("add_tab")
+        
+        if add_screen:
+
+            add_screen.mode = "edit"
+            add_screen.card_id = card_id
+            bottom_nav.switch_tab("add_tab")  # یا 2 بسته به ترتیب
+
+        print(f"edit Card {card_id}")
+        pass
 
     def load_flashcard(self):
         Curent_Filter = next((item for item in self.Filters if item.get("id") == self.Curent_Filter_Id), None)
@@ -76,6 +113,8 @@ class FlashCardListScreen(MDScreen):
             SearchText=self.search_text or '',
             where=Curent_Filter.get('where')
             )
+        def make_edit_func(card_id):
+            return lambda: self.edit_card(card_id)
         
         self.ids.RV.data = [
         {       
@@ -86,7 +125,8 @@ class FlashCardListScreen(MDScreen):
             'partOfSpeach': getattr(flashcard.pos, 'caption', 'N/A'),
             'type_': getattr(flashcard.type_, 'caption', 'N/A'),
             'box': getattr(flashcard.box, 'caption', 'N/A'),
-            'level': getattr(flashcard.level, 'caption', 'N/A')
+            'level': getattr(flashcard.level, 'caption', 'N/A'),
+            'edit_card': make_edit_func(flashcard.id)
         }
         for flashcard in flashcardList
     ]

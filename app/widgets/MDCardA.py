@@ -1,5 +1,5 @@
 from kivy.lang import Builder
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty , ObjectProperty
 from kivymd.uix.card import MDCard
 from cmn.resource_helper import resource_path
 
@@ -14,4 +14,5 @@ class MDCardA(MDCard):
     type_ = StringProperty()
     box = StringProperty()
     level = StringProperty()
+    edit_card = ObjectProperty(None)
     pass  

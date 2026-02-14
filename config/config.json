@@ -4,7 +4,7 @@
     "DBName": "Flashcard.db"
   },
   "loadSeedData": 0,
-
+  "loadOldData": 0,
   "filters_FlashCard_List": [
     {
       "id": "today_review",
@@ -12,7 +12,10 @@
       "text": "today review",
       "color": "primary",
       "order": [
-        { "field": "id", "direction": "desc" }
+        {
+          "field": "id",
+          "direction": "desc"
+        }
       ],
       "where": [
         {
@@ -28,7 +31,10 @@
       "text": "tomorrow review",
       "color": "accent",
       "order": [
-        { "field": "id", "direction": "desc" }
+        {
+          "field": "id",
+          "direction": "desc"
+        }
       ],
       "where": [
         {
@@ -44,7 +50,10 @@
       "text": "all cards",
       "color": "success",
       "order": [
-        { "field": "id", "direction": "desc" }
+        {
+          "field": "id",
+          "direction": "desc"
+        }
       ]
     },
     {
@@ -53,7 +62,10 @@
       "text": "today added",
       "color": "warning",
       "order": [
-        { "field": "id", "direction": "desc" }
+        {
+          "field": "id",
+          "direction": "desc"
+        }
       ],
       "where": [
         {
@@ -69,7 +81,10 @@
       "text": "no review",
       "color": "error",
       "order": [
-        { "field": "id", "direction": "desc" }
+        {
+          "field": "id",
+          "direction": "desc"
+        }
       ],
       "where": [
         {
@@ -80,7 +95,7 @@
       ]
     }
   ],
-  "Defulte_filters_FlashCard_List" : "all_cards",
+  "Defulte_filters_FlashCard_List": "all_cards",
   "Valid_file_format_mapping": [
     {
       "extension": ".jpg",

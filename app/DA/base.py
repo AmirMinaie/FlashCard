@@ -3,9 +3,26 @@ from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import as_declarative
 from sqlalchemy.sql import func
 from datetime import datetime
+from sqlalchemy.orm import validates
+
+def validate_datetime(value):
+    try:
+        formats = [
+                '%Y-%m-%dT%H:%M:%S.%f',  
+                '%Y-%m-%dT%H:%M:%S',     
+                '%Y-%m-%d %H:%M:%S.%f',  
+                '%Y-%m-%d %H:%M:%S',     
+                '%Y-%m-%d',
+                ]
+        for fmt in formats:
+            try:
+                return datetime.strptime(value, fmt)
+            except ValueError:
+                continue
+    except Exception as e:
+        print(f"Eror Convert {value}: {e}")
 
 metadata = MetaData()
-
 
 @as_declarative(metadata=metadata)
 class Base:
@@ -17,6 +34,14 @@ class Base:
         return name 
     
     id = Column(Integer, primary_key=True)
+    
+    @validates('createAt' , 'updatedAt')
+    def validate_careatAt(self, key, value):
+        column = getattr(type(self), key, None)
+        if column and hasattr(column, 'type') and isinstance(column.type, DateTime):
+            if isinstance(value, str):
+                return validate_datetime(value=value)
+        return value
     
     createAt = Column(
         DateTime(timezone=True),
@@ -40,7 +65,7 @@ class Base:
         for key, value in kwargs.items():
             if hasattr(self, key):
                 setattr(self, key, value)
-        self.updated_at = datetime.now()
+        self.updatedAt = datetime.now()
     
     def to_dict(self, include_timestamps=True):
         result = {}
@@ -56,3 +81,4 @@ class Base:
             else:
                 result[column.name] = value
         return result
+

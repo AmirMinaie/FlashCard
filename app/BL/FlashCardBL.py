@@ -29,11 +29,15 @@ class FlashCardBL:
                  ,pos_id
                  ,type_id
                  ,box_id
-                 ,level_id,
-                 files):
+                 ,level_id
+                 ,notion_content
+                 ,files
+                 ,createAt = None
+                 ,updatedAt = None
+                 ,reviews = None):
+        
         filManager = FileManager()
         session = get_session()
-        
         
         card = flashcardDA(
                         title= title ,
@@ -46,24 +50,38 @@ class FlashCardBL:
                         pos_id= pos_id,
                         type_id= type_id,
                         box_id= box_id,
-                        level_id= level_id)
+                        level_id= level_id,
+                        notion_content = notion_content,
+                        createAt = createAt,
+                        updatedAt = updatedAt)
         session.add(card)
         session.flush()
+        
+        if reviews:
+            review = reviewFlashcardDA(
+                flashcard_id = card.id ,
+                quality = reviews['quality'],
+                ease_factor = reviews['ease_factor'],
+                interval = reviews['interval'],
+                repetitions = reviews['repetitions'],
+                review_date = reviews['review_date'],
+            )
+        else:
+            review = reviewFlashcardDA(
+                flashcard_id = card.id ,
+                quality = None,
+                ease_factor = SM2Algorithm.INITIAL_EASE,
+                interval = 1,
+                repetitions = 0, 
+                review_date = datetime.now()
+            )
 
-        review = reviewFlashcardDA(
-            flashcard_id = card.id ,
-            quality = None,
-            ease_factor = SM2Algorithm.INITIAL_EASE,
-            interval = 1,
-            repetitions = 0, 
-            review_date = datetime.now()
-        )
         session.add(review)
 
         if files:
             for file in files:
                 try:
-                    sourceType = session.query(constantDA).where(constantDA.id == file['from_type_Id']).first()
+                    sourceType = session.query(constantDA).where(constantDA.id == file['from_type_id']).first()
                     fileInfo = filManager.save_file( file['value'] ,sourceType.name)
                     type_ = session.query(constantDA).where(constantDA.name == fileInfo['type_']).first()
 

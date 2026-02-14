@@ -1,12 +1,12 @@
 <MDCardA>:
     orientation: "vertical"
     size_hint_y: None
-    height: dp(350)
+    height: dp(400)
     padding: dp(10)
     spacing: dp(5)
     elevation: 4
     radius: [dp(12),]
-    
+        
     MDBoxLayout:
         orientation: "vertical" 
         size_hint_y: None
@@ -121,3 +121,20 @@
                 valign: "top"
                 size_hint_y: None
                 height: self.texture_size[1] + dp(10)
+
+        #Row6 Edit Button
+        MDBoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(10)
+            padding: [0, dp(10), 0, 0]
+            pos_hint: {"center_x": 0.5}
+
+            MDRaisedButton:
+                text: "Edit Card"
+                icon: "pencil"
+                size_hint_x: 0.8
+                pos_hint: {"center_x": 0.5}
+                on_press : root.edit_card()
+                md_bg_color: app.theme_cls.primary_color

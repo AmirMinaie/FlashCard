@@ -37,13 +37,29 @@
                     on_press: root.refresh_session()
                     tooltip_text: "Refresh session"
         
+        # compleat_Session_Box
+        MDBoxLayout:
+            id: compleat_Session_Box
+            orientation: "vertical"  # اضافه کن
+            size_hint: 0.8, 0.3 
+            pos_hint: {"center_x": 0.5, "center_y": 0.5} 
+            opacity: 0
+            disabled: True
+            
+            MDLabel:
+                id: compleat_Session_lable
+                height: self.texture_size[1] if self.texture_size else dp(20)
+                text_size: self.width, None
+                halign: "center"  # متن هم وسط باشه
+                valign: "middle"
+
         # Card Content
         ScrollView:
+            id: flashcard_box
             size_hint: 1, 0.9
             pos_hint: {"top": 0.85, "center_x": 0.5} 
             
             MDBoxLayout:
-                id: flashcard  
                 orientation: "vertical"
                 size_hint_y: None
                 height: self.minimum_height  # تنظیم ارتفاع دینامیک

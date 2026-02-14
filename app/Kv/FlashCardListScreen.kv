@@ -4,15 +4,13 @@
     BoxLayout:
         orientation: 'vertical'
         
-        # بخش بالایی (ثابت) - جستجو و فیلترها
         BoxLayout:
             orientation: 'vertical'
             size_hint_y: None
-            height: dp(110)  # ارتفاع کل بخش بالایی
+            height: dp(110) 
             spacing: dp(5)
             padding: [dp(10), dp(10), dp(10), 0]
             
-            # بخش جستجو
             MDTextField:
                 id: search_field
                 hint_text: "search"
@@ -23,7 +21,6 @@
                 icon_left: "magnify"
                 line_color_focus: app.theme_cls.primary_color
             
-            # بخش فیلترها
             ScrollView:
                 size_hint_y: None
                 height: dp(50)
@@ -42,14 +39,11 @@
             viewclass: 'MDCardA'
             scroll_type: ['bars', 'content']
             bar_width: dp(10)
-
             RecycleBoxLayout:
                 orientation: 'vertical'
                 spacing: dp(15)
                 padding: dp(10)
-
                 size_hint_y: None
                 height: self.minimum_height
-
                 default_size_hint: 1, None
-                default_size: None, dp(375)
+                default_size: None, dp(430)

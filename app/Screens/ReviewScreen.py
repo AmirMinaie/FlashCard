@@ -29,6 +29,16 @@ class ReviewScreen(MDScreen):
         self.current_card = None
         self.session_dialog = None
         self.no_more_cards_dialog = None
+        self.parent_tab = None
+    
+    def on_parent(self, widget, parent):
+        """وقتی صفحه به والد اضافه شد"""
+        if parent:
+            self.parent_tab = parent
+    
+    def update_badge_from_screen(self, count):
+        """آپدیت بدج از داخل صفحه"""
+        pass
     
     def on_kv_post(self, *args):
         """هر بار که وارد صفحه می‌شود"""
@@ -47,7 +57,8 @@ class ReviewScreen(MDScreen):
             self.hide_answer_fields()
             
             self.current_card = self.flashcard_bl.get_next_card_for_review()
-            
+            review_count = self.flashcard_bl.get_today_review_count()
+            self.update_badge_from_screen(review_count)
             if self.current_card:
                 
                 # تنظیم دکمه‌ها
@@ -56,6 +67,13 @@ class ReviewScreen(MDScreen):
                 self.ids.answer_button_box.opacity = 0
                 self.ids.answer_button_box.disabled = True
                 self.session_completed = False
+                
+                self.ids.flashcard_box.opacity = 1
+                self.ids.flashcard_box.disabled = False
+
+                self.compleat_Session_Box.opacity = 0
+                self.compleat_Session_Box.disabled = True
+        
                 
                 # مقداردهی فیلدهای همیشه نمایش
                 self.set_fields(True , False)
@@ -190,31 +208,17 @@ class ReviewScreen(MDScreen):
         self.ids.answer_button_box.opacity = 0
         self.ids.answer_button_box.disabled = True
         
-        # ریست کردن تمام فیلدها
-        self.reset_all_fields()
+        self.ids.flashcard_box.opacity = 0
+        self.ids.flashcard_box.disabled = True
+
+        self.ids.compleat_Session_Box.opacity = 1
+        self.ids.compleat_Session_Box.disabled = False
         
         # نمایش پیام در کارت
-        card = self.ids.flashcard
-        card.ids.title_label.text = "Session Completed!"
-        card.ids.pronunciation_label.text = f"You reviewed {self.total_today_reviews} cards today"
-        card.ids.collocation_label.text = "Great job! Come back later for more reviews."
-    
-    def reset_all_fields(self):
-        """ریست کردن تمام فیلدها"""
-        for field in self.fields_config():
-            self._set_widget_value(field['id'], field['attribute'], field['default'])
-            
-            # مخفی کردن containerها
-            if 'container' in field and field['container']:
-                container = self.ids[field['container']]
-                container.opacity = 0
         
-        # مخفی کردن chips
-        chip_ids = ['pos_chip', 'type_chip', 'level_chip', 'box_chip']
-        for chip_id in chip_ids:
-            if chip_id in self.ids:
-                chip = self.ids[chip_id]
-                chip.opacity = 0
+        self.ids.compleat_Session_lable.text = "Session Completed!\n"
+        self.ids.compleat_Session_lable.text += f"You reviewed {self.total_today_reviews} cards today\n"
+        self.ids.compleat_Session_lable.text += "Great job! Come back later for more reviews."
     
     def update_counter(self):
         """آپدیت شمارنده کارت‌ها"""
@@ -333,7 +337,7 @@ class ReviewScreen(MDScreen):
                 'card_attribute': 'example',
                 'default': '',
                 'container': 'example_box',
-                'show_always': False
+                'show_always': True
             },
             {
                 'id': 'definition_label',
