@@ -1,25 +1,25 @@
 <MDCardA>:
     orientation: "vertical"
     size_hint_y: None
-    height: dp(400)
+    height: dp(260)
     padding: dp(10)
     spacing: dp(5)
     elevation: 4
-    radius: [dp(12),]
-        
+    radius: [dp(12)]
+
     MDBoxLayout:
-        orientation: "vertical" 
+        orientation: "vertical"
         size_hint_y: None
-        height: dp(330)
+        height: dp(190)
         spacing: dp(8)
-        
-        #Row1 Title
+
+        # Row1 Title
         MDBoxLayout:
             orientation: "horizontal"
             size_hint_y: None
             height: dp(35)
             spacing: dp(10)
-            
+
             MDLabelA:
                 id: title_label
                 text: root.title
@@ -28,14 +28,13 @@
                 theme_text_color: "Primary"
                 size_hint_x: 0.7
                 size_hint_y: None
-                height: dp(40)
+                height: dp(35)
 
-        #Row2 pronunciation
+        # Row2 Pronunciation
         MDBoxLayout:
             orientation: "horizontal"
             size_hint_y: None
             height: dp(25)
-            padding: [0, 0, 0, dp(5)]
 
             MDLabelA:
                 id: pronunciation_label
@@ -45,96 +44,99 @@
                 halign: "left"
                 theme_text_color: "Secondary"
                 size_hint_y: None
-                height: dp(30)
-        
-        # Row3 partOfSpeach type level box
+                height: dp(25)
+
+        # Row3 Chips
         MDBoxLayout:
             orientation: "horizontal"
             size_hint_y: None
             height: dp(30)
             spacing: dp(3)
-            padding: [0, 0, 0, dp(3)]
-            
+
             MDChipA:
                 id: pos_chip
                 text: root.partOfSpeach
                 icon: "alphabetical-variant"
-            
+
             MDChipA:
                 id: type_chip
                 text: root.type_
                 icon: "format-list-bulleted-type"
-            
+
             MDChipA:
                 id: level_chip
                 text: root.level
                 icon: "chart-bar"
-                
+
             MDChipA:
                 id: box_chip
                 text: root.box
                 icon: "package-variant"
-  
-        #Row4 Example
+
+        # Row4 Example
         MDBoxLayout:
             orientation: "vertical"
             size_hint_y: None
-            height: dp(90)
-            spacing: dp(3)
-            
+            height: dp(45)
+
             MDLabelA:
-                id: example_title
                 text: "Example:"
                 font_style: "Subtitle1"
                 bold: True
                 size_hint_y: None
                 height: dp(20)
-            
+
             MDLabelA:
                 id: example_label
                 text: root.example
-                font_style: "Body1"
                 halign: "left"
-                valign: "top"
+                valign: "middle"
+
+                text_size: self.width, None
+                shorten: True
+                shorten_from: "right"
+
                 size_hint_y: None
-                height: self.texture_size[1] + dp(10)
-        
-        #Row5 Collocation
+                height: dp(20)
+
+        # Row5 Collocation
         MDBoxLayout:
             orientation: "vertical"
             size_hint_y: None
-            height: dp(130)
-            spacing: dp(5)
-            
+            height: dp(45)
+
             MDLabelA:
-                id: collocation_title
                 text: "Collocation:"
                 font_style: "Subtitle1"
                 bold: True
                 size_hint_y: None
-                height: dp(25)
+                height: dp(20)
 
             MDLabelA:
                 id: collocation_label
                 text: root.collocation
                 halign: "left"
-                valign: "top"
-                size_hint_y: None
-                height: self.texture_size[1] + dp(10)
+                valign: "middle"
 
-        #Row6 Edit Button
+                text_size: self.width, None
+                shorten: True
+                shorten_from: "right"
+
+                size_hint_y: None
+                height: dp(20)
+
+        # Row6 Edit Button
         MDBoxLayout:
             orientation: "horizontal"
             size_hint_y: None
             height: dp(50)
             spacing: dp(10)
             padding: [0, dp(10), 0, 0]
-            pos_hint: {"center_x": 0.5}
 
             MDRaisedButton:
                 text: "Edit Card"
                 icon: "pencil"
                 size_hint_x: 0.8
                 pos_hint: {"center_x": 0.5}
-                on_press : root.edit_card()
+                on_press: root.edit_card()
                 md_bg_color: app.theme_cls.primary_color

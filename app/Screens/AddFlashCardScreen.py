@@ -12,17 +12,72 @@ from kivymd.uix.textfield import MDTextField
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
-from ffpyplayer.player import MediaPlayer
+from kivy.core.audio import SoundLoader
+from cmn.resource_helper import resource_path
+
+import uuid
 from kivy.properties import StringProperty, NumericProperty, DictProperty, BooleanProperty , ObjectProperty 
-import time
+
 
 Builder.load_file(resource_path("app/Kv/AddFlashCardScreen.kv"))
 
 class AddFlashCardScreen(MDScreen):
+    form_title = StringProperty("Add New FlashCard")
+    save_button_text = StringProperty("Save FlashCard")
+
     mode = StringProperty("add")
     card_id = NumericProperty(-1)
 
 
+    def update_form_mode_ui(self):
+        if self.mode == "add":
+            self.form_title = "Add New FlashCard"
+            self.save_button_text = "Save FlashCard"
+
+        elif self.mode == "edit":
+            self.form_title = f"Edit FlashCard {self.card_id}"
+            self.save_button_text = "Update FlashCard"
+
+    def set_card_id(self, card_id):
+        self.card_id = card_id
+        self.mode = "edit"
+        self.update_form_mode_ui()
+
+        flashCardBL = FlashCardBL()
+        card = flashCardBL.get_card_by_id(card_id)
+
+        if not card:
+            return
+
+        self.ids.title_field.text = card.title or ""
+        self.ids.definition_field.text = card.definition or ""
+        self.ids.example_field.text = card.example or ""
+        self.ids.collocation_field.text = card.collocation or ""
+
+        self.ids.pastParticiple_field.text = card.pastParticiple or ""
+        self.ids.pastTense_field.text = card.pastTense or ""
+        self.ids.pronunciation_field.text = card.pronunciation or ""
+
+        self.ids.part_of_speech_field.set_selected_by_id(card.pos_id)
+        self.ids.type_field.set_selected_by_id(card.type_id)
+        self.ids.box_field.set_selected_by_id(card.box_id)
+
+        if card.level_id:
+            self.ids.level_field.set_selected_by_id(card.level_id)  
+
+        self.song_list = []
+        self.ids.song_list.clear_widgets() 
+
+        for file in card.files:
+            item = {
+                "id": file.id,
+                "value": file.filePath,
+                "from_type_id": file.sourceType_id,
+                "from_type_caption": file.sourceType.caption
+            }
+
+            self.add_List_song(item)
+        
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.dialog_add_song = None
@@ -30,12 +85,8 @@ class AddFlashCardScreen(MDScreen):
         self.player = None
         self.song_list = []
     
-    def on_screen_current(self, instance, value):
-        """وقتی current صفحه تغییر می‌کند"""
-        if value == self.name:  # اگر این صفحه active شد
-            print("✅ صفحه فعال شد")
-            self.on_activate()
-
+    def on_tab_activated(self):
+        print("open Add Screen")
 
     def load_constant(self , type):
         constant_pos = constantBL().get_constant(type)
@@ -59,7 +110,11 @@ class AddFlashCardScreen(MDScreen):
             data = self.collect_form_data()
 
             flashCardBL = FlashCardBL()
-            saved_card = flashCardBL.add_card(**data)
+
+            if self.mode == "edit" and self.card_id > 0:
+                saved_card = flashCardBL.update_card(self.card_id , **data)
+            else:
+                saved_card = flashCardBL.add_card(**data)
 
             if saved_card and saved_card['id']:
                 self.show_success_message(saved_card)
@@ -73,6 +128,9 @@ class AddFlashCardScreen(MDScreen):
 
         except Exception as e:
             self.show_generic_error(str(e))
+
+    def cancel_edit(self):
+        self.reset_form()
 
     def validate_form(self):
         errors = []
@@ -276,7 +334,7 @@ ID: #{saved_card['id']}
     def add_List_song(self, item):
         """Add a song item to the list"""
         if 'id' not in item:
-            item['id'] = len(self.song_list) + 1
+            item['id'] = f"new_{uuid.uuid4()}"
 
         self.song_list.append(item)
 
@@ -291,13 +349,14 @@ ID: #{saved_card['id']}
             theme_text_color="Error"
         )
 
-        delete_btn.bind(on_press=self.delete_song_item)            
+        delete_btn.bind(on_release=self.delete_song_item)            
         list_item.bind(on_release=lambda x: self.play_song_item(list_item))
         list_item.add_widget(delete_btn)
         self.ids.song_list.add_widget(list_item)
 
     def delete_song_item(self ,instance):
         """حذف آیتم"""
+        instance.disabled = True
         parent = instance.parent
         if parent:
         
@@ -312,35 +371,46 @@ ID: #{saved_card['id']}
 
     def play_song_item(self, instance):
         item_data = instance.item_data
-        if hasattr(self, 'player') and self.player is not None:
+    
+        # اگر صدای قبلی در حال پخش است، متوقفش کن
+        if hasattr(self, "sound") and self.sound is not None:
             try:
-                self.player.set_pause(True)
-                time.sleep(0.02)
-                self.player.close()
-                time.sleep(0.02)
-            except:
-                pass
+                self.sound.stop()
+            except Exception as e:
+                print("STOP SOUND ERROR:", e)
             finally:
-                self.player = None
+                self.sound = None
+    
         try:
-            time.sleep(0.05)
-            self.player = MediaPlayer(
-            item_data['value'],
-            ff_opts={
-                'paused': False,
-                'sync': 'audio',
-                'buffer_size': '512000',
-                'rtbufsize': '1024000',
-                'infbuf': 1,
-                'reconnect': 1,
-                'reconnect_delay_max': 5
-            }
-        )
-        
+            if isinstance(item_data["id"], int):
+                file_path = resource_path("files", item_data["value"])
+            else:
+                file_path =  item_data["value"]
+    
+            print("PLAY:", file_path)
+    
+            # فایل صوتی را لود کن
+            self.sound = SoundLoader.load(file_path)
+    
+            if self.sound is None:
+                raise Exception(f"Audio file could not be loaded: {file_path}")
+    
+            # تنظیمات صدا
+            self.sound.volume = 1.0
+            self.sound.loop = False
+    
+            # پخش
+            self.sound.play()
+    
         except Exception as e:
+            print("PLAY SOUND ERROR:", e)
+            self.sound = None
             self.show_generic_error(e)
 
     def reset_form(self):
+        self.card_id = -1
+        self.mode = "add"
+        self.update_form_mode_ui()
         text_fields = [
             'title_field', 'definition_field', 'example_field', 
             'collocation_field', 'pastParticiple_field', 
@@ -367,3 +437,46 @@ ID: #{saved_card['id']}
         
         self.song_list = []
         self.ids.song_list.clear_widgets()
+
+
+    def confirm_delete(self):
+        if self.card_id <= 0:
+            return
+    
+        self.delete_dialog = MDDialog(
+            title="Delete FlashCard",
+            text="Are you sure you want to delete this flash card?",
+            buttons=[
+                MDFlatButton(
+                    text="CANCEL",
+                    on_release=lambda x: self.delete_dialog.dismiss()
+                ),
+                MDFlatButton(
+                    text="DELETE",
+                    on_release=lambda x: self.delete_card()
+                )
+            ]
+        )
+    
+        self.delete_dialog.open()
+
+
+    def delete_card(self):
+        flashCardBL = FlashCardBL()
+
+        result = flashCardBL.delete_card(self.card_id)
+
+        self.delete_dialog.dismiss()
+
+        if result:
+            app = MDApp.get_running_app()
+
+            app.show_message(
+                "Flash card deleted successfully",
+                msg_type="success",
+                duration=4
+            )
+
+            self.reset_form()
+        else:
+            self.show_generic_error("Delete failed")

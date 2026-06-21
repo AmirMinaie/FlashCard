@@ -103,3 +103,13 @@ class DropDownA(MDBoxLayout):
     def clear_selection(self):
         self.selected_value = ""
         self.selected_Id = 0
+
+    def set_selected_by_id(self, item_id):
+        if not self.item_menu:
+            return
+    
+        for item in self.item_menu:
+            if item["id"] == item_id:
+                self.selected_Id = item["id"]
+                self.selected_value = item["caption"]
+                return

@@ -61,7 +61,8 @@ class flashcardDA(Base):
         foreign_keys=[reviewFlashcardDA.flashcard_id], 
         order_by=reviewFlashcardDA.review_date.desc(),
         lazy='joined',
-        overlaps="reviewFlashcard"
+        overlaps="reviewFlashcard",
+        cascade="all, delete-orphan"
     )
 
     @property
@@ -97,7 +98,7 @@ class flashcardDA(Base):
     @last_review_date.expression
     def last_reviewed_date(cls):
         # این expression برای استفاده در query
-        return select(func.max(reviewFlashcardDA.createAt))\
+        return (select(func.max(reviewFlashcardDA.createAt))\
             .where(reviewFlashcardDA.flashcard_id == cls.id)\
             .correlate(cls)\
-            .scalar_subquery()
+            .scalar_subquery())

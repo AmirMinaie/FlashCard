@@ -5,10 +5,20 @@ from cmn.resource_helper import resource_path
 from kivy.lang import Builder
 from kivy.properties import ListProperty
 from cmn.config_reader import ConfigReader
+from kivy.core.text import LabelBase
 import sys
 import os
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+LabelBase.register(
+    name="IPAFont",
+    fn_regular=resource_path(
+        "assets",
+        "fonts",
+        "DejaVuSans.ttf"
+    )
+)
 
 class FlashCardApp (MDApp):
     def __init__(self, **kwargs):

@@ -15,9 +15,9 @@
             spacing: "10dp"
             pos_hint: {"top": 1}
             
-            MDLabel:
+            MDLabelA:
                 id: counter_label
-                text: "Card #0"
+                text: f"Done: {root.total_today_reviews} | Remaining: {root.remaining_cards}"
                 halign: "left"
                 valign: "middle"
                 bold: True
@@ -46,7 +46,7 @@
             opacity: 0
             disabled: True
             
-            MDLabel:
+            MDLabelA:
                 id: compleat_Session_lable
                 height: self.texture_size[1] if self.texture_size else dp(20)
                 text_size: self.width, None
@@ -73,7 +73,7 @@
                     height: dp(40)
                     spacing: dp(10)
 
-                    MDLabel:
+                    MDLabelA:
                         id: title_label
                         text: ""
                         font_style: "H5"
@@ -90,7 +90,7 @@
                     height: dp(30)
                     padding: [0, 0, 0, dp(5)]
 
-                    MDLabel:
+                    MDLabelA:
                         id: pronunciation_label
                         text: ""
                         font_style: "Subtitle1"
@@ -142,7 +142,7 @@
                     height: dp(35)
                     spacing: dp(10)
 
-                    MDLabel:
+                    MDLabelA:
                         text: "Past Tense:"
                         font_style: "Body2"
                         bold: True
@@ -150,7 +150,7 @@
                         width: dp(100)
                         halign: "right"
 
-                    MDLabel:
+                    MDLabelA:
                         id: past_tense_label
                         text: ""
                         font_style: "Body1"
@@ -158,7 +158,7 @@
                         halign: "left"
                         theme_text_color: "Secondary"
 
-                    MDLabel:
+                    MDLabelA:
                         text: "Past Participle:"
                         font_style: "Body2"
                         bold: True
@@ -166,7 +166,7 @@
                         width: dp(120)
                         halign: "right"
 
-                    MDLabel:
+                    MDLabelA:
                         id: past_participle_label
                         text: ""
                         font_style: "Body1"
@@ -178,23 +178,23 @@
                 MDBoxLayout:
                     orientation: "vertical"
                     size_hint_y: None
-                    height: dp(90)
+                    height: self.minimum_height
                     spacing: dp(5)
 
-                    MDLabel:
+                    MDLabelA:
                         text: "Collocation:"
                         font_style: "Subtitle1"
                         bold: True
                         size_hint_y: None
                         height: dp(25)
 
-                    MDLabel:
+                    MDLabelA:
                         id: collocation_label
                         text: ""
                         font_style: "Body1"
                         halign: "left"
                         valign: "top"
-                        size_hint_y: 1
+                        size_hint_y: None
                         text_size: self.width, None
                         height: self.texture_size[1] if self.texture_size else dp(20)
 
@@ -203,24 +203,24 @@
                     id: example_box
                     orientation: "vertical"
                     size_hint_y: None
-                    height: dp(90)
+                    height: self.minimum_height
                     spacing: dp(5)
 
-                    MDLabel:
+                    MDLabelA:
                         text: "Example:"
                         font_style: "Subtitle1"
                         bold: True
                         size_hint_y: None
                         height: dp(25)
 
-                    MDLabel:
+                    MDLabelA:
                         id: example_label
                         text: ""
                         font_style: "Body1"
                         halign: "left"
                         valign: "top"
-                        size_hint_y: 1
-                        height: self.texture_size[1] if self.texture_size else dp(20)
+                        size_hint_y: None
+                        height: self.texture_size[1]
                         text_size: self.width, None
 
                 # Row7: Definition (Initially Hidden)
@@ -228,24 +228,24 @@
                     id: definition_box
                     orientation: "vertical"
                     size_hint_y: None
-                    height: dp(120)
+                    height: self.minimum_height
                     spacing: dp(5)
 
-                    MDLabel:
+                    MDLabelA:
                         text: "Definition:"
                         font_style: "Subtitle1"
                         bold: True
                         size_hint_y: None
                         height: dp(25)
 
-                    MDLabel:
+                    MDLabelA:
                         id: definition_label
                         text: ""
                         font_style: "Body1"
                         halign: "left"
                         valign: "top"
-                        size_hint_y: 1
-                        height: self.texture_size[1] if self.texture_size else dp(20)
+                        size_hint_y: None
+                        height: self.texture_size[1]
                         text_size: self.width, None
 
                 # Row8: playList

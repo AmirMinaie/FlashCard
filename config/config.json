@@ -37,13 +37,18 @@
         }
       ],
       "where": [
-        {
-          "field": "last_review_date",
-          "op": "eq",
-          "value": "tomorrow"
-        }
-      ]
-    },
+           {
+            "field":"last_review_date",
+            "op":"gte",
+            "value":"tomorrow_start"
+           },
+           {
+            "field":"last_review_date",
+            "op":"lt",
+            "value":"day_after_tomorrow_start"
+           }
+          ]
+          },
     {
       "id": "all_cards",
       "icon": "format-list-bulleted",

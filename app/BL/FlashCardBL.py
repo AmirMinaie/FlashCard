@@ -30,8 +30,8 @@ class FlashCardBL:
                  ,type_id
                  ,box_id
                  ,level_id
-                 ,notion_content
                  ,files
+                 ,notion_content = None
                  ,createAt = None
                  ,updatedAt = None
                  ,reviews = None):
@@ -102,31 +102,141 @@ class FlashCardBL:
         session.close()
         return card_saved
 
-    def get_cards(self , order = None , SearchText = '',where = None ):
+    def get_card_by_id(self , card_id):
         session = get_session()
+        card = session.query(flashcardDA).options(
+            selectinload(flashcardDA.files)
+            .joinedload(fileFlashcardDA.sourceType)
+        ).filter(
+            flashcardDA.id == card_id
+        ).first()
+        session.close()
+        return card
+
+    def update_card(self , card_id , **data):
+        session = get_session()
+        card = session.query(flashcardDA).filter(
+            flashcardDA.id == card_id
+        ).first()
+
+        if not card:
+            return False
+        
+        card.title = data["title"]
+        card.definition = data["definition"]
+        card.example = data["example"]
+        card.collocation = data["collocation"]
+        card.pastParticiple = data["pastParticiple"]
+        card.pastTense = data["pastTense"]
+        card.pronunciation = data["pronunciation"]
+        card.pos_id = data["pos_id"]
+        card.type_id = data["type_id"]
+        card.box_id = data["box_id"]
+        card.level_id = data["level_id"]
+    
+        incoming_files = data.get("files", [])
+
+        incoming_existing_ids = {
+            f["id"]
+            for f in incoming_files
+            if isinstance(f.get("id"), int)
+        }
+
+        # حذف فایل‌هایی که کاربر پاک کرده
+        for file_obj in list(card.files):
+            if file_obj.id not in incoming_existing_ids:
+                session.delete(file_obj)
+
+        # اضافه کردن فایل‌های جدید
+        for file_data in incoming_files:
+
+            if isinstance(file_data.get("id"), int):
+                continue
+
+            filManager = FileManager()
+
+            sourceType = session.query(constantDA)\
+                .where(constantDA.id == file_data['from_type_id'])\
+                .first()
+
+            fileInfo = filManager.save_file(
+                file_data['value'],
+                sourceType.name
+            )
+
+            type_ = session.query(constantDA)\
+                .where(constantDA.name == fileInfo['type_'])\
+                .first()
+
+            new_file = fileFlashcardDA(
+                flashcard_id=card.id,
+                filePath=fileInfo['filePath'],
+                fileName=fileInfo['fileName'],
+                fileSize=fileInfo['fileSize'],
+                type_id=type_.id,
+                sourceType_id=sourceType.id
+            )
+
+            session.add(new_file)
+        
+        
+        session.commit()
+    
+        result = {
+            "id": card.id,
+            "title": card.title
+        }
+
+        session.close()
+        return result
+
+    def delete_card(self, card_id):
+        session = get_session()
+
+        card = session.query(flashcardDA).filter(
+            flashcardDA.id == card_id
+        ).first()
+
+        if not card:
+            session.close()
+            return False
+
+        session.delete(card)
+        session.commit()
+        session.close()
+
+        return True
+    
+    def get_cards(self , order=None , SearchText='', where=None):
+        session = get_session()
+
         query = session.query(flashcardDA).options(
             selectinload(flashcardDA.pos),
             selectinload(flashcardDA.type_),
             selectinload(flashcardDA.box),
             selectinload(flashcardDA.level),
         )
-        order_expressions= self._get_order_expressions(order)
+
+        order_expressions = self._get_order_expressions(order)
         if order_expressions:
             query = query.order_by(*order_expressions)
-        
-        where_expressions= self._get_where_expressions(where)
-        if order_expressions:
-            query = query.where(*where_expressions)
-        
-        text_expressions= self._get_text_expressions(SearchText)
-        if order_expressions:
-            query = query.where(*text_expressions)
-        
 
-        cards= query.all()
+
+        where_expressions = self._get_where_expressions(where)
+        if where_expressions:
+            query = query.where(*where_expressions)
+
+
+        text_expressions = self._get_text_expressions(SearchText)
+        if text_expressions:
+            query = query.where(*text_expressions)
+
+
+        cards = query.all()
+
         session.close()
         return cards
-    
+
     def get_next_card_for_review(self):
         try:
             session = get_session()
@@ -332,6 +442,18 @@ class FlashCardBL:
 
         if value == "today_end":
             return datetime.combine(today, datetime.max.time())
+        
+        if value == "tomorrow_start":
+            return datetime.combine(
+                today + timedelta(days=1),
+                datetime.min.time()
+            )
+        
+        if value == "day_after_tomorrow_start":
+            return datetime.combine(
+                today + timedelta(days=2),
+                datetime.min.time()
+            )
 
         # اگر ISO date فرستاده شد
         try:

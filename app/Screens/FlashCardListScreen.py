@@ -12,6 +12,7 @@ from kivy.metrics import dp
 from kivymd.app import MDApp
 from .AddFlashCardScreen import AddFlashCardScreen
 
+
 Builder.load_file(resource_path("app/Kv/FlashCardListScreen.kv"))
 
 class FlashCardListScreen(MDScreen):
@@ -99,9 +100,8 @@ class FlashCardListScreen(MDScreen):
         
         if add_screen:
 
-            add_screen.mode = "edit"
-            add_screen.card_id = card_id
-            bottom_nav.switch_tab("add_tab")  # یا 2 بسته به ترتیب
+            add_screen.children[0].set_card_id(card_id)
+            bottom_nav.switch_tab("add_tab")
 
         print(f"edit Card {card_id}")
         pass

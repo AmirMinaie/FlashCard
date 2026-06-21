@@ -21,6 +21,7 @@ class ReviewScreen(MDScreen):
     show_answer = BooleanProperty(False)
     current_card = None
     total_today_reviews = NumericProperty(0)
+    remaining_cards = NumericProperty(0)
     session_completed = BooleanProperty(False)
     
     def __init__(self, *args, **kwargs):
@@ -35,10 +36,6 @@ class ReviewScreen(MDScreen):
         """وقتی صفحه به والد اضافه شد"""
         if parent:
             self.parent_tab = parent
-    
-    def update_badge_from_screen(self, count):
-        """آپدیت بدج از داخل صفحه"""
-        pass
     
     def on_kv_post(self, *args):
         """هر بار که وارد صفحه می‌شود"""
@@ -57,27 +54,10 @@ class ReviewScreen(MDScreen):
             self.hide_answer_fields()
             
             self.current_card = self.flashcard_bl.get_next_card_for_review()
-            review_count = self.flashcard_bl.get_today_review_count()
-            self.update_badge_from_screen(review_count)
+            self.remaining_cards = self.flashcard_bl.get_today_review_count()
             if self.current_card:
-                
-                # تنظیم دکمه‌ها
-                self.ids.button_box.opacity = 1
-                self.ids.button_box.disabled = False
-                self.ids.answer_button_box.opacity = 0
-                self.ids.answer_button_box.disabled = True
-                self.session_completed = False
-                
-                self.ids.flashcard_box.opacity = 1
-                self.ids.flashcard_box.disabled = False
-
-                self.compleat_Session_Box.opacity = 0
-                self.compleat_Session_Box.disabled = True
-        
-                
-                # مقداردهی فیلدهای همیشه نمایش
-                self.set_fields(True , False)
-                
+                self.show_card_content(True)
+                self.set_fields(True , False)                
                 self.update_counter()
                 
             else:
@@ -98,6 +78,28 @@ class ReviewScreen(MDScreen):
                     value = self.get_card_attribute(field['card_attribute'], field['default'])
                 self._set_widget_value(field['id'], field['attribute'], value)
     
+    def show_card_content(self, show):
+        """نمایش یا مخفی کردن محتوای کارت"""
+        if show:
+            self.ids.flashcard_box.opacity = 1
+            self.ids.flashcard_box.disabled = False
+            self.ids.flashcard_box.size_hint_y = 0.9
+            self.ids.flashcard_box.pos_hint = {"top": 0.9, "center_x": 0.5}
+            
+            self.ids.compleat_Session_Box.opacity = 0
+            self.ids.compleat_Session_Box.disabled = True
+            self.ids.compleat_Session_Box.size_hint_y = None
+            self.ids.compleat_Session_Box.height = 0
+            
+            # فعال کردن دکمه‌ها
+            self.ids.button_box.opacity = 1
+            self.ids.button_box.disabled = False
+            self.ids.button_box.height = 60
+        else:
+            self.ids.flashcard_box.opacity = 0
+            self.ids.flashcard_box.disabled = True
+            self.ids.flashcard_box.size_hint_y = 0
+
     def show_answer_fields(self):
         """نمایش فیلدهای جواب"""
         if not self.current_card:
@@ -213,6 +215,8 @@ class ReviewScreen(MDScreen):
 
         self.ids.compleat_Session_Box.opacity = 1
         self.ids.compleat_Session_Box.disabled = False
+        self.ids.compleat_Session_Box.height = 80
+
         
         # نمایش پیام در کارت
         
@@ -222,7 +226,7 @@ class ReviewScreen(MDScreen):
     
     def update_counter(self):
         """آپدیت شمارنده کارت‌ها"""
-        counter_text = f"Card #{self.total_today_reviews}"
+        counter_text = f"Done: {self.total_today_reviews} | Remaining: {self.remaining_cards}"
         self.ids.counter_label.text = counter_text
     
     def stop_playlist(self):

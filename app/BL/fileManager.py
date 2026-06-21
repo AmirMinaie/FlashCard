@@ -10,6 +10,7 @@ from fake_useragent import UserAgent
 import requests
 from urllib.parse import urlparse, unquote
 
+
 class FileManager:
     def __init__(self, base_directory="files"):
         self.base_dir = Path(resource_path(base_directory))
@@ -97,7 +98,11 @@ class FileManager:
         try:
             session = requests.Session()
             
-            response = session.get(source_path, stream=True, timeout=timeout , headers=self.headers())
+            response = session.get(
+                source_path, stream=True, 
+                timeout=timeout , 
+                headers=self.headers(source_path)
+            )
             response.raise_for_status() 
 
             # مسیر کامل فایل
@@ -146,21 +151,31 @@ class FileManager:
             }
 
     def copy_file(self,source_path , file_id ):
-        pass
+        source = Path(source_path)
 
-    def headers(self):
-        """ایجاد headers معتبر برای Cambridge Dictionary"""
-        ua = UserAgent()
+        extension = source.suffix
+
+        destination = self.base_dir / f"{filename}{extension}"
+
+        shutil.copy2(source, destination)
+
         return {
-            'User-Agent': ua.random,
-            'Accept': 'audio/webm,audio/ogg,audio/wav,audio/*;q=0.9,application/ogg;q=0.7,video/*;q=0.6,*/*;q=0.5',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Connection': 'keep-alive',
-            'Referer': 'https://dictionary.cambridge.org/',
-            'Sec-Fetch-Dest': 'audio',
-            'Sec-Fetch-Mode': 'no-cors',
-            'Sec-Fetch-Site': 'same-site',
-            'Pragma': 'no-cache',
-            'Cache-Control': 'no-cache',
+            "success": True,
+            "file_path": str(destination),
+            "file_name": destination.name,
+            "file_size": destination.stat().st_size
+        }
+
+    def headers(self, url):
+        parsed = urlparse(url)
+    
+        return {
+            "User-Agent": UserAgent().random,
+            "Referer": f"{parsed.scheme}://{parsed.netloc}/",
+            "Origin": f"{parsed.scheme}://{parsed.netloc}",
+            "Host": parsed.netloc,
+            "Accept": "*/*",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive",
         }
