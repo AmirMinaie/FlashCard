@@ -14,6 +14,8 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
 from kivy.core.audio import SoundLoader
 from cmn.resource_helper import resource_path
+from urllib.parse import urlparse, unquote
+from os.path import basename
 
 import uuid
 from kivy.properties import StringProperty, NumericProperty, DictProperty, BooleanProperty , ObjectProperty 
@@ -71,6 +73,7 @@ class AddFlashCardScreen(MDScreen):
         for file in card.files:
             item = {
                 "id": file.id,
+                "fileName": file.fileName,
                 "value": file.filePath,
                 "from_type_id": file.sourceType_id,
                 "from_type_caption": file.sourceType.caption
@@ -324,6 +327,7 @@ ID: #{saved_card['id']}
     def add_new_song_item(self , *args):
         item={
                 "from_type_id": self.from_DropDown_field.selected_Id,
+                "fileName": unquote(basename(urlparse( self.value_field.text).path)) ,
                 "from_type_caption": self.from_DropDown_field.selected_value,
                 "value":self.value_field.text
             }
@@ -339,7 +343,7 @@ ID: #{saved_card['id']}
         self.song_list.append(item)
 
         list_item = OneLineIconListItem(
-            text=f"{item['value']} ({item['from_type_caption']})"
+            text=f"{item['fileName']} ({item['from_type_caption']})"
         )
         list_item.item_data = item
 
@@ -438,7 +442,6 @@ ID: #{saved_card['id']}
         self.song_list = []
         self.ids.song_list.clear_widgets()
 
-
     def confirm_delete(self):
         if self.card_id <= 0:
             return
@@ -459,7 +462,6 @@ ID: #{saved_card['id']}
         )
     
         self.delete_dialog.open()
-
 
     def delete_card(self):
         flashCardBL = FlashCardBL()

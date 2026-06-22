@@ -334,10 +334,16 @@ class FlashCardBL:
             "box_id": flashcardDA.box_id,
             "level_id": flashcardDA.level_id,
             "last_review_date":flashcardDA.last_review_date,
+            "last_review_quality": flashcardDA.last_review_quality,
             "created_at": getattr(flashcardDA, 'createAt', flashcardDA.id),
             "updated_at": getattr(flashcardDA, 'updatedAt', flashcardDA.id),
         }
-        return field_mapping.get(field_name.lower(), flashcardDA.id)
+        field = field_mapping.get(field_name.lower())
+
+        if field is None:
+            raise ValueError(f"Unknown filter field: {field_name}")
+    
+        return field
     
     def _get_order_expressions(self, order):
         """

@@ -2,6 +2,7 @@ import os
 
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.lang import Builder
+from kivymd.app import MDApp
 from kivy.properties import (
     StringProperty,
     NumericProperty,
@@ -19,13 +20,9 @@ Builder.load_file(resource_path("app", "widgets", "Playlist.kv"))
 class Playlist(MDBoxLayout):
 
     current_song = StringProperty("No song")
-
     volume_level = NumericProperty(50)
-
     is_playing = BooleanProperty(False)
-
     songs = ListProperty([])
-
     volume_slider_enabled = BooleanProperty(True)
 
     def __init__(self, **kwargs):
@@ -34,6 +31,18 @@ class Playlist(MDBoxLayout):
         self.sound = None
         self.current_index = 0
         self.last_volume = 50
+
+    # -------------------------
+    # Popup message (ONLY important messages)
+    # -------------------------
+
+    def show_message(self, message, msg_type="info"):
+        app = MDApp.get_running_app()
+        app.show_message(
+            message,
+            msg_type=msg_type,
+            duration=5
+        )
 
     # -------------------------
     # Load song
@@ -45,19 +54,15 @@ class Playlist(MDBoxLayout):
         try:
             path = resource_path("files", song.filePath)
 
-            print("AUDIO PATH:", path)
-
             if not os.path.isfile(path):
-                print("FILE NOT FOUND:", path)
+                self.show_message("File not found", "error")
                 self.current_song = "File not found"
                 return False
 
             sound = SoundLoader.load(path)
 
-            print("AUDIO OBJECT:", sound)
-
             if sound is None:
-                print("AUDIO LOAD FAILED:", path)
+                self.show_message("Audio file is not supported or corrupted", "error")
                 self.current_song = "Unsupported audio"
                 return False
 
@@ -67,16 +72,13 @@ class Playlist(MDBoxLayout):
             self.sound = sound
             self.current_song = song.fileName
 
-            print("AUDIO LOADED SUCCESSFULLY")
             return True
 
-        except Exception as e:
-            print("LOAD ERROR:", repr(e))
-
+        except Exception:
+            self.show_message("Unexpected error while loading audio", "error")
             self.sound = None
-            self.current_song = "Audio load error"
+            self.current_song = "Audio error"
             self.is_playing = False
-
             return False
 
     # -------------------------
@@ -86,15 +88,13 @@ class Playlist(MDBoxLayout):
     def toggle_play(self):
         if not self.sound:
             if not self.songs:
-                print("PLAYLIST IS EMPTY")
+                self.show_message("Playlist is empty", "warning")
                 return
 
             if self.current_index >= len(self.songs):
                 self.current_index = 0
 
-            loaded = self.load_song(
-                self.songs[self.current_index]
-            )
+            loaded = self.load_song(self.songs[self.current_index])
 
             if not loaded:
                 return
@@ -109,16 +109,11 @@ class Playlist(MDBoxLayout):
             return
 
         try:
-            print("START PLAYING:", self.current_song)
-
             self.sound.play()
-
             self.is_playing = True
 
-            print("PLAY STARTED")
-
-        except Exception as e:
-            print("PLAY ERROR:", repr(e))
+        except Exception:
+            self.show_message("Cannot play this audio file", "error")
             self.is_playing = False
 
     def stop_song(self):
@@ -126,14 +121,11 @@ class Playlist(MDBoxLayout):
             return
 
         try:
-            print("STOPPING:", self.current_song)
-
             self.sound.stop()
-
             self.is_playing = False
 
-        except Exception as e:
-            print("STOP ERROR:", repr(e))
+        except Exception:
+            self.show_message("Error while stopping audio", "error")
             self.is_playing = False
 
     # -------------------------
@@ -142,36 +134,28 @@ class Playlist(MDBoxLayout):
 
     def next_song(self):
         if not self.songs:
-            print("PLAYLIST IS EMPTY")
+            self.show_message("Playlist is empty", "warning")
             return
 
         was_playing = self.is_playing
 
-        self.current_index = (
-            self.current_index + 1
-        ) % len(self.songs)
+        self.current_index = (self.current_index + 1) % len(self.songs)
 
-        loaded = self.load_song(
-            self.songs[self.current_index]
-        )
+        loaded = self.load_song(self.songs[self.current_index])
 
         if loaded and was_playing:
             self.play_song()
 
     def prev_song(self):
         if not self.songs:
-            print("PLAYLIST IS EMPTY")
+            self.show_message("Playlist is empty", "warning")
             return
 
         was_playing = self.is_playing
 
-        self.current_index = (
-            self.current_index - 1
-        ) % len(self.songs)
+        self.current_index = (self.current_index - 1) % len(self.songs)
 
-        loaded = self.load_song(
-            self.songs[self.current_index]
-        )
+        loaded = self.load_song(self.songs[self.current_index])
 
         if loaded and was_playing:
             self.play_song()
@@ -189,8 +173,8 @@ class Playlist(MDBoxLayout):
         if self.sound:
             try:
                 self.sound.volume = value / 100
-            except Exception as e:
-                print("VOLUME ERROR:", repr(e))
+            except Exception:
+                self.show_message("Volume error", "error")
 
     def toggle_mute(self):
         if self.volume_level > 0:
@@ -209,8 +193,8 @@ class Playlist(MDBoxLayout):
         if self.sound:
             try:
                 self.sound.stop()
-            except Exception as e:
-                print("STOP PLAYER ERROR:", repr(e))
+            except Exception:
+                self.show_message("Audio stop error", "error")
 
         self.sound = None
         self.is_playing = False

@@ -102,3 +102,27 @@ class flashcardDA(Base):
             .where(reviewFlashcardDA.flashcard_id == cls.id)\
             .correlate(cls)\
             .scalar_subquery())
+    
+    @hybrid_property
+    def last_review_quality(self):
+        """
+        آخرین quality مربوط به آخرین review کارت
+        برای استفاده در Python
+        """
+        if self.reviews:
+            return self.reviews[0].quality
+        return None
+    
+    
+    @last_review_quality.expression
+    def last_review_quality(cls):
+        """
+        برای استفاده در Queryهای SQLAlchemy
+        """
+        return (
+            select(reviewFlashcardDA.quality)
+            .where(reviewFlashcardDA.flashcard_id == cls.id)
+            .order_by(reviewFlashcardDA.review_date.desc())
+            .limit(1)
+            .scalar_subquery()
+        )

@@ -91,13 +91,14 @@
           "direction": "desc"
         }
       ],
+      
       "where": [
-        {
-          "field": "last_review_date",
-          "op": "is_null",
-          "value": null
-        }
-      ]
+    {
+      "field": "last_review_quality",
+      "op": "is_null",
+      "value": null
+    }
+  ]
     }
   ],
   "Defulte_filters_FlashCard_List": "all_cards",
