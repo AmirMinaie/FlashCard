@@ -1,15 +1,35 @@
 import sys
 import os
+from cmn.resource_helper import resource_path
+from cmn.splash_screen import SplashScreen
+APP_WIDTH = 736
+APP_HEIGHT = 685
+
+splash = SplashScreen(
+    resource_path("app","assets", "images", "splash.bmp"),
+    width= APP_WIDTH,
+    height=APP_HEIGHT
+)
+splash.show()
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from kivy.config import Config
 
+Config.set("graphics", "width", str(APP_WIDTH))
+Config.set("graphics", "height", str(APP_HEIGHT))
+Config.set("graphics", "resizable", "0")
+Config.set("graphics", "borderless", "0")
+
+
+import ctypes
+from kivy.core.window import Window
 from Screens.HomeScreen import HomeScreen
 from kivy.uix.screenmanager import ScreenManager
 from kivymd.app import MDApp
-from cmn.resource_helper import resource_path
 from kivy.lang import Builder
 from cmn.config_reader import ConfigReader
 from cmn.font_manage import FontManager
+from kivy.clock import Clock
 
 
 class FlashCardApp (MDApp):
@@ -27,8 +47,14 @@ class FlashCardApp (MDApp):
         return sm
 
     def on_start(self):
-        start = super().on_start()
-        return start
+        # اجازه می‌دهد اولین فریم رابط کاربری ساخته شود
+        Clock.schedule_once(
+            self.close_splash,
+            1,
+        )
+
+    def close_splash(self, dt):
+        splash.close()
     
     def show_message(self, message, msg_type="info", duration=3):
         from widgets.SnackbarManager import snackbar_manager
