@@ -1,5 +1,7 @@
 from sqlalchemy import create_engine
-from cmn.config_reader import ConfigReader, resource_path
+from cmn.config_reader import ConfigReader
+from cmn.resource_helper import resource_path
+from cmn.path_manager import PathManager
 
 def create_db_engine():
     config_reader = ConfigReader("config.json")
@@ -7,8 +9,8 @@ def create_db_engine():
     driver = db_config["driver"]
     
     if driver == 'sqlite':
-        DB_PATH = resource_path('app', db_config['DBName'])
-        connection_string = f"sqlite:///{DB_PATH}"
+        dbPath = resource_path(PathManager.DB_PATH, db_config['DBName'])
+        connection_string = f"sqlite:///{dbPath}"
     elif driver == 'sqlServer':
         server = db_config['server']
         database = db_config['dBName']

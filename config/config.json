@@ -1,10 +1,12 @@
 {
+  "data_directory": "E:\\MyFiles\\Desktop\\Online_FlashCard_Data",
   "database": {
     "driver": "sqlite",
     "DBName": "Flashcard.db"
   },
   "loadSeedData": 0,
   "loadOldData": 0,
+  "backup_retention_count": 10,
   "filters_FlashCard_List": [
     {
       "id": "today_review",
@@ -37,18 +39,18 @@
         }
       ],
       "where": [
-           {
-            "field":"last_review_date",
-            "op":"gte",
-            "value":"tomorrow_start"
-           },
-           {
-            "field":"last_review_date",
-            "op":"lt",
-            "value":"day_after_tomorrow_start"
-           }
-          ]
-          },
+        {
+          "field": "last_review_date",
+          "op": "gte",
+          "value": "tomorrow_start"
+        },
+        {
+          "field": "last_review_date",
+          "op": "lt",
+          "value": "day_after_tomorrow_start"
+        }
+      ]
+    },
     {
       "id": "all_cards",
       "icon": "format-list-bulleted",
@@ -91,14 +93,13 @@
           "direction": "desc"
         }
       ],
-      
       "where": [
-    {
-      "field": "last_review_quality",
-      "op": "is_null",
-      "value": null
-    }
-  ]
+        {
+          "field": "last_review_quality",
+          "op": "is_null",
+          "value": null
+        }
+      ]
     }
   ],
   "Defulte_filters_FlashCard_List": "all_cards",

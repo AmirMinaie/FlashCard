@@ -6,16 +6,20 @@ import logging
 from datetime import datetime
 from cmn.resource_helper import resource_path
 from cmn.FilenameExtractor import FilenameExtractor
+from cmn.path_manager import PathManager
 from fake_useragent import UserAgent
 import requests
 from urllib.parse import urlparse, unquote
 
 
 class FileManager:
-    def __init__(self, base_directory="files"):
-        self.base_dir = Path(resource_path(base_directory))
-        self.base_dir.mkdir(exist_ok=True)
+    def __init__(self):
+        self.base_dir = Path(resource_path(PathManager.FILES_DIR))
         self.base_dir.mkdir(parents=True, exist_ok=True)
+
+    @classmethod
+    def getfilepath(self,fileName):
+        return str(PathManager.FILES_DIR / fileName)
 
     def generate_unique_id(self):
         return str(uuid.uuid4())

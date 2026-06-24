@@ -1,10 +1,19 @@
+<OutlineButton@MDFlatButton>:
+    md_bg_color: 0, 0, 0, 0
+    canvas.after:
+        Color:
+            rgba: app.theme_cls.primary_color
+        Line:
+            width: dp(1)
+            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(8))
+
 <ReviewScreen>:
     name: "ReviewScreen"
     
     MDBoxLayout:
         orientation: "vertical"
-        padding: "10dp"
-        spacing: "10dp"
+        padding: ["10dp", "10dp", "10dp", "0dp"]
+        spacing: "0dp"
         
         # Header
         MDBoxLayout:
@@ -40,7 +49,7 @@
         # compleat_Session_Box
         MDBoxLayout:
             id: compleat_Session_Box
-            orientation: "vertical"  # اضافه کن
+            orientation: "vertical" 
             size_hint: 0.8, 0.3 
             pos_hint: {"center_x": 0.5, "center_y": 0.5} 
             opacity: 0
@@ -50,7 +59,7 @@
                 id: compleat_Session_lable
                 height: self.texture_size[1] if self.texture_size else dp(20)
                 text_size: self.width, None
-                halign: "center"  # متن هم وسط باشه
+                halign: "center" 
                 valign: "middle"
 
         # Card Content
@@ -62,7 +71,7 @@
             MDBoxLayout:
                 orientation: "vertical"
                 size_hint_y: None
-                height: self.minimum_height  # تنظیم ارتفاع دینامیک
+                height: self.minimum_height 
                 padding: "10dp"
                 spacing: "5dp"
 
@@ -262,7 +271,7 @@
             id: button_area
             orientation: 'vertical'
             size_hint_y: None
-            height: "65dp"
+            height: "60dp"
             spacing: "0dp"
 
             MDBoxLayout:
@@ -270,23 +279,21 @@
                 orientation: "horizontal"
                 size_hint_y: None
                 height: "60dp"
-                spacing: "15dp"
-                padding: "0dp", "5dp"
+                spacing: "20dp"
+                padding: ["0dp", "0dp", "0dp", "10dp"]
 
-                MDRaisedButton:
+                
+                OutlineButton:
                     id: skip_btn
                     text: "Skip"
-                    size_hint_x: 1
-                    theme_text_color: "Custom"
-                    text_color: app.theme_cls.accent_color
-                    on_press: root.skip_card()
-                    icon: "skip-next"
-                    md_bg_color: 0.2, 0.2, 0.2, 1
+                    size_hint_x: 0.25
+                    text_color: app.theme_cls.primary_color
+                    on_release: root.skip_card()
 
                 MDRaisedButton:
                     id: show_answer_btn
                     text: "Show Answer"
-                    size_hint_x: 2
+                    size_hint_x: 0.75
                     on_press: root.show_answer_fields()  
                     icon: "eye"
                     md_bg_color: app.theme_cls.primary_color
@@ -300,13 +307,13 @@
                 padding: "0dp", "5dp"
                 disabled: True
 
-                MDRaisedButton:
+                OutlineButton:
                     id: hide_answer_btn
                     text: "Hide"
                     size_hint_x: 1
-                    on_press: root.hide_answer_fields()
+                    text_color: app.theme_cls.primary_color
+                    on_release: root.hide_answer_fields()
                     icon: "eye-off"
-                    md_bg_color: 0.5, 0.5, 0.5, 1
 
                 # Again Button - Quality 0
                 MDRaisedButton:

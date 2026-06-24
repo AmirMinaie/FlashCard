@@ -20,9 +20,6 @@ Config.set("graphics", "height", str(APP_HEIGHT))
 Config.set("graphics", "resizable", "0")
 Config.set("graphics", "borderless", "0")
 
-
-import ctypes
-from kivy.core.window import Window
 from Screens.HomeScreen import HomeScreen
 from kivy.uix.screenmanager import ScreenManager
 from kivymd.app import MDApp
@@ -30,7 +27,7 @@ from kivy.lang import Builder
 from cmn.config_reader import ConfigReader
 from cmn.font_manage import FontManager
 from kivy.clock import Clock
-
+from cmn.backup_db import backup_database
 
 class FlashCardApp (MDApp):
     def __init__(self, **kwargs):
@@ -120,6 +117,7 @@ def LoadOldData():
 if __name__ == "__main__":
     print("Starting FlashCard Application...")
     try:
+        backup_database()
         from DA import init_db
         init_db()
         LoadOldData()

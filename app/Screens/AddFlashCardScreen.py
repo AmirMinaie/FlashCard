@@ -6,6 +6,7 @@ from widgets.MDTextFieldA import MDTextFieldA
 from widgets.DropDownA import DropDownA
 from BL.constantBL import constantBL
 from BL.FlashCardBL import FlashCardBL
+from BL.fileManager import FileManager
 from kivymd.app import MDApp
 from kivymd.uix.list import OneLineIconListItem
 from kivymd.uix.button import MDIconButton
@@ -387,7 +388,7 @@ ID: #{saved_card['id']}
     
         try:
             if isinstance(item_data["id"], int):
-                file_path = resource_path("files", item_data["value"])
+                file_path = FileManager.getfilepath(item_data["value"])
             else:
                 file_path =  item_data["value"]
     

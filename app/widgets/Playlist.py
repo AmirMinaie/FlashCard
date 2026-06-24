@@ -9,6 +9,7 @@ from kivy.properties import (
     BooleanProperty,
     ListProperty,
 )
+from BL.fileManager import FileManager
 from kivy.core.audio import SoundLoader
 
 from cmn.resource_helper import resource_path
@@ -20,7 +21,7 @@ Builder.load_file(resource_path("app", "widgets", "Playlist.kv"))
 class Playlist(MDBoxLayout):
 
     current_song = StringProperty("No song")
-    volume_level = NumericProperty(50)
+    volume_level = NumericProperty(100)
     is_playing = BooleanProperty(False)
     songs = ListProperty([])
     volume_slider_enabled = BooleanProperty(True)
@@ -30,7 +31,7 @@ class Playlist(MDBoxLayout):
 
         self.sound = None
         self.current_index = 0
-        self.last_volume = 50
+        self.last_volume = 100
 
     # -------------------------
     # Popup message (ONLY important messages)
@@ -52,7 +53,7 @@ class Playlist(MDBoxLayout):
         self.stop_player()
 
         try:
-            path = resource_path("files", song.filePath)
+            path = FileManager.getfilepath(song.filePath)
 
             if not os.path.isfile(path):
                 self.show_message("File not found", "error")
