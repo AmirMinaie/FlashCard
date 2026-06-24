@@ -2,13 +2,13 @@ from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from cmn.resource_helper import *
 from widgets.MDLabelA import MDLabelA
+from widgets.MDTextFieldA import MDTextFieldA
 from widgets.DropDownA import DropDownA
 from BL.constantBL import constantBL
 from BL.FlashCardBL import FlashCardBL
 from kivymd.app import MDApp
 from kivymd.uix.list import OneLineIconListItem
 from kivymd.uix.button import MDIconButton
-from kivymd.uix.textfield import MDTextField
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
@@ -285,7 +285,7 @@ ID: #{saved_card['id']}
             content.add_widget(self.from_DropDown_field)
 
             # Text field for item name
-            self.value_field = MDTextField(
+            self.value_field = MDTextFieldA(
                 hint_text="value",
                 mode="rectangle",
                 size_hint_x=None,

@@ -1,31 +1,25 @@
-from Screens.HomeScreen import HomeScreen
-from kivy.uix.screenmanager import ScreenManager
-from kivymd.app import MDApp
-from cmn.resource_helper import resource_path
-from kivy.lang import Builder
-from kivy.properties import ListProperty
-from cmn.config_reader import ConfigReader
-from kivy.core.text import LabelBase
 import sys
 import os
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-LabelBase.register(
-    name="IPAFont",
-    fn_regular=resource_path(
-        "assets",
-        "fonts",
-        "DejaVuSans.ttf"
-    )
-)
+from Screens.HomeScreen import HomeScreen
+from kivy.uix.screenmanager import ScreenManager
+from kivymd.app import MDApp
+from cmn.resource_helper import resource_path
+from kivy.lang import Builder
+from cmn.config_reader import ConfigReader
+from cmn.font_manage import FontManager
+
 
 class FlashCardApp (MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     def build(self):
+        FontManager.register_fonts()
         self.theme_cls.primary_palette = "Teal"
+        FontManager.apply_kivymd_default_font(self.theme_cls)
         Builder.load_file(resource_path("app/Kv/HomeScreen.kv"))
         sm = ScreenManager()
         sm.add_widget(HomeScreen(name="HomeScreen"))

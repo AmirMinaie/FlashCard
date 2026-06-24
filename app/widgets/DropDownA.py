@@ -3,6 +3,7 @@ from kivy.properties import StringProperty, ObjectProperty, NumericProperty, Boo
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.metrics import dp
 from kivymd.uix.menu import MDDropdownMenu
+from cmn.font_manage import FontManager
 
 Builder.load_string('''
 <DropDownA>:
@@ -25,10 +26,9 @@ Builder.load_string('''
         size_hint_x: 0.9
         pos_hint: {"center_y": 0.5}
         
-        MDLabel:
+        MDLabelA:
             id: hint_label
             text: root.text_h + (" *" if root.is_required else "")
-            font_style: "Caption"
             size_hint_y: None
             height: dp(20)
             color: (0.8, 0, 0, 0.8) if root.is_required and not root.selected_value else (0.5, 0.5, 0.5, 1)
@@ -75,6 +75,7 @@ class DropDownA(MDBoxLayout):
                     "text": item['caption'],
                     "icon": "check" if item['id'] == self.selected_Id else "circle-outline",
                     "viewclass": "OneLineIconListItem",
+                    "font_name": FontManager.DEFAULT_FONT,
                     "on_release": lambda x=item: self.set_selected_value(x),
                     "height": dp(50),
                 } for item in items

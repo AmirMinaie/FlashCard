@@ -8,23 +8,6 @@
             rounded_rectangle: (self.x, self.y, self.width, self.height, dp(8))
 
 
-<MDTextFieldA@MDTextField>:
-    text_h: ""
-    icon: ""
-    is_required: False
-    required_color: 1, 0, 0, 1
-
-    hint_text: root.text_h + (" *" if root.is_required else "")
-    icon_left: root.icon
-    
-    hint_text_color: root.required_color if root.is_required and not self.text else (0.5, 0.5, 0.5, 1)
-    line_color_normal: root.required_color if root.is_required and not self.text else (0, 0, 0, 1)
-    
-    text_color: 0, 0, 0, 1
-    line_color_focus: app.theme_cls.primary_color
-    size_hint_y: None
-    height: dp(60)
-
 <AddFlashCardScreen>:
     name: "AddFlashCardScreen"
 
