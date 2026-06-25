@@ -1,7 +1,6 @@
 import shutil
 from datetime import datetime
-from cmn.path_manager import  PathManager
-from cmn.resource_helper import resource_path
+from cmn.resource_helper import *
 from cmn.config_reader import ConfigReader
 
 def backup_database():
@@ -9,10 +8,13 @@ def backup_database():
     backup_retention_count = config.get("backup_retention_count")
 
     DBName = config.get("database")['DBName']
-    Bb_Path = resource_path(PathManager.DB_PATH, DBName)
+    Bb_Path = PathManager.bundled_path(PathManager.DATA_DIR, DBName)
 
     today = datetime.now().strftime("%Y-%m-%d")
     backup_file = PathManager.BACKUP_DIR / f"Flashcard_{today}.db"
+
+    if Bb_Path.exists() == False:
+        return False
 
     if backup_file.exists():
         return

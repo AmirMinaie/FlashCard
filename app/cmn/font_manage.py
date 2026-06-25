@@ -1,5 +1,5 @@
 from kivy.core.text import LabelBase
-from cmn.resource_helper import resource_path
+from cmn.resource_helper import PathManager
 
 
 class FontManager:
@@ -18,12 +18,10 @@ class FontManager:
 
         LabelBase.register(
             name=cls.DEFAULT_FONT,
-            fn_regular=resource_path(
-                "app","assets", "fonts", "CharisSIL-Regular.ttf"
-            ),
-            fn_bold=resource_path(
-                "app","assets", "fonts", "CharisSIL-Bold.ttf"
-            ),
+            fn_regular=PathManager.app_path( "assets", "fonts", "CharisSIL-Regular.ttf"
+            ).__str__(),
+            fn_bold=PathManager.app_path("assets", "fonts", "CharisSIL-Bold.ttf"
+            ).__str__(),
         )
 
         cls._registered = True

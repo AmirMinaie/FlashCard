@@ -14,7 +14,7 @@ from kivymd.uix.dialog import MDDialog
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
 from kivy.core.audio import SoundLoader
-from cmn.resource_helper import resource_path
+from cmn.resource_helper import PathManager
 from urllib.parse import urlparse, unquote
 from os.path import basename
 
@@ -22,7 +22,7 @@ import uuid
 from kivy.properties import StringProperty, NumericProperty, DictProperty, BooleanProperty , ObjectProperty 
 
 
-Builder.load_file(resource_path("app/Kv/AddFlashCardScreen.kv"))
+Builder.load_file(str(PathManager.app_path( "Kv/AddFlashCardScreen.kv")))
 
 class AddFlashCardScreen(MDScreen):
     form_title = StringProperty("Add New FlashCard")

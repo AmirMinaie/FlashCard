@@ -1,12 +1,12 @@
 import sys
 import os
-from cmn.resource_helper import resource_path
+from cmn.resource_helper import PathManager
 from cmn.splash_screen import SplashScreen
 APP_WIDTH = 736
 APP_HEIGHT = 685
 
 splash = SplashScreen(
-    resource_path("app","assets", "images", "splash.bmp"),
+    str(PathManager.app_path("assets", "images", "splash.bmp")),
     width= APP_WIDTH,
     height=APP_HEIGHT
 )
@@ -37,7 +37,7 @@ class FlashCardApp (MDApp):
         FontManager.register_fonts()
         self.theme_cls.primary_palette = "Teal"
         FontManager.apply_kivymd_default_font(self.theme_cls)
-        Builder.load_file(resource_path("app/Kv/HomeScreen.kv"))
+        Builder.load_file(PathManager.app_path("Kv/HomeScreen.kv").__str__())
         sm = ScreenManager()
         sm.add_widget(HomeScreen(name="HomeScreen"))
         sm.current = "HomeScreen"
@@ -78,6 +78,10 @@ def get_constant(name):
         return 0
 
 def LoadOldData():
+    old_data_path = PathManager.CONFIG_DIR / "OldData.json"
+    if not old_data_path.exists():
+        return
+
     from BL.FlashCardBL import FlashCardBL
     data = ConfigReader("OldData.json").get('flashcards')
     loadOldData = ConfigReader("config.json").get("loadOldData" , 1 )

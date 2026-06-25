@@ -4,9 +4,8 @@ import shutil
 from pathlib import Path
 import logging
 from datetime import datetime
-from cmn.resource_helper import resource_path
+from cmn.resource_helper import PathManager
 from cmn.FilenameExtractor import FilenameExtractor
-from cmn.path_manager import PathManager
 from fake_useragent import UserAgent
 import requests
 from urllib.parse import urlparse, unquote
@@ -14,7 +13,7 @@ from urllib.parse import urlparse, unquote
 
 class FileManager:
     def __init__(self):
-        self.base_dir = Path(resource_path(PathManager.FILES_DIR))
+        self.base_dir = Path(PathManager.bundled_path(PathManager.FILES_DIR))
         self.base_dir.mkdir(parents=True, exist_ok=True)
 
     @classmethod

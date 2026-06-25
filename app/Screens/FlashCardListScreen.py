@@ -13,7 +13,7 @@ from kivymd.app import MDApp
 from .AddFlashCardScreen import AddFlashCardScreen
 
 
-Builder.load_file(resource_path("app/Kv/FlashCardListScreen.kv"))
+Builder.load_file(str(PathManager.app_path( "Kv/FlashCardListScreen.kv")))
 
 class FlashCardListScreen(MDScreen):
     Filters = ConfigReader().get('filters_FlashCard_List')

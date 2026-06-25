@@ -1,10 +1,9 @@
 {
-  "data_directory": "E:\\MyFiles\\Desktop\\Online_FlashCard_Data",
   "database": {
     "driver": "sqlite",
     "DBName": "Flashcard.db"
   },
-  "loadSeedData": 0,
+  "loadSeedData": 1,
   "loadOldData": 0,
   "backup_retention_count": 10,
   "filters_FlashCard_List": [

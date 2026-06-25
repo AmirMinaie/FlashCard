@@ -1,6 +1,6 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
-from cmn.resource_helper import resource_path
+from cmn.resource_helper import *
 from BL.FlashCardBL import FlashCardBL
 from kivymd.app import MDApp
 from kivymd.uix.button import MDRaisedButton, MDFlatButton
@@ -15,7 +15,7 @@ from kivy.clock import Clock
 from kivy.metrics import dp
 from widgets.Playlist import Playlist
 
-Builder.load_file(resource_path("app/Kv/ReviewScreen.kv"))
+Builder.load_file(str(PathManager.app_path("Kv/ReviewScreen.kv")))
 
 class ReviewScreen(MDScreen):
     show_answer = BooleanProperty(False)

@@ -11,11 +11,77 @@ from kivy.properties import (
 )
 from BL.fileManager import FileManager
 from kivy.core.audio import SoundLoader
+from kivymd.uix.slider import MDSlider
+from cmn.resource_helper import *
 
-from cmn.resource_helper import resource_path
 
+Builder.load_string(
+    
+"""
+<Playlist>:
+    orientation: "vertical"
+    padding: dp(15)
+    spacing: dp(8)
 
-Builder.load_file(resource_path("app", "widgets", "Playlist.kv"))
+    MDBoxLayout:
+        size_hint_y: None
+        height: dp(75)
+        spacing: dp(8)
+
+        MDBoxLayout:
+            size_hint_x: 0.35
+            padding: dp(5)
+
+            MDLabelA:
+                text: root.current_song
+                shorten: True
+                shorten_from: "right"
+                max_lines: 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+
+        MDBoxLayout:
+            size_hint_x: 0.35
+            spacing: dp(8)
+            padding: dp(0), dp(8)
+            pos_hint: {"center_x": 0.5}
+
+            MDIconButton:
+                icon: "skip-previous"
+                icon_size: dp(30)
+                on_release: root.prev_song()
+
+            MDFloatingActionButton:
+                icon: "pause" if root.is_playing else "play"
+                size_hint: None, None
+                size: dp(52), dp(52)
+                on_release: root.toggle_play()
+
+            MDIconButton:
+                icon: "skip-next"
+                icon_size: dp(30)
+                on_release: root.next_song()
+
+        MDBoxLayout:
+            size_hint_x: 0.30
+            spacing: dp(4)
+            padding: dp(0), dp(10)
+            opacity: 1 if root.volume_slider_enabled else 0
+            disabled: not root.volume_slider_enabled
+
+            MDIconButton:
+                icon: "volume-high" if root.volume_level > 0 else "volume-off"
+                on_release: root.toggle_mute()
+
+            MDSlider:
+                min: 0
+                max: 100
+                value: root.volume_level
+                on_value: root.set_volume(self.value)
+"""
+
+)
 
 
 class Playlist(MDBoxLayout):
