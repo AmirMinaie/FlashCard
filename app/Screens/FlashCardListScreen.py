@@ -72,39 +72,24 @@ class FlashCardListScreen(MDScreen):
         self.Curent_Filter_Id = selected_chip.filter_id
         self.load_flashcard()
      
-    def edit_card(self , card_id):
-        current = self
-        while current.__class__.__name__ != "HomeScreen":
-            current = current.parent
-        home_screen = current
-        
-        bottom_nav = None
-        for child in home_screen.children:
+
+    def edit_card(self, card_id):
+        """ویرایش کارت با آیدی مشخص"""
+        app = MDApp.get_running_app()
+        home_screen = app.root.get_screen("HomeScreen")
+
+        for child in home_screen.walk(restrict=True):
             if child.__class__.__name__ == "MDBottomNavigation":
-                bottom_nav = child
+                for sub_child in child.children:
+                    if hasattr(sub_child, 'get_screen'):
+                        add_screen = sub_child.get_screen("add_tab")
+                        if add_screen and add_screen.children:
+                            add_flashcard = add_screen.children[0]
+                            if hasattr(add_flashcard, 'set_card_id'):
+                                add_flashcard.set_card_id(card_id)
+                                child.switch_tab("add_tab")
+                        break
                 break
-        
-        if not bottom_nav:
-            return
-        
-        screen_manager = None
-        for child in bottom_nav.children:
-            if child.__class__.__name__ == "ScreenManager":
-                screen_manager = child
-                break
-        
-        if not screen_manager:
-            return
-        
-        add_screen =  screen_manager.get_screen("add_tab")
-        
-        if add_screen:
-
-            add_screen.children[0].set_card_id(card_id)
-            bottom_nav.switch_tab("add_tab")
-
-        print(f"edit Card {card_id}")
-        pass
 
     def load_flashcard(self):
         Curent_Filter = next((item for item in self.Filters if item.get("id") == self.Curent_Filter_Id), None)
