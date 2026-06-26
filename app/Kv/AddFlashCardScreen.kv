@@ -160,16 +160,13 @@
                             md_bg_color: app.theme_cls.primary_color
                     
                     # لیست Songs
-                    ScrollView:
+
+                    MDList:
+                        id: song_list
+                        padding: "10dp"
+                        spacing: "5dp"
                         size_hint_y: None
-                        height: dp(200)
-                        
-                        MDList:
-                            id: song_list
-                            padding: "10dp"
-                            spacing: "5dp"
-                            size_hint_y: None
-                            height: self.minimum_height
+                        height: self.minimum_height
         
 
         MDBoxLayout:

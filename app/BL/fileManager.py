@@ -8,6 +8,7 @@ from cmn.resource_helper import PathManager
 from cmn.FilenameExtractor import FilenameExtractor
 from fake_useragent import UserAgent
 import requests
+from cmn.NetworkClient import NetworkClient
 from urllib.parse import urlparse, unquote
 
 
@@ -15,6 +16,7 @@ class FileManager:
     def __init__(self):
         self.base_dir = Path(PathManager.bundled_path(PathManager.FILES_DIR))
         self.base_dir.mkdir(parents=True, exist_ok=True)
+        self.network = NetworkClient()
 
     @classmethod
     def getfilepath(self,fileName):
@@ -98,60 +100,21 @@ class FileManager:
         Returns:
             dict: اطلاعات فایل دانلود شده
         """
-        try:
-            session = requests.Session()
-            
-            response = session.get(
-                source_path, stream=True, 
-                timeout=timeout , 
-                headers=self.headers(source_path)
-            )
-            response.raise_for_status() 
+        file_path = self.base_dir / filename
 
-            # مسیر کامل فایل
-            file_path = self.base_dir / filename
-            
-            # ذخیره فایل
-            with open(file_path, 'wb') as file:
-                for chunk in response.iter_content(chunk_size=8192):
-                    if chunk:
-                        file.write(chunk)
-            
-            file_size = os.path.getsize(file_path)
-            
-            return {
-                'success': True,
-                'url': source_path,
-                'file_path': str(file_path),
-                'file_name': filename,
-                'file_size': file_size
+        result = self.network.download(source_path, file_path)
+
+        if not result.get("success"):
+            raise Exception(result.get("error"))
+
+        return {
+            "success": True,
+            'url': source_path,
+            "file_path": str(file_path),
+            "file_name": filename,
+            "file_size": file_path.stat().st_size 
             }
-            
-        except requests.exceptions.Timeout:
-            return {
-                'success': False,
-                'error': 'Request timeout',
-                'url': filename
-            }
-        except requests.exceptions.HTTPError as e:
-            return {
-                'success': False,
-                'error': f'HTTP Error: {e}',
-                'url': filename,
-                'status_code': e.response.status_code if hasattr(e, 'response') else None
-            }
-        except requests.exceptions.RequestException as e:
-            return {
-                'success': False,
-                'error': f'Request Error: {e}',
-                'url': filename
-            }
-        except Exception as e:
-            return {
-                'success': False,
-                'error': f'Unexpected Error: {e}',
-                'url': filename
-            }
+
 
     def copy_file(self,source_path , file_id ):
         source = Path(source_path)

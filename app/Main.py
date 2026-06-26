@@ -2,6 +2,8 @@ import sys
 import os
 from cmn.resource_helper import PathManager
 from cmn.splash_screen import SplashScreen
+import win32gui
+import win32con
 APP_WIDTH = 736
 APP_HEIGHT = 685
 
@@ -17,8 +19,9 @@ from kivy.config import Config
 
 Config.set("graphics", "width", str(APP_WIDTH))
 Config.set("graphics", "height", str(APP_HEIGHT))
-Config.set("graphics", "resizable", "0")
-Config.set("graphics", "borderless", "0")
+Config.set("graphics", "resizable", "1")
+Config.set("graphics", "borderless", "1")
+Config.set('kivy', 'window_icon', str(PathManager.app_path("assets", "images", "icon.png")))
 
 from Screens.HomeScreen import HomeScreen
 from kivy.uix.screenmanager import ScreenManager
@@ -28,27 +31,60 @@ from cmn.config_reader import ConfigReader
 from cmn.font_manage import FontManager
 from kivy.clock import Clock
 from cmn.backup_db import backup_database
+from kivy.core.window import Window
+
 
 class FlashCardApp (MDApp):
+    title_icon = ""
+    title_text = ConfigReader().get("App_Name")
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.title_icon = str(PathManager.app_path("assets", "images", "icon.ico"))
+        self.title_text = ConfigReader().get("App_Name")
 
     def build(self):
         FontManager.register_fonts()
         self.theme_cls.primary_palette = "Teal"
         FontManager.apply_kivymd_default_font(self.theme_cls)
+        from widgets.CustomTitleBar import CustomTitleBar
         Builder.load_file(PathManager.app_path("Kv/HomeScreen.kv").__str__())
         sm = ScreenManager()
         sm.add_widget(HomeScreen(name="HomeScreen"))
         sm.current = "HomeScreen"
         return sm
 
+    def close_app(self):
+        Window.close()
+        
+    def minimize_window(self):
+        Window.minimize()
+        
     def on_start(self):
-        # اجازه می‌دهد اولین فریم رابط کاربری ساخته شود
-        Clock.schedule_once(
-            self.close_splash,
-            1,
-        )
+        Clock.schedule_once(self._set_window_icon, 0.5)
+        Clock.schedule_once(self.close_splash,1)
+
+
+    def _set_window_icon(self, dt):
+        """تنظیم آیکون پنجره با API ویندوز"""
+        try:
+            hwnd = win32gui.GetForegroundWindow()
+            icon_path = str(PathManager.app_path("assets", "images", "icon.png"))
+            
+            icon_small = win32gui.LoadImage(0,icon_path,win32con.IMAGE_ICON,16, 16,win32con.LR_LOADFROMFILE)
+            
+            icon_big = win32gui.LoadImage(0,icon_path,win32con.IMAGE_ICON,32, 32,win32con.LR_LOADFROMFILE)
+            
+            # تنظیم آیکون برای پنجره
+            win32gui.SendMessage(hwnd, win32con.WM_SETICON, win32con.ICON_SMALL, icon_small)
+            win32gui.SendMessage(hwnd, win32con.WM_SETICON, win32con.ICON_BIG, icon_big)
+            
+            import ctypes
+            ctypes.windll.user32.SetClassLongW(hwnd, -14, icon_small or icon_big)
+
+            print("Window icon set successfully")
+        except Exception as e:
+            print(f"Error setting window icon: {e}")
 
     def close_splash(self, dt):
         splash.close()

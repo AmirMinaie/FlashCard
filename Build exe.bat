@@ -13,18 +13,21 @@ for /d /r . %%d in (__pycache__) do @if exist "%%d" rmdir /s /q "%%d"
 
 echo Starting build...
 
-pyinstaller app\Main.py ^
-  --name FlashCard ^
+set "PROJECT_DIR=%CD%"
+
+pyinstaller "%PROJECT_DIR%\app\Main.py" ^
+  --name DuckMemo ^
   --onefile ^
   --noconsole ^
-  --add-data "%CD%\app\Kv;Kv" ^
-  --add-data "%CD%\app\assets;assets" ^
-  --add-data "%CD%\app\widgets;widgets" ^
+  --icon="%PROJECT_DIR%\app\assets\images\icon.ico" ^
+  --add-data "%PROJECT_DIR%\app\Kv;Kv" ^
+  --add-data "%PROJECT_DIR%\app\assets;assets" ^
+  --add-data "%PROJECT_DIR%\app\widgets;widgets" ^
   --hidden-import kivymd.icon_definitions ^
   --hidden-import kivymd.uix.slider ^
-  --distpath output\dist ^
-  --workpath output\build ^
-  --specpath output ^
+  --distpath "%PROJECT_DIR%\output\dist" ^
+  --workpath "%PROJECT_DIR%\output\build" ^
+  --specpath "%PROJECT_DIR%\output" ^
   --clean
 
 echo.

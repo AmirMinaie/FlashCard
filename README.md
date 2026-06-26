@@ -1,135 +1,54 @@
-📚 FlashCard
+# FlashCard
 
-FlashCard is a lightweight and extensible flashcard application built with Python to help users study, review, and memorize information efficiently.
+A desktop flashcard application built with Python, Kivy, and KivyMD.
 
-The app is suitable for language learning, exam preparation, technical study, or daily knowledge review.
+FlashCard helps learners create, organize, review, and manage flashcards in a focused desktop environment. It is designed primarily for language learning, exam preparation, technical study, and any workflow that benefits from repeated review.
 
-✨ Features
+> The project uses a layered architecture to keep the user interface, business logic, and data-access code separate and maintainable.
 
-Simple and user-friendly graphical interface
+---
 
-Create, edit, and delete flashcards
+## Features
 
-Review cards easily
+- Create, edit, and delete flashcards
+- Browse and manage flashcard lists
+- Review cards in a dedicated review screen
+- Store flashcard data locally
+- Manage flashcard-related files
+- Configurable application settings
+- Local backup support
+- Custom Kivy/KivyMD widgets and reusable UI components
+- Splash screen support
+- Windows executable packaging with PyInstaller
 
-Organized and scalable project structure
+---
 
-Designed to be extendable for future features
+## Tech Stack
 
-Suitable for desktop and Android builds
+- **Python**
+- **Kivy** — application framework
+- **KivyMD** — Material Design components
+- **SQLAlchemy** — database ORM
+- **pyodbc** — database connectivity
+- **PyInstaller** — Windows executable packaging
 
-🛠 Technologies Used
+---
 
-Python 3
+## Project Structure
 
-Kivy / KivyMD for UI
-
-Buildozer for Android APK generation
-
-JSON/local storage for data management
-
-🚀 Installation
-Requirements
-
-Make sure you have:
-
-Python 3.10+
-
-pip installed
-
-virtual environment support (recommended)
-
-Setup Steps
-
-Clone the repository:
-
-git clone https://github.com/AmirMinaie/FlashCard.git
-cd FlashCard
-
-
-Create and activate a virtual environment:
-
-Windows
-
-python -m venv venv
-venv\Scripts\activate
-
-
-Linux / macOS
-
-python -m venv venv
-source venv/bin/activate
-
-
-Install dependencies:
-
-pip install -r requirements.txt
-
-▶️ Running the Application
-
-Run the project using:
-
-python main.py
-
-
-Or use the provided run scripts if available.
-
-📱 Building Android APK (Optional)
-
-If you want to build an Android version:
-
-buildozer android debug
-
-
-Make sure Buildozer and Android dependencies are installed properly.
-
-📂 Project Structure
-
-Typical structure overview:
-
+```text
 FlashCard/
-├── app/                # Application source code
-├── assets/             # Fonts, images, resources
-├── config/             # Configuration files
-├── main.py             # Application entry point
-├── buildozer.spec      # Android build configuration
-├── requirements.txt    # Python dependencies
+├── app/
+│   ├── BL/                 # Business logic layer
+│   ├── DA/                 # Data-access layer and database models
+│   ├── Kv/                 # Kivy language UI layouts
+│   ├── Screens/            # Application screens
+│   ├── assets/             # Fonts, images, and other resources
+│   ├── cmn/                # Shared helpers and utilities
+│   ├── theme/              # Colors and UI theme configuration
+│   ├── widgets/            # Reusable custom widgets
+│   └── Main.py             # Application entry point
+├── output/                 # Generated build output (if created)
+├── requirements.txt        # Python dependencies
+├── buildozer.spec.backup   # Android build configuration backup
 └── README.md
-
-🧩 Future Improvements (Ideas)
-
-Possible future enhancements:
-
-Card categories & decks
-
-Spaced repetition algorithm
-
-Import/export decks
-
-Cloud sync
-
-Progress tracking
-
-Dark mode support
-
-🤝 Contributing
-
-Contributions are welcome!
-
-Steps:
-
-Fork the repository
-
-Create a feature branch
-
-Commit changes
-
-Submit a Pull Request
-
-📄 License
-
-You can add your preferred open-source license here (MIT, GPL, etc.).
-
-⭐ Support
-
-If this project is helpful, consider giving the repository a star to support development.

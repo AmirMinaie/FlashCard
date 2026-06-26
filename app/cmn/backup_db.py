@@ -11,7 +11,7 @@ def backup_database():
     Bb_Path = PathManager.bundled_path(PathManager.DATA_DIR, DBName)
 
     today = datetime.now().strftime("%Y-%m-%d")
-    backup_file = PathManager.BACKUP_DIR / f"Flashcard_{today}.db"
+    backup_file = PathManager.BACKUP_DIR / f"{DBName}_{today}.db"
 
     if Bb_Path.exists() == False:
         return False
@@ -22,7 +22,7 @@ def backup_database():
     shutil.copy2(Bb_Path, backup_file)
 
     backups = sorted(
-        PathManager.BACKUP_DIR.glob("Flashcard_*.db"),
+        PathManager.BACKUP_DIR.glob(f"{DBName}_*.db"),
         key=lambda file: file.stat().st_mtime,
         reverse=True
     )

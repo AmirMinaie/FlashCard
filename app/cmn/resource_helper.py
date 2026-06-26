@@ -4,7 +4,7 @@ import shutil
 
 
 class PathManager:
-    APP_NAME = "FlashCard"
+    APP_NAME = "DuckMemo"
 
     @classmethod
     def get_data_dir(cls) -> Path:

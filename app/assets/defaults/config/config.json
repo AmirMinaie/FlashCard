@@ -1,7 +1,9 @@
 {
+  "App_Name": "DuckMemo",
+  "network_backend": "wininet",
   "database": {
     "driver": "sqlite",
-    "DBName": "Flashcard.db"
+    "DBName": "DuckMemo.db"
   },
   "loadSeedData": 1,
   "loadOldData": 0,

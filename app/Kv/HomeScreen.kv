@@ -1,27 +1,32 @@
 <HomeScreen>
     name: "HomeScreen"
 
-    MDBottomNavigation:
-        name: "switch_tab"
-        on_switch_tabs: root.on_tab_switch(*args)
+    BoxLayout:
+        orientation: "vertical"
+        
+        CustomTitleBar:
 
-        MDBottomNavigationItemA:
-            name: "review_tab"
-            icon: "clipboard-check"
-            text: "Review Today"
+        MDBottomNavigation:
+            name: "switch_tab"
+            on_switch_tabs: root.on_tab_switch(*args)
 
-            ReviewScreen:
+            MDBottomNavigationItemA:
+                name: "review_tab"
+                icon: "clipboard-check"
+                text: "Review Today"
 
-        MDBottomNavigationItemA:
-            name: "add_tab"
-            icon: "note-plus"
-            text: "Add Cards"
+                ReviewScreen:
 
-            AddFlashCardScreen:
+            MDBottomNavigationItemA:
+                name: "add_tab"
+                icon: "note-plus"
+                text: "Add Cards"
 
-        MDBottomNavigationItemA:
-            name: "list_tab"
-            icon: "format-list-bulleted"
-            text: "List Cards"
+                AddFlashCardScreen:
 
-            FlashCardListScreen:
+            MDBottomNavigationItemA:
+                name: "list_tab"
+                icon: "format-list-bulleted"
+                text: "List Cards"
+
+                FlashCardListScreen:
