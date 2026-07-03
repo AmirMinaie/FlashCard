@@ -4,24 +4,24 @@ from pathlib import Path
 from cmn.resource_helper import PathManager
 from logging.handlers import RotatingFileHandler
 
-
-# پوشه logs
 log_dir = PathManager.log_DIR
 
-handler = RotatingFileHandler(
-    log_dir / "app.log",
-    maxBytes=2 * 1024 * 1024,  # 2MB
-    backupCount=5,
-    encoding="utf-8"
-)
+handlers = [
+    RotatingFileHandler(
+        log_dir / "app.log",
+        maxBytes=2 * 1024 * 1024,
+        backupCount=5,
+        encoding="utf-8"
+    )
+]
+
+if hasattr(sys, "__stdout__") and sys.__stdout__:
+    handlers.append(logging.StreamHandler(sys.__stdout__))
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)-8s | %(message)s",
-    handlers=[
-        handler ,
-        logging.StreamHandler()
-    ]
+    handlers= handlers
 )
 
 logger = logging.getLogger("App")
