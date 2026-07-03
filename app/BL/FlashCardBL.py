@@ -8,6 +8,8 @@ from  BL.fileManager import FileManager
 from sqlalchemy import func
 from datetime import datetime, date , timedelta
 from .SM2Algorithm import SM2Algorithm
+from cmn.logger import logger
+from cmn.config_reader import ConfigReader
 
 @dataclass
 class OrderByConfig:
@@ -95,7 +97,7 @@ class FlashCardBL:
                     )
                     session.add(file)
                 except Exception as e:
-                    print(e)
+                    logger.error(str(e))
 
         session.commit()
         card_saved ={"id":card.id , "title":card.title}
@@ -231,6 +233,9 @@ class FlashCardBL:
         if text_expressions:
             query = query.where(*text_expressions)
 
+        CardsPerPage = ConfigReader().get("CardsPerPage")
+        query = query.limit(CardsPerPage)
+
 
         cards = query.all()
 
@@ -257,7 +262,7 @@ class FlashCardBL:
             return card_data
         
         except Exception as e:
-            print(f"Error getting next card for review: {e}")
+            logger.error(f"Error getting next card for review: {e}")
             return None
 
     def mark_card_reviewed(self, card_id, quality_Answer):
@@ -297,27 +302,8 @@ class FlashCardBL:
             return review_card_saved
             
         except Exception as e:
-            print(f"Error marking card reviewed: {e}")
+            logger.error(f"Error marking card reviewed: {e}")
             return False
-    
-    def get_today_review_count(self):
-        """گرفتن تعداد مرورهای امروز"""
-        try:
-            today = date.today()
-            session = get_session()
-            count = session.query(func.count(flashcardDA.id)).\
-                filter(or_(
-                    flashcardDA.last_review_date <= today,
-                    flashcardDA.last_review_date == None                  
-                )).scalar()
-            session.close()
-            if count:
-                return count
-            return 0
-            
-        except Exception as e:
-            print(f"Error getting today's review count: {e}")
-            return 0
 
     def _get_field(self, field_name):
         field_mapping = {
@@ -466,16 +452,3 @@ class FlashCardBL:
             return datetime.fromisoformat(value)
         except Exception:
             return value
-
-    def get_today_reviewed_count(self):
-        try:
-            today = date.today()
-            session = get_session()
-            count = session.query(func.count(flashcardDA.id)).\
-                filter(func.date(flashcardDA.last_reviewed_date) == today).scalar()
-            session.close()
-            return count or 0
-            
-        except Exception as e:
-            print(f"Error getting today's review count: {e}")
-            return 0

@@ -5,6 +5,7 @@ import time
 import win32api
 import win32con
 import win32gui
+from cmn.logger import logger
 
 
 class SplashScreen:
@@ -19,9 +20,9 @@ class SplashScreen:
         self._close_requested = False
 
     def show(self):
-        print("SPLASH: show called")
-        print("SPLASH path:", self.image_path)
-        print("SPLASH exists:", os.path.isfile(self.image_path))
+        logger.info("SPLASH: show called")
+        logger.info(f"SPLASH path: {self.image_path}")
+        logger.info(f"SPLASH exists: {os.path.isfile(self.image_path)}")
 
         self._thread = threading.Thread(target=self._run, daemon=True)
         self._thread.start()
@@ -108,7 +109,7 @@ class SplashScreen:
         win32gui.ShowWindow(self.hwnd, win32con.SW_SHOW)
         win32gui.UpdateWindow(self.hwnd)
         
-        print("SPLASH: window shown")
+        logger.info("SPLASH: window shown")
 
         self._ready.set()
 

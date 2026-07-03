@@ -1,6 +1,7 @@
 from cmn.config_reader import ConfigReader
 from sqlalchemy import insert, inspect , MetaData, select
 from .base import Base
+from cmn.logger import logger
 
 def Create_SeedData(engine):
     
@@ -64,7 +65,7 @@ def insert_row(row ,conn, metadata, table , table_name):
                 insert_row(child , conn , metadata , child_table , child_table_name )
                 
     except Exception as e:
-            print(f"Error insert seed data: {e}")
+            logger.info(f"Error insert seed data: {e}")
 
 
 

@@ -7,6 +7,7 @@ from .constantDA import constantDA
 from .fileFlashcardDA import fileFlashcardDA
 from .flashcardDA import flashcardDA
 from .reviewFlashcardDA import reviewFlashcardDA
+from cmn.logger import logger
 
 #__all__ = []
 #
@@ -27,4 +28,4 @@ from .reviewFlashcardDA import reviewFlashcardDA
 
 __all__ = ["constantDA" , "fileFlashcardDA" , "flashcardDA" , "reviewFlashcardDA"]
 
-print("Models loaded dynamically:", __all__)
+logger.info("Models loaded dynamically: " + str(  __all__))

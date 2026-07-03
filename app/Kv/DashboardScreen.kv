@@ -1,0 +1,508 @@
+#:import dp kivy.metrics.dp
+
+<DashboardScreen>:
+    name: "DashboardScreen"
+
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: dp(10)
+        padding: dp(15)
+
+        # ================= Header =================
+
+        MDBoxLayout:
+            size_hint_y: None
+            height: dp(50)
+
+            MDLabel:
+                text: "Dashboard"
+                font_style: "H4"
+                bold: True
+                valign: "middle"
+
+            Widget:
+
+            MDIconButton:
+                icon: "refresh"
+                on_release: root.load_dashboard()
+
+        # ================= Scroll =================
+
+        ScrollView:
+
+            MDBoxLayout:
+                orientation: "vertical"
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(15)
+                padding: dp(10)
+
+                ##################################################
+                # TODAY CARD
+                ##################################################
+
+                MDCard:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: dp(220)
+
+                    radius: [16, 16, 16, 16]
+                    elevation: 2
+                    padding: dp(20)
+
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        spacing: dp(14)
+                        padding: [dp(20), dp(20), dp(20), dp(20)]
+                        spacing: dp(14)
+
+                        MDLabel:
+                            text: "Today's Progress"
+                            font_style: "H6"
+                            bold: True
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                        MDLabel:
+                            id: today_review_label
+                            text: "52 Reviews Completed"
+                            font_style: "H4"
+                            bold: True
+                            halign: "center"
+                            size_hint_y: None
+                            height: self.texture_size[1] + dp(6)
+
+                        MDProgressBar:
+                            id: today_progress
+                            value: 0
+                            max: 100
+                            size_hint_y: None
+                            height: dp(8)
+
+                        MDBoxLayout:
+                            size_hint_y: None
+                            height: dp(24)
+
+                            MDLabel:
+                                id: remaining_label
+                                text: "415 cards remaining"
+                                theme_text_color: "Secondary"
+
+                            MDLabel:
+                                id: completion_percent
+                                text: "35%"
+                                halign: "right"
+                                bold: True
+
+                ##################################################
+                # SUMMARY
+                ##################################################
+                
+                MDGridLayout:
+                    cols: 2
+                    spacing: dp(12)
+                    row_default_height: dp(100)
+                    row_force_default: True
+                    size_hint_y: None
+                    height: self.minimum_height
+                
+                    ##################################################
+                    # STREAK
+                    ##################################################
+                
+                    MDCard:
+                        size_hint_y: None
+                        height: dp(100)
+                        radius: [14,14,14,14]
+                        elevation: 2
+                
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            padding: dp(16)
+                            spacing: dp(8)
+                
+                            MDBoxLayout:
+                                orientation: "horizontal"
+                                size_hint_y: None
+                                height: dp(32)
+                                spacing: dp(8)
+
+                                MDIcon:
+                                    icon: "fire"
+                                    icon_size: "24sp"
+                                    size_hint: None, None
+                                    size: dp(24), dp(24)
+                                    pos_hint: {"center_y": 0.5}
+
+                                MDLabel:
+                                    text: "Current Streak"
+                                    bold: True
+                                    size_hint_y: None
+                                    height: self.texture_size[1]
+                
+                            MDLabel:
+                                id: streak_label
+                                text: "18 Days"
+                                font_style: "H5"
+                                halign: "center"
+                                bold: True
+                                size_hint_y: None
+                                height: self.texture_size[1]
+                
+                    ##################################################
+                    # DUE TODAY
+                    ##################################################
+                
+                    MDCard:
+                        size_hint_y: None
+                        height: dp(100)
+                        radius: [14,14,14,14]
+                        elevation: 2
+                
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            padding: dp(16)
+                            spacing: dp(8)
+
+                            MDBoxLayout:
+                                orientation: "horizontal"
+                                size_hint_y: None
+                                height: dp(32)
+                                spacing: dp(8)                            
+                
+                                MDIcon:
+                                    icon: "calendar-clock"
+                                    icon_size: "24sp"
+                                    size_hint: None, None
+                                    size: dp(24), dp(24)
+
+                                MDLabel:
+                                    text: "Due Today"
+                                    bold: True
+                                    size_hint_y: None
+                                    height: self.texture_size[1]
+                
+                            MDLabel:
+                                id: due_today_label
+                                text: "52"
+                                font_style: "H5"
+                                bold: True
+                                halign: "center"
+                                size_hint_y: None
+                                height: self.texture_size[1]
+                
+                    ##################################################
+                    # TOTAL CARDS
+                    ##################################################
+                
+                    MDCard:
+                        size_hint_y: None
+                        height: dp(100)
+                        radius: [14,14,14,14]
+                        elevation: 2
+                
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            padding: dp(16)
+                            spacing: dp(8)
+
+                            MDBoxLayout:
+                                orientation: "horizontal"
+                                size_hint_y: None
+                                height: dp(32)
+                                spacing: dp(8)                            
+                
+                                MDIcon:
+                                    icon: "cards"
+                                    icon_size: "24sp"
+                                    size_hint: None, None
+                                    size: dp(24), dp(24)
+
+                                MDLabel:
+                                    text: "Total Cards"
+                                    bold: True
+                                    size_hint_y: None
+                                    height: self.texture_size[1]
+                
+                            MDLabel:
+                                id: total_cards_label
+                                text: "2458"
+                                font_style: "H5"
+                                bold: True
+                                halign: "center"
+                                size_hint_y: None
+                                height: self.texture_size[1]
+                
+                    ##################################################
+                    # MATURE
+                    ##################################################
+                
+                    MDCard:
+                        size_hint_y: None
+                        height: dp(100)
+                        radius: [14,14,14,14]
+                        elevation: 2
+                
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            padding: dp(16)
+                            spacing: dp(8)
+
+                            MDBoxLayout:
+                                orientation: "horizontal"
+                                size_hint_y: None
+                                height: dp(32)
+                                spacing: dp(8)
+                
+                                MDIcon:
+                                    icon: "school"
+                                    icon_size: "24sp"
+                                    size_hint: None, None
+                                    size: dp(24), dp(24)
+
+                                MDLabel:
+                                    text: "Mature Cards"
+                                    bold: True
+                                    size_hint_y: None
+                                    height: self.texture_size[1]
+                
+                            MDLabel:
+                                id: mature_label
+                                text: "712"
+                                font_style: "H5"
+                                bold: True
+                                halign: "center"
+                                size_hint_y: None
+                                height: self.texture_size[1]
+
+                ##################################################
+                # LEARNING PROGRESS
+                ##################################################
+
+                MDCard:
+                    size_hint_y: None
+                    height: dp(310)
+                    radius: [16,16,16,16]
+                    elevation: 2
+
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        padding: dp(20)
+                        spacing: dp(14)
+
+                        MDLabel:
+                            text: "Learning Progress"
+                            font_style: "H6"
+                            bold: True
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                        ##################################################
+                        # NEW
+                        ##################################################
+
+                        MDBoxLayout:
+                            size_hint_y: None
+                            height: dp(24)
+                            spacing: dp(8)
+
+                            MDIcon:
+                                icon: "plus-box"
+                                width: dp(24)
+                                icon_size: "24sp"
+                                size_hint: None, None
+                                size: dp(24), dp(24)
+
+
+                            MDLabel:
+                                text: "New Cards"
+
+                            MDLabel:
+                                id: new_count
+                                text: "120 (18%)"
+                                halign: "right"
+
+                        MDProgressBar:
+                            id: new_progress
+                            value: 0
+                            max: 100
+                            size_hint_y: None
+                            height: dp(8)
+
+                        ##################################################
+                        # LEARNING
+                        ##################################################
+
+                        MDBoxLayout:
+                            size_hint_y: None
+                            height: dp(24)
+                            spacing: dp(8)
+
+                            MDIcon:
+                                icon: "brain"
+                                width: dp(24)
+                                icon_size: "24sp"
+                                size_hint: None, None
+                                size: dp(24), dp(24)
+
+                            MDLabel:
+                                text: "Learning"
+
+                            MDLabel:
+                                id: learning_count
+                                text: "56 (8%)"
+                                halign: "right"
+
+                        MDProgressBar:
+                            id: learning_progress
+                            value: 0
+                            max: 100
+                            size_hint_y: None
+                            height: dp(8)
+
+                        ##################################################
+                        # REVIEW
+                        ##################################################
+
+                        MDBoxLayout:
+                            size_hint_y: None
+                            height: dp(24)
+                            spacing: dp(8)
+
+                            MDIcon:
+                                icon: "refresh"
+                                width: dp(24)
+                                icon_size: "24sp"
+                                size_hint: None, None
+                                size: dp(24), dp(24)
+
+                            MDLabel:
+                                text: "Review"
+
+                            MDLabel:
+                                id: review_count
+                                text: "245 (37%)"
+                                halign: "right"
+
+                        MDProgressBar:
+                            id: review_progress
+                            value: 0
+                            max: 100
+                            size_hint_y: None
+                            height: dp(8)
+
+                        ##################################################
+                        # MATURE
+                        ##################################################
+
+                        MDBoxLayout:
+                            size_hint_y: None
+                            height: dp(24)
+                            spacing: dp(8)
+
+                            MDIcon:
+                                icon: "school"
+                                width: dp(24)
+                                icon_size: "24sp"
+                                size_hint: None, None
+                                size: dp(24), dp(24)
+
+                            MDLabel:
+                                text: "Mature"
+
+                            MDLabel:
+                                id: mature_count
+                                text: "2380 (37%)"
+                                halign: "right"
+
+                        MDProgressBar:
+                            id: mature_progress
+                            value: 0
+                            max: 100
+                            size_hint_y: None
+                            height: dp(8)
+                ##################################################
+                # UPCOMING REVIEWS
+                ##################################################
+
+                MDCard:
+                    size_hint_y: None
+                    height: dp(270)
+                    radius: [16,16,16,16]
+                    elevation: 2
+
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        padding: dp(20)
+                        spacing: dp(12)
+
+                        MDLabel:
+                            text: "Upcoming Reviews"
+                            font_style: "H6"
+                            bold: True
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                        MDSeparator:
+
+                        MDBoxLayout:
+                            size_hint_y: None
+                            height: dp(24)
+
+                            MDLabel:
+                                text: "Tomorrow"
+
+                            MDLabel:
+                                id: tomorrow_label
+                                text: "68"
+                                halign: "right"
+
+                        MDBoxLayout:
+                            size_hint_y: None
+                            height: dp(24)
+
+                            MDLabel:
+                                text: "Next 3 Days"
+
+                            MDLabel:
+                                id: next3_label
+                                text: "142"
+                                halign: "right"
+
+                        MDBoxLayout:
+                            size_hint_y: None
+                            height: dp(24)
+
+                            MDLabel:
+                                text: "Next 7 Days"
+
+                            MDLabel:
+                                id: next7_label
+                                text: "281"
+                                halign: "right"
+
+                        MDBoxLayout:
+                            size_hint_y: None
+                            height: dp(24)
+
+                            MDLabel:
+                                text: "Next 30 Days"
+
+                            MDLabel:
+                                id: next30_label
+                                text: "1248"
+                                halign: "right"
+
+                        MDSeparator:
+
+                        MDBoxLayout:
+                            size_hint_y: None
+                            height: dp(24)
+
+                            MDLabel:
+                                text: "Estimated Study Time"
+
+                            MDLabel:
+                                id: study_time_label
+                                text: "18 min"
+                                halign: "right"

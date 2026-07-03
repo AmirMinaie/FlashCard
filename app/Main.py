@@ -2,6 +2,7 @@ import sys
 import os
 from cmn.resource_helper import PathManager
 from cmn.splash_screen import SplashScreen
+from cmn.logger import logger
 import win32gui
 import win32con
 APP_WIDTH = 736
@@ -82,9 +83,9 @@ class FlashCardApp (MDApp):
             import ctypes
             ctypes.windll.user32.SetClassLongW(hwnd, -14, icon_small or icon_big)
 
-            print("Window icon set successfully")
+            logger.info("Window icon set successfully")
         except Exception as e:
-            print(f"Error setting window icon: {e}")
+            logger.error(f"Error setting window icon: {e}")
 
     def close_splash(self, dt):
         splash.close()
@@ -110,7 +111,7 @@ def get_constant(name):
             return None
     
     except Exception as e:
-        print (f" Error Load constant {name}: {e}")
+        logger.error(f" Error Load constant {name}: {e}")
         return 0
 
 def LoadOldData():
@@ -148,14 +149,14 @@ def LoadOldData():
                      ,updatedAt = row.get('updatedAt',None)
                      ,reviews = row.get('reviewFlashcard',None)
                 )
-                print(f"insert row {row.get('title',None)}: {card['id']}")
+                logger.info(f"insert row {row.get('title',None)}: {card['id']}")
             except Exception as e:
-                print(f"Errro insert row {row.get('title',None)}: {e}")
+                logger.error(f"Errro insert row {row.get('title',None)}: {e}")
         
         ConfigReader("config.json").set("loadOldData" , 0 )
 
 if __name__ == "__main__":
-    print("Starting FlashCard Application...")
+    logger.info("Starting FlashCard Application...")
     try:
         backup_database()
         from DA import init_db
@@ -163,7 +164,7 @@ if __name__ == "__main__":
         LoadOldData()
 
     except Exception as e:
-        print(f"❌ Error initializing database: {e}")
+        logger.error(f"❌ Error initializing database: {e}")
         sys.exit(1)
 
     FlashCardApp().run()

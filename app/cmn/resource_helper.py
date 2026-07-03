@@ -82,9 +82,11 @@ class PathManager:
         # سایر فایل‌های قابل‌تغییر کاربر
         cls.FILES_DIR = cls.DATA_DIR / "files"
         cls.BACKUP_DIR = cls.DATA_DIR / "backups"
+        cls.log_DIR = cls.DATA_DIR / "logs"
 
         cls.FILES_DIR.mkdir(parents=True, exist_ok=True)
         cls.BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+        cls.log_DIR.mkdir(parents=True, exist_ok=True)
 
 
 PathManager.initialize()

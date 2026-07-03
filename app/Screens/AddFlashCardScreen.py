@@ -17,6 +17,7 @@ from kivy.core.audio import SoundLoader
 from cmn.resource_helper import PathManager
 from urllib.parse import urlparse, unquote
 from os.path import basename
+from cmn.logger import logger
 
 import uuid
 from kivy.properties import StringProperty, NumericProperty, DictProperty, BooleanProperty , ObjectProperty 
@@ -88,9 +89,6 @@ class AddFlashCardScreen(MDScreen):
         self.add_card = []
         self.player = None
         self.song_list = []
-    
-    def on_tab_activated(self):
-        print("open Add Screen")
 
     def load_constant(self , type):
         constant_pos = constantBL().get_constant(type)
@@ -243,7 +241,7 @@ ID: #{saved_card['id']}
             duration=5
         )
         # لاگ کردن خطا برای دیباگ
-        print(f"Database Error: {error_message}")
+        logger.info(f"Database Error: {error_message}")
 
     def show_generic_error(self, error_message):
         """نمایش خطای عمومی"""
@@ -253,7 +251,7 @@ ID: #{saved_card['id']}
             msg_type="error",
             duration=5
         )
-        print(f"Error: {error_message}")
+        logger.info(f"Error: {error_message}")
 
     def show_save_failed_message(self):
         """نمایش پیام عدم موفقیت در ذخیره"""
@@ -382,7 +380,7 @@ ID: #{saved_card['id']}
             try:
                 self.sound.stop()
             except Exception as e:
-                print("STOP SOUND ERROR:", e)
+                logger.info(f"STOP SOUND ERROR: {str( e)}")
             finally:
                 self.sound = None
     
@@ -392,7 +390,7 @@ ID: #{saved_card['id']}
             else:
                 file_path =  item_data["value"]
     
-            print("PLAY:", file_path)
+            logger.info(f"PLAY: {file_path}")
     
             # فایل صوتی را لود کن
             self.sound = SoundLoader.load(file_path)
@@ -408,7 +406,7 @@ ID: #{saved_card['id']}
             self.sound.play()
     
         except Exception as e:
-            print("PLAY SOUND ERROR:", e)
+            logger.info("PLAY SOUND ERROR: "+ str(e))
             self.sound = None
             self.show_generic_error(e)
 

@@ -80,6 +80,16 @@ Builder.load_string(
                 id: box_chip
                 text: root.box
                 icon: "package-variant"
+            
+            MDChipA:
+                id: quality_chip
+                text: str(root.last_review_quality or "")
+                icon: "star"
+            
+            MDChipA:
+                id: next_review_chip
+                text: str(root.last_review_date or "")
+                icon: "calendar"
 
         # Row4 Example
         MDBoxLayout:
@@ -162,5 +172,7 @@ class MDCardA(MDCard):
     type_ = StringProperty()
     box = StringProperty()
     level = StringProperty()
+    last_review_quality = StringProperty()
+    last_review_date = StringProperty()
     edit_card = ObjectProperty(None)
     pass  

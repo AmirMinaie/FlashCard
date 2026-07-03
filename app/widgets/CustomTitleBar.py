@@ -9,6 +9,7 @@ import win32api
 import win32con
 import win32gui
 from pathlib import Path
+from cmn.logger import logger
 
 
 Builder.load_string("""
@@ -112,7 +113,7 @@ class CustomTitleBar(BoxLayout):
                 return True
                 
             except Exception as e:
-                print(f"Error in touch_down: {e}")
+                logger.info(f"Error in touch_down: {e}")
                 self._dragging = False
         
         return super().on_touch_down(touch)
@@ -136,7 +137,7 @@ class CustomTitleBar(BoxLayout):
                 return True
                 
             except Exception as e:
-                print(f"Error in touch_move: {e}")
+                logger.info(f"Error in touch_move: {e}")
                 self._dragging = False
         
         return super().on_touch_move(touch)

@@ -8,6 +8,8 @@ from .AddFlashCardScreen import AddFlashCardScreen
 from .FlashCardListScreen import FlashCardListScreen
 from .HomeScreen import HomeScreen
 from .ReviewScreen import ReviewScreen
+from .DashboardScreen import DashboardScreen
+from cmn.logger import logger
 
 __all__ = []
 
@@ -26,4 +28,4 @@ __all__ = []
 #            except TypeError:
 #                pass
 
-print("screen loaded dynamically:", __all__)
+logger.info("screen loaded dynamically: " + str( __all__))

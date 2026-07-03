@@ -111,6 +111,12 @@ class FlashCardListScreen(MDScreen):
             'type_': getattr(flashcard.type_, 'caption', 'N/A'),
             'box': getattr(flashcard.box, 'caption', 'N/A'),
             'level': getattr(flashcard.level, 'caption', 'N/A'),
+            'last_review_quality': str(flashcard.last_review_quality or ""),
+            'last_review_date': (
+                flashcard.last_review_date.strftime("%Y-%m-%d")
+                if flashcard.last_review_date
+                else ""
+            ),
             'edit_card': make_edit_func(flashcard.id)
         }
         for flashcard in flashcardList

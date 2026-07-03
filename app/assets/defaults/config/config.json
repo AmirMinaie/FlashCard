@@ -1,12 +1,20 @@
 {
   "App_Name": "DuckMemo",
+  "REVIEW_THRESHOLD" : 3,
+  "MATURE_INTERVAL_DAYS" : 21,
+  "NEW_CARD_TIME": 120,
+  "LEARNING_CARD_TIME": 60,
+  "REVIEW_CARD_TIME": 30,
+
+  "CardsPerPage": 30 ,
+
   "network_backend": "wininet",
   "database": {
     "driver": "sqlite",
     "DBName": "DuckMemo.db"
   },
   "loadSeedData": 1,
-  "loadOldData": 0,
+  "loadOldData": 1,
   "backup_retention_count": 10,
   "filters_FlashCard_List": [
     {

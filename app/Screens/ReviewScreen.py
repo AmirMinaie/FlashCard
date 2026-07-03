@@ -2,6 +2,7 @@ from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from cmn.resource_helper import *
 from BL.FlashCardBL import FlashCardBL
+from BL.DashboardBL import DashboardBL
 from kivymd.app import MDApp
 from kivymd.uix.button import MDRaisedButton, MDFlatButton
 from kivymd.uix.boxlayout import MDBoxLayout
@@ -14,6 +15,8 @@ from datetime import datetime
 from kivy.clock import Clock
 from kivy.metrics import dp
 from widgets.Playlist import Playlist
+from cmn.logger import logger
+from cmn.logger import logger
 
 Builder.load_file(str(PathManager.app_path("Kv/ReviewScreen.kv")))
 
@@ -27,6 +30,7 @@ class ReviewScreen(MDScreen):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.flashcard_bl = FlashCardBL()
+        self.summary = DashboardBL().get_summary()
         self.current_card = None
         self.session_dialog = None
         self.no_more_cards_dialog = None
@@ -41,7 +45,7 @@ class ReviewScreen(MDScreen):
         """هر بار که وارد صفحه می‌شود"""
         self.show_answer = False
         self.session_completed = False
-        self.total_today_reviews = self.flashcard_bl.get_today_reviewed_count()
+        self.total_today_reviews = self.summary.today_reviews
         self.load_next_card()
     
     def load_next_card(self):
@@ -54,7 +58,7 @@ class ReviewScreen(MDScreen):
             self.hide_answer_fields()
             
             self.current_card = self.flashcard_bl.get_next_card_for_review()
-            self.remaining_cards = self.flashcard_bl.get_today_review_count()
+            self.remaining_cards = self.summary.remaining_reviews
             if self.current_card:
                 self.show_card_content(True)
                 self.set_fields(True , False)                
@@ -65,7 +69,7 @@ class ReviewScreen(MDScreen):
                 self.show_session_completed()
                 
         except Exception as e:
-            print(f"Error loading next card: {e}")
+            logger.info(f"Error loading next card: {e}")
             self.show_error_message("Error loading card. Please try again.")
     
     def set_fields(self , show_always , default):
@@ -154,7 +158,7 @@ class ReviewScreen(MDScreen):
                     return default
             return value if value is not None else default
         except Exception as e:
-            print(f"Error getting attribute {attribute_path}: {e}")
+            logger.info(f"Error getting attribute {attribute_path}: {e}")
             return default
     
     def setup_playlist(self):
@@ -179,7 +183,7 @@ class ReviewScreen(MDScreen):
             Clock.schedule_once(lambda dt: self.load_next_card(), 0.5)
             
         except Exception as e:
-            print(f"Error marking card correct: {e}")
+            logger.info(f"Error marking card correct: {e}")
             self.show_error_message("Error saving review. Please try again.")
             Clock.schedule_once(lambda dt: self.load_next_card(), 0.5)
  
@@ -197,7 +201,7 @@ class ReviewScreen(MDScreen):
             Clock.schedule_once(lambda dt: self.load_next_card(), 0.5)
             
         except Exception as e:
-            print(f"Error skipping card: {e}")
+            logger.info(f"Error skipping card: {e}")
             self.load_next_card()
     
     def show_session_completed(self):
@@ -368,4 +372,4 @@ class ReviewScreen(MDScreen):
                 setattr(widget, attribute, value)
 
         except Exception as e:
-            print(f"Error setting value for {widget_id}: {e}")
+            logger.info(f"Error setting value for {widget_id}: {e}")

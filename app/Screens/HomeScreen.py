@@ -10,6 +10,7 @@ from kivy.clock import Clock
 
 from Screens import *
 from widgets.MDBottomNavigationItemA import MDBottomNavigationItemA
+from cmn.logger import logger
 
 class HomeScreen(MDScreen):
     def on_tab_switch(self, bottom_navigation, tab, tab_item):
@@ -17,7 +18,11 @@ class HomeScreen(MDScreen):
             if len(tab.children) > 0:
                 screen = tab.children[0]
                 if hasattr(screen, 'on_tab_activated'):
+                    self.on_tab_activated(screen=screen)
                     screen.on_tab_activated()
         except Exception as e:
-            print(f"❌ Eror: {e}")
+            logger.info(f"❌ Eror: {e}")
     
+    def on_tab_activated(self , screen):
+        logger.info("open tab "+ screen.name)
+        screen.on_tab_activated()

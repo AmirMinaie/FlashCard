@@ -126,3 +126,63 @@ class flashcardDA(Base):
             .limit(1)
             .scalar_subquery()
         )
+    
+    @hybrid_property
+    def last_interval(self):
+        """
+        آخرین interval کارت
+        """
+        if self.reviews:
+            return self.reviews[0].interval
+        return None
+    
+    
+    @last_interval.expression
+    def last_interval(cls):
+        return (
+            select(reviewFlashcardDA.interval)
+            .where(reviewFlashcardDA.flashcard_id == cls.id)
+            .order_by(reviewFlashcardDA.review_date.desc())
+            .limit(1)
+            .scalar_subquery()
+        )
+    
+    @hybrid_property
+    def last_repetitions(self):
+        """
+        آخرین repetitions کارت
+        """
+        if self.reviews:
+            return self.reviews[0].repetitions
+        return None
+    
+    
+    @last_repetitions.expression
+    def last_repetitions(cls):
+        return (
+            select(reviewFlashcardDA.repetitions)
+            .where(reviewFlashcardDA.flashcard_id == cls.id)
+            .order_by(reviewFlashcardDA.review_date.desc())
+            .limit(1)
+            .scalar_subquery()
+        )
+    
+    @hybrid_property
+    def last_ease_factor(self):
+        """
+        آخرین Ease Factor کارت
+        """
+        if self.reviews:
+            return self.reviews[0].ease_factor
+        return None
+    
+    
+    @last_ease_factor.expression
+    def last_ease_factor(cls):
+        return (
+            select(reviewFlashcardDA.ease_factor)
+            .where(reviewFlashcardDA.flashcard_id == cls.id)
+            .order_by(reviewFlashcardDA.review_date.desc())
+            .limit(1)
+            .scalar_subquery()
+        )

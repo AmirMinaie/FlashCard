@@ -3,12 +3,20 @@
 
     BoxLayout:
         orientation: "vertical"
-        
+
         CustomTitleBar:
 
         MDBottomNavigation:
+            id: bottom_nav
             name: "switch_tab"
             on_switch_tabs: root.on_tab_switch(*args)
+
+            MDBottomNavigationItemA:
+                name: "dashboard_tab"
+                icon: "view-dashboard"
+                text: "Dashboard"
+
+                DashboardScreen:
 
             MDBottomNavigationItemA:
                 name: "review_tab"

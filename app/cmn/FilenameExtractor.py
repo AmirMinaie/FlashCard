@@ -1,6 +1,7 @@
 from urllib.parse import urlparse, unquote
 from pathlib import Path
 from cmn.config_reader import ConfigReader
+from cmn.logger import logger
 import os
 import re
 
@@ -45,7 +46,7 @@ class FilenameExtractor:
             return filename if filename else None
             
         except Exception as e:
-            print(f"Error extracting filename from URL: {e}")
+            logger.error(f"Error extracting filename from URL: {e}")
             return None
     
     @staticmethod

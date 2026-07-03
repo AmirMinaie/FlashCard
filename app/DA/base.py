@@ -4,6 +4,7 @@ from sqlalchemy.orm import as_declarative
 from sqlalchemy.sql import func
 from datetime import datetime
 from sqlalchemy.orm import validates
+from cmn.logger import logger
 
 def validate_datetime(value):
     try:
@@ -20,7 +21,7 @@ def validate_datetime(value):
             except ValueError:
                 continue
     except Exception as e:
-        print(f"Eror Convert {value}: {e}")
+        logger.e(f"Eror Convert {value}: {e}")
 
 metadata = MetaData()
 
