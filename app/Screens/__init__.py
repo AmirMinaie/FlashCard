@@ -28,4 +28,4 @@ __all__ = []
 #            except TypeError:
 #                pass
 
-logger.info("screen loaded dynamically: " + str( __all__))
+logger.info(f"screen loaded dynamically: { str( __all__)}")

@@ -64,7 +64,14 @@ Builder.load_string("""
         on_release:
             app.minimize_window()
 
-
+    MDIconButton:
+        id: btn_max
+        icon: "window-maximize"
+        size_hint: None, None
+        size: dp(34), dp(34)
+        pos_hint: {"center_y": .5}
+        on_release:
+            app.toggle_maximize()
 
     MDIconButton:
         id: btn_close

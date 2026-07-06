@@ -28,4 +28,4 @@ from cmn.logger import logger
 
 __all__ = ["constantDA" , "fileFlashcardDA" , "flashcardDA" , "reviewFlashcardDA"]
 
-logger.info("Models loaded dynamically: " + str(  __all__))
+logger.info(f"Models loaded dynamically: { str(  __all__)}")

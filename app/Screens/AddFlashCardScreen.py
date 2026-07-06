@@ -18,6 +18,7 @@ from cmn.resource_helper import PathManager
 from urllib.parse import urlparse, unquote
 from os.path import basename
 from cmn.logger import logger
+from widgets.AsyncButton import AsyncButton
 
 import uuid
 from kivy.properties import StringProperty, NumericProperty, DictProperty, BooleanProperty , ObjectProperty 
@@ -95,7 +96,7 @@ class AddFlashCardScreen(MDScreen):
         data = [{"caption":pos.caption, "id" :  pos.id } for pos in constant_pos]
         return data
 
-    def Save_info(self):
+    def befor_Save_info(self):
         from kivymd.app import MDApp
         app = MDApp.get_running_app()
 
@@ -106,8 +107,10 @@ class AddFlashCardScreen(MDScreen):
                 msg_type ="error",
                 duration =5
             )
-            return
-
+            return False
+        return True
+    
+    def Save_info(self):
         try:
             data = self.collect_form_data()
 
@@ -117,17 +120,32 @@ class AddFlashCardScreen(MDScreen):
                 saved_card = flashCardBL.update_card(self.card_id , **data)
             else:
                 saved_card = flashCardBL.add_card(**data)
+            
+            return  saved_card
 
+        except ValueError as e:
+            
+            self.show_validation_error(str(e))
+
+        except Exception as e:
+            self.show_generic_error(str(e))
+    
+    def handle_save_error(self , e):
+        if isinstance(e, ValueError):
+            self.show_validation_error(str(e))
+        else:
+            self.show_generic_error(str(e))
+
+    def After_Save_info(self , result):
+        try:
+            saved_card = result 
             if saved_card and saved_card['id']:
                 self.show_success_message(saved_card)
                 self.reset_form()
 
             else:
                 self.show_save_failed_message()
-
-        except ValueError as e:
-            self.show_validation_error(str(e))
-
+                
         except Exception as e:
             self.show_generic_error(str(e))
 
@@ -212,11 +230,8 @@ class AddFlashCardScreen(MDScreen):
     def show_success_message(self, saved_card):
         app = MDApp.get_running_app()
 
-        message = f"""
-Flash card saved successfully!
-Title: {saved_card['title']}
-ID: #{saved_card['id']}
-        """
+        message = f"""saved successfully!
+Title: {saved_card['title']} ID: #{saved_card['id']}"""
 
         app.show_message(
             message,
@@ -441,43 +456,25 @@ ID: #{saved_card['id']}
         self.song_list = []
         self.ids.song_list.clear_widgets()
 
-    def confirm_delete(self):
-        if self.card_id <= 0:
-            return
+    def befor_delete(self):
+        return self.card_id > 0
     
-        self.delete_dialog = MDDialog(
-            title="Delete FlashCard",
-            text="Are you sure you want to delete this flash card?",
-            buttons=[
-                MDFlatButton(
-                    text="CANCEL",
-                    on_release=lambda x: self.delete_dialog.dismiss()
-                ),
-                MDFlatButton(
-                    text="DELETE",
-                    on_release=lambda x: self.delete_card()
-                )
-            ]
+    def After_delete(self , result):
+        app = MDApp.get_running_app()
+
+        app.show_message(
+            "Flash card deleted successfully",
+            msg_type="success",
+            duration=4
         )
-    
-        self.delete_dialog.open()
+
+        self.reset_form()
+
+    def handle_delete(self , e):
+        logger.error(str(e))
+        self.show_generic_error("Delete failed")
 
     def delete_card(self):
         flashCardBL = FlashCardBL()
-
         result = flashCardBL.delete_card(self.card_id)
-
-        self.delete_dialog.dismiss()
-
-        if result:
-            app = MDApp.get_running_app()
-
-            app.show_message(
-                "Flash card deleted successfully",
-                msg_type="success",
-                duration=4
-            )
-
-            self.reset_form()
-        else:
-            self.show_generic_error("Delete failed")
+        return result

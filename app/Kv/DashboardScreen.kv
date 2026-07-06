@@ -1,5 +1,3 @@
-#:import dp kivy.metrics.dp
-
 <DashboardScreen>:
     name: "DashboardScreen"
 
@@ -22,9 +20,14 @@
 
             Widget:
 
-            MDIconButton:
-                icon: "refresh"
-                on_release: root.load_dashboard()
+            AsyncButton:
+                id: refresh_btn
+                text: "refresh"
+                mode: "add"
+                before: root.befor_load_dashboard
+                task: root.load_dashboard_data
+                after: root.after_load_dashboard
+                error_handler: root.handle_load_dashboard
 
         # ================= Scroll =================
 
@@ -44,7 +47,7 @@
                 MDCard:
                     orientation: "vertical"
                     size_hint_y: None
-                    height: dp(220)
+                    height: dp(230)
 
                     radius: [16, 16, 16, 16]
                     elevation: 2
@@ -62,6 +65,8 @@
                             bold: True
                             size_hint_y: None
                             height: self.texture_size[1]
+                        
+                        MDSeparator:
 
                         MDLabel:
                             id: today_review_label
@@ -275,13 +280,143 @@
                                 size_hint_y: None
                                 height: self.texture_size[1]
 
+                    ##################################################
+                    # study time
+                    ##################################################
+                
+                    MDCard:
+                        size_hint_y: None
+                        height: dp(100)
+                        radius: [14,14,14,14]
+                        elevation: 2
+                
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            padding: dp(16)
+                            spacing: dp(8)
+
+                            MDBoxLayout:
+                                orientation: "horizontal"
+                                size_hint_y: None
+                                height: dp(32)
+                                spacing: dp(8)
+                
+                                MDIcon:
+                                    icon: "book-open-page-variant"
+                                    icon_size: "24sp"
+                                    size_hint: None, None
+                                    size: dp(24), dp(24)
+
+                                MDLabel:
+                                    text: "study time"
+                                    bold: True
+                                    size_hint_y: None
+                                    height: self.texture_size[1]
+                
+                            MDLabel:
+                                id: study_time_label
+                                text: "712"
+                                font_style: "H5"
+                                bold: True
+                                halign: "center"
+                                size_hint_y: None
+                                height: self.texture_size[1]
+
+                    ##################################################
+                    # Today's Performance
+                    ##################################################
+                    MDCard:
+                        size_hint_y: None
+                        height: dp(100)
+                        radius: [14,14,14,14]
+                        elevation: 2
+
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            padding: dp(16)
+                            spacing: dp(8)
+
+                            ##################################################
+                            # Header
+                            ##################################################
+                            MDBoxLayout:
+                                orientation: "horizontal"
+                                size_hint_y: None
+                                height: dp(32)
+                                spacing: dp(8)
+
+                                MDIcon:
+                                    icon: "star-circle"
+                                    icon_size: "24sp"
+                                    size_hint: None, None
+                                    size: dp(24), dp(24)
+
+                                MDLabel:
+                                    text: "Today's Performance"
+                                    bold: True
+                                    size_hint_y: None
+                                    height: self.texture_size[1]
+
+                            ##################################################
+                            # Stars + Score (ONE ROW)
+                            ##################################################
+                            
+                            AnchorLayout:
+                                anchor_x: "center"
+                                anchor_y: "center"
+
+                                MDBoxLayout:
+                                    adaptive_width: True
+                                    size_hint_y: None
+                                    height: dp(22)
+                                    spacing: dp(4)
+
+                                    # ستاره‌ها
+                                    MDBoxLayout:
+                                        adaptive_width: True
+                                        spacing: dp(2)
+
+                                        MDIcon:
+                                            id: star1
+                                            icon: "star-outline"
+                                            size_hint: None, None
+                                            size: dp(20), dp(20)
+
+                                        MDIcon:
+                                            id: star2
+                                            icon: "star-outline"
+                                            size_hint: None, None
+                                            size: dp(20), dp(20)
+
+                                        MDIcon:
+                                            id: star3
+                                            icon: "star-outline"
+                                            size_hint: None, None
+                                            size: dp(20), dp(20)
+
+                                        MDIcon:
+                                            id: star4
+                                            icon: "star-outline"
+                                            size_hint: None, None
+                                            size: dp(20), dp(20)
+
+                                        MDIcon:
+                                            id: star5
+                                            icon: "star-outline"
+                                            size_hint: None, None
+                                            size: dp(20), dp(20)
+
+                                    MDLabel:
+                                        id: Today_Performance_label
+                                        text: "3.30 (70%)"
+                                        adaptive_width: True
+                                        bold: True
                 ##################################################
                 # LEARNING PROGRESS
                 ##################################################
-
                 MDCard:
                     size_hint_y: None
-                    height: dp(310)
+                    height: dp(315)
                     radius: [16,16,16,16]
                     elevation: 2
 
@@ -296,6 +431,8 @@
                             bold: True
                             size_hint_y: None
                             height: self.texture_size[1]
+                        
+                        MDSeparator:
 
                         ##################################################
                         # NEW
@@ -424,10 +561,9 @@
                 ##################################################
                 # UPCOMING REVIEWS
                 ##################################################
-
                 MDCard:
                     size_hint_y: None
-                    height: dp(270)
+                    height: dp(225)
                     radius: [16,16,16,16]
                     elevation: 2
 
@@ -491,18 +627,4 @@
                             MDLabel:
                                 id: next30_label
                                 text: "1248"
-                                halign: "right"
-
-                        MDSeparator:
-
-                        MDBoxLayout:
-                            size_hint_y: None
-                            height: dp(24)
-
-                            MDLabel:
-                                text: "Estimated Study Time"
-
-                            MDLabel:
-                                id: study_time_label
-                                text: "18 min"
                                 halign: "right"

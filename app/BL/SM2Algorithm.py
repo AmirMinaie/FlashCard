@@ -72,4 +72,4 @@ class SM2Algorithm:
             return 6  # 6 روز بعد
         else:
             # برای مرورهای بعدی
-            return int(current_interval * new_ease + 0.5)  # گرد کردن به نزدیکترین عدد صحیح
+            return int(current_interval * new_ease + 0.5)

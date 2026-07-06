@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from sqlalchemy import func
+from sqlalchemy import func, case
 from datetime import datetime, timedelta
 from DA.session import get_session
 from DA.models import flashcardDA , fileFlashcardDA , constantDA , reviewFlashcardDA
@@ -31,6 +31,11 @@ class UpcomingReview:
     next3: int
     next7: int
     next30: int
+
+@dataclass
+class TodayPerformance:
+    average_quality: float
+    success_rate: float
 
 class DashboardBL:
 
@@ -258,3 +263,32 @@ class DashboardBL:
         )
 
         return estimated_seconds
+    
+    def get_today_performance(self):
+
+        session = get_session()
+
+        result = (
+            session.query(
+                func.round( func.avg(reviewFlashcardDA.quality), 2 ).label("average_quality"),
+
+                func.round(
+                    (
+                        func.sum(
+                            case( (reviewFlashcardDA.quality >= 4, 1), else_=0)
+                        ) * 100.0
+                        / func.count(reviewFlashcardDA.id)
+                    ),
+                    1
+                ).label("success_rate")
+            )
+            .filter(func.date(reviewFlashcardDA.createAt) == self.today)
+            .one()
+        )
+
+        session.close()
+
+        return TodayPerformance(
+            average_quality=result.average_quality or 0,
+            success_rate=result.success_rate or 0,
+        )

@@ -7,13 +7,16 @@ from datetime import datetime
 from cmn.resource_helper import PathManager
 from cmn.FilenameExtractor import FilenameExtractor
 from fake_useragent import UserAgent
-import requests
 from cmn.NetworkClient import NetworkClient
 from urllib.parse import urlparse, unquote
-
+from mutagen.easyid3 import EasyID3
+from mutagen.id3 import ID3, ID3NoHeaderError, TDRC
+from cmn.logger import logger
+from cmn.config_reader import ConfigReader
 
 class FileManager:
     def __init__(self):
+        self.AppName = ConfigReader().get("App_Name")
         self.base_dir = Path(PathManager.bundled_path(PathManager.FILES_DIR))
         self.base_dir.mkdir(parents=True, exist_ok=True)
         self.network = NetworkClient()
@@ -51,6 +54,7 @@ class FileManager:
             fileName = FilenameExtractor.extract_filename(source_path)
             file_size = os.path.getsize(file_path['file_path'])
             type_ = FilenameExtractor.get_file_type(file_path['file_name'])
+            self.set_metadata(file_path['file_path'] , fileName ,self.AppName )
             
             return {
                 'file_id': file_id,
@@ -106,6 +110,8 @@ class FileManager:
 
         if not result.get("success"):
             raise Exception(result.get("error"))
+        
+
 
         return {
             "success": True,
@@ -114,7 +120,6 @@ class FileManager:
             "file_name": filename,
             "file_size": file_path.stat().st_size 
             }
-
 
     def copy_file(self,source_path , file_id ):
         source = Path(source_path)
@@ -145,3 +150,39 @@ class FileManager:
             "Accept-Encoding": "gzip, deflate, br",
             "Connection": "keep-alive",
         }
+    
+    def set_metadata(self,file_path, title=None, author=None):
+        try:
+            now = datetime.now().strftime("%Y:%m:%d %H:%M:%S")
+            try:
+                audio = EasyID3(file_path)
+            except ID3NoHeaderError:
+                audio = EasyID3()
+                audio.save(file_path)
+                audio = EasyID3(file_path)
+
+            if title:
+                audio["title"] = title
+
+            if author:
+                audio["artist"] = author 
+
+            audio.save()
+
+            id3 = ID3(file_path)
+
+            id3.add(TDRC(encoding=3, text=now))
+            id3.save()
+
+            logger.info(f"Metadata set successfully for {file_path}: {file_path}")
+            return {
+                "success": True,
+                "result": file_path
+            }
+
+        except Exception as e:
+            logger.exception(f"Failed to set metadata for {file_path}")
+            return {
+                "success": False,
+                "error": str(e)
+            }

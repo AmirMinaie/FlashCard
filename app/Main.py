@@ -21,7 +21,7 @@ from kivy.config import Config
 Config.set("graphics", "width", str(APP_WIDTH))
 Config.set("graphics", "height", str(APP_HEIGHT))
 Config.set("graphics", "resizable", "1")
-Config.set("graphics", "borderless", "1")
+Config.set("graphics", "borderless", "0")
 Config.set('kivy', 'window_icon', str(PathManager.app_path("assets", "images", "icon.png")))
 
 from Screens.HomeScreen import HomeScreen
@@ -33,11 +33,14 @@ from cmn.font_manage import FontManager
 from kivy.clock import Clock
 from cmn.backup_db import backup_database
 from kivy.core.window import Window
+from cmn.window_manager import WindowManager
 
 
 class FlashCardApp (MDApp):
     title_icon = ""
     title_text = ConfigReader().get("App_Name")
+    title = title_text
+    _is_maximized = False
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -57,35 +60,29 @@ class FlashCardApp (MDApp):
 
     def close_app(self):
         Window.close()
-        
+
+    def toggle_maximize(self):
+        print("toggle_maximize called")
+        if WindowManager.is_maximized():
+            WindowManager.restore()
+        else:
+            WindowManager.maximize()
+
+
     def minimize_window(self):
         Window.minimize()
         
     def on_start(self):
-        Clock.schedule_once(self._set_window_icon, 0.5)
-        Clock.schedule_once(self.close_splash,1)
+        Clock.schedule_once(self._init_window, 0.3)
 
+        WindowManager.set_window_icon(
+            str(PathManager.app_path("assets", "images", "icon.ico"))
+        )
 
-    def _set_window_icon(self, dt):
-        """تنظیم آیکون پنجره با API ویندوز"""
-        try:
-            hwnd = win32gui.GetForegroundWindow()
-            icon_path = str(PathManager.app_path("assets", "images", "icon.png"))
-            
-            icon_small = win32gui.LoadImage(0,icon_path,win32con.IMAGE_ICON,16, 16,win32con.LR_LOADFROMFILE)
-            
-            icon_big = win32gui.LoadImage(0,icon_path,win32con.IMAGE_ICON,32, 32,win32con.LR_LOADFROMFILE)
-            
-            # تنظیم آیکون برای پنجره
-            win32gui.SendMessage(hwnd, win32con.WM_SETICON, win32con.ICON_SMALL, icon_small)
-            win32gui.SendMessage(hwnd, win32con.WM_SETICON, win32con.ICON_BIG, icon_big)
-            
-            import ctypes
-            ctypes.windll.user32.SetClassLongW(hwnd, -14, icon_small or icon_big)
+        Clock.schedule_once(self.close_splash, 1)
 
-            logger.info("Window icon set successfully")
-        except Exception as e:
-            logger.error(f"Error setting window icon: {e}")
+    def _init_window(self, dt):
+        WindowManager.initialize()
 
     def close_splash(self, dt):
         splash.close()
