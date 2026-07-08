@@ -150,14 +150,13 @@
                     
                     # لیست Songs
 
-                    MDList:
-                        id: song_list
-                        padding: "10dp"
-                        spacing: "5dp"
+                    Playlist:
+                        id: songs_playlist
                         size_hint_y: None
-                        height: self.minimum_height
+                        height: dp(300)
+                        allow_delete: True
+                        delete_callback: root.song_deleted
         
-
         MDBoxLayout:
             orientation: "horizontal"
             spacing: "10dp"

@@ -6,7 +6,6 @@ from widgets.MDTextFieldA import MDTextFieldA
 from widgets.DropDownA import DropDownA
 from BL.constantBL import constantBL
 from BL.FlashCardBL import FlashCardBL
-from BL.fileManager import FileManager
 from kivymd.app import MDApp
 from kivymd.uix.list import OneLineIconListItem
 from kivymd.uix.button import MDIconButton
@@ -71,8 +70,7 @@ class AddFlashCardScreen(MDScreen):
             self.ids.level_field.set_selected_by_id(card.level_id)  
 
         self.song_list = []
-        self.ids.song_list.clear_widgets() 
-
+        
         for file in card.files:
             item = {
                 "id": file.id,
@@ -83,6 +81,8 @@ class AddFlashCardScreen(MDScreen):
             }
 
             self.add_List_song(item)
+
+        self.ids.songs_playlist.songs = self.song_list
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -355,76 +355,8 @@ Title: {saved_card['title']} ID: #{saved_card['id']}"""
             item['id'] = f"new_{uuid.uuid4()}"
 
         self.song_list.append(item)
-
-        list_item = OneLineIconListItem(
-            text=f"{item['fileName']} ({item['from_type_caption']})"
-        )
-        list_item.item_data = item
-
-        delete_btn = MDIconButton(
-            icon="delete",
-            pos_hint={"center_y": 0.5},
-            theme_text_color="Error"
-        )
-
-        delete_btn.bind(on_release=self.delete_song_item)            
-        list_item.bind(on_release=lambda x: self.play_song_item(list_item))
-        list_item.add_widget(delete_btn)
-        self.ids.song_list.add_widget(list_item)
-
-    def delete_song_item(self ,instance):
-        """حذف آیتم"""
-        instance.disabled = True
-        parent = instance.parent
-        if parent:
+        self.ids.songs_playlist.songs = self.song_list
         
-            item_to_delete = parent.item_data
-            self.song_list = [song for song in self.song_list 
-                                if song.get('id') != item_to_delete.get('id')]
-
-            self.ids.song_list.remove_widget(parent)
-            self.ids.song_list.height = self.ids.song_list.minimum_height
-
-        return True
-
-    def play_song_item(self, instance):
-        item_data = instance.item_data
-    
-        # اگر صدای قبلی در حال پخش است، متوقفش کن
-        if hasattr(self, "sound") and self.sound is not None:
-            try:
-                self.sound.stop()
-            except Exception as e:
-                logger.info(f"STOP SOUND ERROR: {str( e)}")
-            finally:
-                self.sound = None
-    
-        try:
-            if isinstance(item_data["id"], int):
-                file_path = FileManager.getfilepath(item_data["value"])
-            else:
-                file_path =  item_data["value"]
-    
-            logger.info(f"PLAY: {file_path}")
-    
-            # فایل صوتی را لود کن
-            self.sound = SoundLoader.load(file_path)
-    
-            if self.sound is None:
-                raise Exception(f"Audio file could not be loaded: {file_path}")
-    
-            # تنظیمات صدا
-            self.sound.volume = 1.0
-            self.sound.loop = False
-    
-            # پخش
-            self.sound.play()
-    
-        except Exception as e:
-            logger.info("PLAY SOUND ERROR: "+ str(e))
-            self.sound = None
-            self.show_generic_error(e)
-
     def reset_form(self):
         self.card_id = -1
         self.mode = "add"
@@ -454,7 +386,7 @@ Title: {saved_card['title']} ID: #{saved_card['id']}"""
                 field.clear_selection()
         
         self.song_list = []
-        self.ids.song_list.clear_widgets()
+        self.ids.songs_playlist.songs = []
 
     def befor_delete(self):
         return self.card_id > 0
@@ -478,3 +410,11 @@ Title: {saved_card['title']} ID: #{saved_card['id']}"""
         flashCardBL = FlashCardBL()
         result = flashCardBL.delete_card(self.card_id)
         return result
+
+    def song_deleted(self, song):
+
+        self.song_list = [
+            s for s in self.song_list
+            if s["id"] != song["id"]
+        ]
+        self.ids.songs_playlist.songs = self.song_list
