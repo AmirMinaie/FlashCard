@@ -12,7 +12,7 @@ from kivymd.uix.list import OneLineIconListItem
 from kivymd.uix.button import MDIconButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import MDFlatButton
+from widgets.BaseButtonA import BaseButtonA
 from kivy.core.audio import SoundLoader
 from cmn.resource_helper import PathManager
 from urllib.parse import urlparse, unquote
@@ -313,13 +313,13 @@ Title: {saved_card['title']} ID: #{saved_card['id']}"""
                 type="custom",
                 content_cls=content,
                 buttons=[
-                    MDFlatButton(
+                    BaseButtonA(
                         text="CANCEL",
                         theme_text_color="Custom",
                         text_color=self.theme_cls.primary_color,
                         on_release=self.close_dialog_add_song
                     ),
-                    MDFlatButton(
+                    BaseButtonA(
                         text="ADD",
                         theme_text_color="Custom",
                         text_color=self.theme_cls.primary_color,

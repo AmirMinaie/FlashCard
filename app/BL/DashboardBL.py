@@ -282,7 +282,8 @@ class DashboardBL:
                     1
                 ).label("success_rate")
             )
-            .filter(func.date(reviewFlashcardDA.createAt) == self.today)
+            .filter(func.date(reviewFlashcardDA.createAt) == self.today ,
+                              reviewFlashcardDA.quality != -1)
             .one()
         )
 

@@ -3,10 +3,9 @@ from kivy.metrics import dp
 from kivy.lang import Builder
 from kivy.clock import Clock
 from threading import Thread
-from kivymd.uix.button import MDRaisedButton
+from widgets.BaseButtonA import BaseButtonA
 from kivy.utils import get_color_from_hex
 from cmn.logger import logger
-from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 
 Builder.load_string('''
@@ -15,7 +14,7 @@ Builder.load_string('''
     size: dp(120), dp(48)
 ''')
 
-class AsyncButton(MDRaisedButton):
+class AsyncButton(BaseButtonA):
     before = ObjectProperty(None, allownone=True)
     task = ObjectProperty(None, allownone=True)
     after = ObjectProperty(None, allownone=True)
@@ -64,11 +63,11 @@ class AsyncButton(MDRaisedButton):
             title=self.confirm_title,
             text=self.confirm_text,
             buttons=[
-                MDFlatButton(
+                BaseButtonA(
                     text="CANCEL",
                     on_release=lambda x: self._cancel_confirm()
                 ),
-                MDFlatButton(
+                BaseButtonA(
                     text="OK",
                     on_release=self._confirm
                 )

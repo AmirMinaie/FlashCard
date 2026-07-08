@@ -1,386 +1,377 @@
-<OutlineButton@MDFlatButton>:
-    md_bg_color: 0, 0, 0, 0
-    canvas.after:
-        Color:
-            rgba: app.theme_cls.primary_color
-        Line:
-            width: dp(1)
-            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(8))
-
 <ReviewScreen>:
     name: "ReviewScreen"
-    
+
     MDBoxLayout:
         orientation: "vertical"
-        padding: ["10dp", "10dp", "10dp", "0dp"]
-        spacing: "0dp"
-        
+        padding: dp(12)
+        spacing: dp(8)
+
+        ##################################################
         # Header
-        MDBoxLayout:
-            orientation: "horizontal"
+        ##################################################
+
+        MDCard:
+            elevation: 1
+            radius: [16]
             size_hint_y: None
-            height: "60dp"
-            padding: "10dp"
-            spacing: "10dp"
-            pos_hint: {"top": 1}
-            
-            MDLabelA:
-                id: counter_label
-                text: f"Done: {root.total_today_reviews} | Remaining: {root.remaining_cards}"
-                halign: "left"
-                valign: "middle"
-                bold: True
-                theme_text_color: "Primary"
-                font_style: "H6"
-                size_hint_x: 0.4
-            
+            height: dp(50)
+
             MDBoxLayout:
-                orientation: "horizontal"
-                size_hint_x: 0.2
-                spacing: "5dp"
-                
+                padding: dp(10), dp(0)
+                spacing: dp(8)
+
+                MDLabelA:
+                    id: counter_label
+                    text: f"Done: {root.total_today_reviews}  | Remaining: {root.remaining_cards}"
+                    font_style: "Subtitle1"
+                    bold: True
+                    valign: "middle"
+                    halign: "left"
+                    text_size: self.size
+
+                Widget:
+
                 MDIconButton:
                     icon: "refresh"
-                    theme_icon_color: "Custom"
-                    icon_color: app.theme_cls.primary_color
-                    on_press: root.refresh_session()
-                    tooltip_text: "Refresh session"
-        
-        # compleat_Session_Box
+                    size_hint: None, None
+                    size: dp(40), dp(40)
+                    pos_hint: {"center_y": 0.5}
+                    on_release: root.refresh_session()
+
+        ##################################################
+        # Complete Session
+        ##################################################
+
         MDBoxLayout:
             id: compleat_Session_Box
-            orientation: "vertical" 
-            size_hint: 0.8, 0.3 
-            pos_hint: {"center_x": 0.5, "center_y": 0.5} 
+            orientation: "vertical"
+            size_hint_y: None
+            height: self.minimum_height
             opacity: 0
             disabled: True
-            
+            padding: dp(20)
+
             MDLabelA:
                 id: compleat_Session_lable
-                height: self.texture_size[1] if self.texture_size else dp(20)
-                text_size: self.width, None
-                halign: "center" 
+                halign: "center"
                 valign: "middle"
+                text_size: self.width, None
+                size_hint_y: None
+                height: self.texture_size[1]
 
-        # Card Content
+        ##################################################
+        # Flash Card
+        ##################################################
+
         ScrollView:
             id: flashcard_box
-            size_hint: 1, 0.9
-            pos_hint: {"top": 0.85, "center_x": 0.5} 
-            
+
             MDBoxLayout:
                 orientation: "vertical"
                 size_hint_y: None
-                height: self.minimum_height 
-                padding: "10dp"
-                spacing: "5dp"
+                height: self.minimum_height
 
-                # Row1: Title
-                MDBoxLayout:
-                    orientation: "horizontal"
+                padding:  dp(10), dp(10), dp(10), dp(10)
+                spacing: dp(8)
+        
+                MDCard:
+                    orientation: "vertical"
+                    size_hint_x: 1
                     size_hint_y: None
-                    height: dp(40)
-                    spacing: dp(10)
+                    height: self.minimum_height
+                    padding: dp(20)
+                    spacing: dp(8)
+                    radius: [20]
+                    elevation: 2
+
+                    ##################################################
+                    # Word
+                    ##################################################
 
                     MDLabelA:
                         id: title_label
                         text: ""
-                        font_style: "H5"
+                        font_style: "H4"
                         bold: True
-                        theme_text_color: "Primary"
-                        size_hint_x: 1
-                        halign: "left"
-                        valign: "middle"
-
-                # Row2: Pronunciation
-                MDBoxLayout:
-                    orientation: "horizontal"
-                    size_hint_y: None
-                    height: dp(30)
-                    padding: [0, 0, 0, dp(5)]
+                        adaptive_height: True
 
                     MDLabelA:
                         id: pronunciation_label
                         text: ""
                         font_style: "Subtitle1"
-                        size_hint_x: 1
-                        halign: "left"
                         theme_text_color: "Secondary"
+                        adaptive_height: True
 
-                # Row3: Chips (Part of Speech, Type, Level, Box)
-                MDBoxLayout:
-                    orientation: "horizontal"
-                    size_hint_y: None
-                    height: dp(35)
-                    spacing: dp(5)
-                    padding: [0, 0, 0, dp(5)]
+                    ##################################################
+                    # Chips
+                    ##################################################
 
-                    MDChipA:
-                        id: pos_chip
-                        text: ""
-                        icon: "alphabetical-variant"
-                        size_hint_x: None
-                        width: dp(100)
+                    MDBoxLayout:
+                        adaptive_height: True
+                        spacing: dp(8)
 
-                    MDChipA:
-                        id: type_chip
-                        text: ""
-                        icon: "format-list-bulleted-type"
-                        size_hint_x: None
-                        width: dp(100)
+                        MDChipA:
+                            id: pos_chip
+                            icon: "alphabetical-variant"
 
-                    MDChipA:
-                        id: level_chip
-                        text: ""
-                        icon: "chart-bar"
-                        size_hint_x: None
-                        width: dp(80)
+                        MDChipA:
+                            id: type_chip
+                            icon: "shape"
 
-                    MDChipA:
-                        id: box_chip
-                        text: ""
-                        icon: "package-variant"
-                        size_hint_x: None
-                        width: dp(80)
+                        MDChipA:
+                            id: level_chip
+                            icon: "chart-bar"
 
-                # Row4: Verb Forms (Conditional)
-                MDBoxLayout:
-                    id: verb_forms_box
-                    orientation: "horizontal"
-                    size_hint_y: None
-                    height: dp(35)
-                    spacing: dp(10)
+                        MDChipA:
+                            id: box_chip
+                            icon: "package-variant"
 
-                    MDLabelA:
-                        text: "Past Tense:"
-                        font_style: "Body2"
-                        bold: True
-                        size_hint_x: None
-                        width: dp(100)
-                        halign: "right"
+                    MDSeparator:
 
-                    MDLabelA:
-                        id: past_tense_label
-                        text: ""
-                        font_style: "Body1"
-                        size_hint_x: 1
-                        halign: "left"
-                        theme_text_color: "Secondary"
+                    ##################################################
+                    # Verb Forms
+                    ##################################################
 
-                    MDLabelA:
-                        text: "Past Participle:"
-                        font_style: "Body2"
-                        bold: True
-                        size_hint_x: None
-                        width: dp(120)
-                        halign: "right"
+                    MDBoxLayout:
+                        id: verb_forms_box
+                        adaptive_height: True
+                        padding: 0, dp(5)
+                        spacing: dp(8)
 
-                    MDLabelA:
-                        id: past_participle_label
-                        text: ""
-                        font_style: "Body1"
-                        size_hint_x: 1
-                        halign: "left"
-                        theme_text_color: "Secondary"
+                        MDLabelA:
+                            text: "Past:"
+                            bold: True
+                            size_hint_x: None
+                            width: dp(55)
 
-                # Row5: Collocation
-                MDBoxLayout:
-                    orientation: "vertical"
-                    size_hint_y: None
-                    height: self.minimum_height
-                    spacing: dp(5)
+                        MDLabelA:
+                            id: past_tense_label
+                            theme_text_color: "Secondary"
 
-                    MDLabelA:
-                        text: "Collocation:"
-                        font_style: "Subtitle1"
-                        bold: True
+                        MDLabelA:
+                            text: "Past Participle:"
+                            bold: True
+                            size_hint_x: None
+                            width: dp(125)
+
+                        MDLabelA:
+                            id: past_participle_label
+                            theme_text_color: "Secondary"
+
+                    MDSeparator:
+                        height: dp(1)
+
+                    ##################################################
+                    # Collocation
+                    ##################################################
+
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        adaptive_height: True
+                        spacing: dp(6)
+
+                        MDBoxLayout:
+                            adaptive_height: True
+                            spacing: dp(8)
+
+                            MDIcon:
+                                icon: "format-list-bulleted"
+                                theme_text_color: "Primary"
+                                size_hint_x: None
+                                width: dp(10)
+
+                            MDLabelA:
+                                text: "Collocations"
+                                bold: True
+                                font_style: "Subtitle1"
+
+                        MDLabelA:
+                            id: collocation_label
+                            text: ""
+                            text_size: self.width, None
+                            adaptive_height: True
+                            halign: "left"
+
+                    MDSeparator:
+
+                    ##################################################
+                    # Example
+                    ##################################################
+
+                    MDBoxLayout:
+                        id: example_box
+                        orientation: "vertical"
+                        adaptive_height: True
+                        spacing: dp(6)
+
+                        MDBoxLayout:
+                            adaptive_height: True
+                            spacing: dp(8)
+
+                            MDIcon:
+                                icon: "lightbulb-on-outline"
+                                theme_text_color: "Primary"
+                                size_hint_x: None
+                                width: dp(10)
+
+                            MDLabelA:
+                                text: "Example"
+                                bold: True
+                                font_style: "Subtitle1"
+
+                        MDLabelA:
+                            id: example_label
+                            text: ""
+                            text_size: self.width, None
+                            adaptive_height: True
+                            halign: "left"
+
+                    MDSeparator:
+
+                    ##################################################
+                    # Definition
+                    ##################################################
+
+                    MDBoxLayout:
+                        id: definition_box
+                        orientation: "vertical"
+                        adaptive_height: True
+                        spacing: dp(6)
+
+                        MDBoxLayout:
+                            adaptive_height: True
+                            spacing: dp(8)
+
+                            MDIcon:
+                                icon: "book-open-page-variant"
+                                theme_text_color: "Primary"
+                                size_hint_x: None
+                                width: dp(10)
+
+                            MDLabelA:
+                                text: "Definition"
+                                bold: True
+                                font_style: "Subtitle1"
+
+                        MDLabelA:
+                            id: definition_label
+                            text: ""
+                            text_size: self.width, None
+                            adaptive_height: True
+                            halign: "left"
+
+                    MDSeparator:
+
+                    ##################################################
+                    # Audio
+                    ##################################################
+                    MDBoxLayout:
+                        adaptive_height: True
+                        spacing: dp(8)
+
+                        MDIcon:
+                            icon: "book-open-page-variant"
+                            theme_text_color: "Primary"
+                            size_hint_x: None
+                            width: dp(10)
+
+                        MDLabelA:
+                            text: "Audio"
+                            bold: True
+                            font_style: "Subtitle1"
+
+                    Playlist:
+                        id: songs_playlist
                         size_hint_y: None
-                        height: dp(25)
-
-                    MDLabelA:
-                        id: collocation_label
-                        text: ""
-                        font_style: "Body1"
-                        halign: "left"
-                        valign: "top"
-                        size_hint_y: None
-                        text_size: self.width, None
-                        height: self.texture_size[1] if self.texture_size else dp(20)
-
-                # Row6: Example (Initially Hidden)
-                MDBoxLayout:
-                    id: example_box
-                    orientation: "vertical"
-                    size_hint_y: None
-                    height: self.minimum_height
-                    spacing: dp(5)
-
-                    MDLabelA:
-                        text: "Example:"
-                        font_style: "Subtitle1"
-                        bold: True
-                        size_hint_y: None
-                        height: dp(25)
-
-                    MDLabelA:
-                        id: example_label
-                        text: ""
-                        font_style: "Body1"
-                        halign: "left"
-                        valign: "top"
-                        size_hint_y: None
-                        height: self.texture_size[1]
-                        text_size: self.width, None
-
-                # Row7: Definition (Initially Hidden)
-                MDBoxLayout:
-                    id: definition_box
-                    orientation: "vertical"
-                    size_hint_y: None
-                    height: self.minimum_height
-                    spacing: dp(5)
-
-                    MDLabelA:
-                        text: "Definition:"
-                        font_style: "Subtitle1"
-                        bold: True
-                        size_hint_y: None
-                        height: dp(25)
-
-                    MDLabelA:
-                        id: definition_label
-                        text: ""
-                        font_style: "Body1"
-                        halign: "left"
-                        valign: "top"
-                        size_hint_y: None
-                        height: self.texture_size[1]
-                        text_size: self.width, None
-
-                # Row8: playList
-                Playlist:
-                    id: songs_playlist
-                    size_hint_y: None
-                    height: dp(80)
-                    padding: ["10dp", "0dp"]
-                    spacing: "5dp"
-                    time_slider_enabled: True
-                    volume_slider_enabled: True
+                        height: dp(80)
+                        padding: dp(8), 0
+                        spacing: dp(8)
+                        time_slider_enabled: True
+                        volume_slider_enabled: True
 
         BoxLayout:
             id: button_area
-            orientation: 'vertical'
+            orientation: "vertical"
             size_hint_y: None
-            height: "60dp"
-            spacing: "0dp"
-
+            height: dp(60)
+        
             MDBoxLayout:
                 id: button_box
                 orientation: "horizontal"
                 size_hint_y: None
-                height: "60dp"
-                spacing: "20dp"
-                padding: ["0dp", "0dp", "0dp", "10dp"]
-
-                
-                OutlineButton:
+                height: dp(46)
+                spacing: dp(10)
+        
+                BaseButtonA:
                     id: skip_btn
                     text: "Skip"
-                    size_hint_x: 0.25
-                    text_color: app.theme_cls.primary_color
+                    icon: "skip-next"
+                    size_hint_x: 0.28
+                    md_bg_color: app.theme_cls.primary_light
                     on_release: root.skip_card()
-
-                MDRaisedButton:
+        
+                BaseButtonA:
                     id: show_answer_btn
                     text: "Show Answer"
-                    size_hint_x: 0.75
-                    on_press: root.show_answer_fields()  
                     icon: "eye"
+                    size_hint_x: 0.72
                     md_bg_color: app.theme_cls.primary_color
-
+                    on_release: root.show_answer_fields()
+        
             MDBoxLayout:
                 id: answer_button_box
                 orientation: "horizontal"
                 size_hint_y: None
-                height: "0dp"
-                spacing: "15dp"
-                padding: "0dp", "5dp"
+                height: 0
+                opacity: 0
                 disabled: True
-
-                OutlineButton:
+        
+                spacing: dp(10)
+        
+                BaseButtonA:
                     id: hide_answer_btn
                     text: "Hide"
-                    size_hint_x: 1
-                    text_color: app.theme_cls.primary_color
-                    on_release: root.hide_answer_fields()
                     icon: "eye-off"
-
-                # Again Button - Quality 0
-                MDRaisedButton:
+                    size_hint_x: 1
+                    md_bg_color: app.theme_cls.primary_light
+                    on_release: root.hide_answer_fields()
+        
+                BaseButtonA:
                     id: again_btn
                     text: "Again"
-                    size_hint_x: 1
-                    on_press: root.mark_card_quality(0)
                     icon: "reload-alert"
-                    elevation_normal: 2
-                    md_bg_color: 0.8, 0.1, 0.1, 1  # Dark red
-                    theme_text_color: "Custom"
-                    text_color: 1, 1, 1, 1
-                    font_size: "12sp"
-                    icon_size: "20sp"
-
-                # Hard Button - Quality 1
-                MDRaisedButton:
+                    size_hint_x: 1
+                    md_bg_color: "#D32F2F"
+                    on_release: root.mark_card_quality(0)
+        
+                BaseButtonA:
                     id: hard_btn
                     text: "Hard"
-                    size_hint_x: 1
-                    on_press: root.mark_card_quality(1)
                     icon: "alert-circle"
-                    elevation_normal: 2
-                    md_bg_color: 0.9, 0.4, 0.1, 1  # Orange
-                    theme_text_color: "Custom"
-                    text_color: 1, 1, 1, 1
-                    font_size: "12sp"
-                    icon_size: "20sp"
-
-                # Good Button - Quality 2
-                MDRaisedButton:
+                    size_hint_x: 1
+                    md_bg_color: "#FB8C00"
+                    on_release: root.mark_card_quality(1)
+        
+                BaseButtonA:
                     id: good_btn
                     text: "Good"
-                    size_hint_x: 1
-                    on_press: root.mark_card_quality(2)
                     icon: "thumb-up"
-                    elevation_normal: 3
-                    md_bg_color: 0.1, 0.5, 0.8, 1  # Blue
-                    theme_text_color: "Custom"
-                    text_color: 1, 1, 1, 1
-                    font_size: "12sp"
-                    icon_size: "20sp"
-
-                # Easy Button - Quality 3
-                MDRaisedButton:
+                    size_hint_x: 1
+                    md_bg_color: "#1E88E5"
+                    on_release: root.mark_card_quality(2)
+        
+                BaseButtonA:
                     id: easy_btn
                     text: "Easy"
-                    size_hint_x: 1
-                    on_press: root.mark_card_quality(3)
                     icon: "emoticon"
-                    elevation_normal: 3
-                    md_bg_color: 0.2, 0.7, 0.3, 1  # Green
-                    theme_text_color: "Custom"
-                    text_color: 1, 1, 1, 1
-                    font_size: "12sp"
-                    icon_size: "20sp"
-
-                # Very Easy Button - Quality 4
-                MDRaisedButton:
+                    size_hint_x: 1
+                    md_bg_color: "#43A047"
+                    on_release: root.mark_card_quality(3)
+        
+                BaseButtonA:
                     id: very_easy_btn
                     text: "Very Easy"
-                    size_hint_x: 1
-                    on_press: root.mark_card_quality(4)
                     icon: "emoticon-happy"
-                    elevation_normal: 4
-                    md_bg_color: 0.1, 0.8, 0.1, 1  # Bright green
-                    theme_text_color: "Custom"
-                    text_color: 1, 1, 1, 1
-                    font_size: "12sp"
-                    icon_size: "20sp"
+                    size_hint_x: 1
+                    md_bg_color: "#2E7D32"
+                    on_release: root.mark_card_quality(4)

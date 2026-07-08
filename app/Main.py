@@ -34,11 +34,12 @@ from kivy.clock import Clock
 from cmn.backup_db import backup_database
 from kivy.core.window import Window
 from cmn.window_manager import WindowManager
+from cmn.AppName import *
 
 
 class FlashCardApp (MDApp):
     title_icon = ""
-    title_text = ConfigReader().get("App_Name")
+    title_text = APP_NAME
     title = title_text
     _is_maximized = False
 
@@ -67,7 +68,6 @@ class FlashCardApp (MDApp):
             WindowManager.restore()
         else:
             WindowManager.maximize()
-
 
     def minimize_window(self):
         Window.minimize()

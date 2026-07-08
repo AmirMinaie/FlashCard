@@ -13,10 +13,11 @@ from mutagen.easyid3 import EasyID3
 from mutagen.id3 import ID3, ID3NoHeaderError, TDRC
 from cmn.logger import logger
 from cmn.config_reader import ConfigReader
+from cmn.AppName import *
 
 class FileManager:
     def __init__(self):
-        self.AppName = ConfigReader().get("App_Name")
+        self.AppName = APP_NAME
         self.base_dir = Path(PathManager.bundled_path(PathManager.FILES_DIR))
         self.base_dir.mkdir(parents=True, exist_ok=True)
         self.network = NetworkClient()

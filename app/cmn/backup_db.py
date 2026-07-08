@@ -2,12 +2,13 @@ import shutil
 from datetime import datetime
 from cmn.resource_helper import *
 from cmn.config_reader import ConfigReader
+from cmn.AppName import *
 
 def backup_database():
     config = ConfigReader("config.json")
     backup_retention_count = config.get("backup_retention_count")
 
-    DBName = config.get("database")['DBName']
+    DBName = APP_NAME + ".db"
     Bb_Path = PathManager.bundled_path(PathManager.DATA_DIR, DBName)
 
     today = datetime.now().strftime("%Y-%m-%d")

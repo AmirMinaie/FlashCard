@@ -116,10 +116,11 @@ class ReviewScreen(MDScreen):
         self.ids.button_box.opacity = 0
         self.ids.button_box.disabled = True
 
-        self.ids.answer_button_box.height = 60
+        self.ids.answer_button_box.height = dp(46)
         self.ids.answer_button_box.opacity = 1
         self.ids.answer_button_box.disabled = False
-        self.ids.button_area.height = 65
+
+        self.ids.button_area.height = dp(52)
         
         self.show_answer = True
     
@@ -133,14 +134,15 @@ class ReviewScreen(MDScreen):
             self.ids.button_box.disabled = False
         
         # تغییر دکمه‌ها
-        self.ids.button_box.height = 60
+        self.ids.button_box.height = dp(46)
         self.ids.button_box.opacity = 1
         self.ids.button_box.disabled = False
-
+    
         self.ids.answer_button_box.height = 0
         self.ids.answer_button_box.opacity = 0
         self.ids.answer_button_box.disabled = True
-        self.ids.button_area.height = 65
+    
+        self.ids.button_area.height = dp(52)
         
         self.show_answer = False
     

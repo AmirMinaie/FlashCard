@@ -1,5 +1,4 @@
 {
-  "App_Name": "DuckMemo",
   "REVIEW_THRESHOLD" : 3,
   "MATURE_INTERVAL_DAYS" : 21,
   "NEW_CARD_TIME": 120,
@@ -10,8 +9,7 @@
 
   "network_backend": "wininet",
   "database": {
-    "driver": "sqlite",
-    "DBName": "DuckMemo.db"
+    "driver": "sqlite"
   },
   "loadSeedData": 1,
   "loadOldData": 1,

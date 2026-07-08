@@ -1,14 +1,13 @@
 import sys
 from pathlib import Path
 import shutil
-
+from cmn.AppName import *
 
 class PathManager:
-    APP_NAME = "DuckMemo"
-
+    
     @classmethod
     def get_data_dir(cls) -> Path:
-        return Path.home() / "Documents" / cls.APP_NAME
+        return Path.home() / "Documents" / APP_NAME
 
     @classmethod
     def base_dir(cls) -> Path:
