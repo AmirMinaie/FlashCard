@@ -88,14 +88,7 @@ class NetworkClient:
             if not hInternet:
                 return {"success": False, "error": "InternetOpen failed"}
 
-            hUrl = self.InternetOpenUrl(
-                hInternet,
-                url,
-                None,
-                0,
-                0,
-                0
-            )
+            hUrl = self.InternetOpenUrl( hInternet, url, None, 0, 0, 0 )
 
             if not hUrl:
                 return {"success": False, "error": "InternetOpenUrl failed"}

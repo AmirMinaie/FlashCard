@@ -11,7 +11,7 @@ from kivy.metrics import dp
 from kivy.clock import Clock
 from widgets.BaseButtonA import BaseButtonA
 from kivymd.uix.list import OneLineRightIconListItem, IconRightWidget
-
+import uuid
 
 Builder.load_string(
     
@@ -80,12 +80,27 @@ Builder.load_string(
     
     ScrollView:
         size_hint_y: 1
+        do_scroll_x: False
 
-        MDList:
-            id: song_list
-"""
+        MDBoxLayout:
+            orientation: "vertical"
+            adaptive_height: True
+            height: self.minimum_height
 
-)
+            MDLabelA:
+                text: "Playlist is empty"
+                halign: "center"
+                valign: "middle"
+                size_hint_y: None
+                height: dp(50) if len(root.songs) == 0 else 0
+                opacity: 1 if len(root.songs) == 0 else 0
+                disabled: len(root.songs) != 0
+
+            MDList:
+                id: song_list
+                size_hint_y: None
+                height: self.minimum_height
+""")
 
 
 class Playlist(MDBoxLayout):
@@ -96,15 +111,13 @@ class Playlist(MDBoxLayout):
     is_playing = BooleanProperty(False)
     songs = ListProperty([])
     volume_slider_enabled = BooleanProperty(True)
-    delete_callback = ObjectProperty(None, allownone=True)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
+        self.song_widgets = {}
         self.sound = None
         self.current_index = 0
         self.last_volume = 100
-        Clock.schedule_once(lambda dt: self.update_song_list(), 0)
 
     def show_message(self, message, msg_type="info"):
         app = MDApp.get_running_app()
@@ -114,7 +127,7 @@ class Playlist(MDBoxLayout):
         self.stop_player()
 
         try:
-            path = self.get_song_path(song)
+            path = FileManager.getfilepath(song["value"])
 
             if not os.path.isfile(path):
                 self.show_message("File not found", "error")
@@ -132,7 +145,7 @@ class Playlist(MDBoxLayout):
             sound.loop = False
 
             self.sound = sound
-            self.current_song = self.get_song_name( song)
+            self.current_song = song["fileName"]
 
             return True
 
@@ -242,67 +255,55 @@ class Playlist(MDBoxLayout):
 
     def on_stop(self):
         self.stop_player()
-
-    def update_song_list(self):
-        container = self.ids.song_list
-        container.clear_widgets()
-        for index, song in enumerate(self.songs):
-
-            text = self.get_song_name( song)
-
-            item = OneLineRightIconListItem(text=text)
-            item.song_index = index
-
-            item.bind(on_release=lambda x: self.select_song(x.song_index))
-
-            if self.allow_delete:
-
-                btn = IconRightWidget(icon="delete")
-
-                btn.song_index = index
-                btn.bind(on_release=lambda x: self.delete_song(x.song_index))
-
-                item.add_widget(btn)
-
-            container.add_widget(item)
-
-        container.height = container.minimum_height
     
-    def delete_song(self, index):
+    def delete_song(self, song):
+        try:
+            self.songs.remove(song)
 
-        song = self.songs[index]
-    
-        self.songs.pop(index)
-        self.songs = self.songs[:]
-    
-        if self.delete_callback:
-            self.delete_callback(song)
+            song_id = song["id"]
+            widget = self.song_widgets.pop(song_id, None)
+            if widget:
+                self.ids.song_list.remove_widget(widget)
 
-    def select_song(self, index):
-        self.current_index = index
-        loaded = self.load_song(self.songs[index])
+        except ValueError:
+            pass
+
+    def select_song(self, song):
+        loaded = self.load_song(song)
 
         if loaded:
             self.play_song()
     
-    def get_song_name(self, song):
-        if isinstance(song, dict):
-            return song["fileName"]
-        return song.fileName
+    def add_song(self, song):
+        if 'id' not in song:
+            song['id'] = f"new_{uuid.uuid4()}"
 
-    def get_song_path(self, song):
-        if isinstance(song, dict):
-            if isinstance(song["id"], int):
-                return FileManager.getfilepath(song["value"])
-            return song["value"]
+        self.songs.append(song)
+        widget = self.create_song_widget(song)
+        self.song_widgets[song["id"]] = widget
+        self.ids.song_list.add_widget(widget)
+        self.ids.song_list.height = self.ids.song_list.minimum_height
 
-        return FileManager.getfilepath(song.filePath)
+    def create_song_widget(self, song):
 
-    def get_song_id(self, song):
-        if isinstance(song, dict):
-            return song["id"]
-        return song.id
+        text = song["fileName"]
     
-    def on_songs(self, instance, value):
-        print("on_songs", len(value))
-        self.update_song_list()
+        item = OneLineRightIconListItem(text=text)
+        item.song = song
+    
+        item.bind(on_release=lambda x: self.select_song(x.song))
+    
+        if self.allow_delete:
+            btn = IconRightWidget(icon="delete")
+            btn.song = song
+            btn.bind(on_release=lambda x: self.delete_song(x.song))
+            item.add_widget(btn)
+    
+        return item
+
+    def clear(self):
+        self.stop_player()
+        self.songs = []
+        self.current_song = "No song"
+        self.current_index = 0
+        self.ids.song_list.clear_widgets()

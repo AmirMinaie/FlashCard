@@ -68,9 +68,7 @@ class AddFlashCardScreen(MDScreen):
 
         if card.level_id:
             self.ids.level_field.set_selected_by_id(card.level_id)  
-
-        self.song_list = []
-        
+        self.ids.songs_playlist.clear()
         for file in card.files:
             item = {
                 "id": file.id,
@@ -79,17 +77,13 @@ class AddFlashCardScreen(MDScreen):
                 "from_type_id": file.sourceType_id,
                 "from_type_caption": file.sourceType.caption
             }
-
-            self.add_List_song(item)
-
-        self.ids.songs_playlist.songs = self.song_list
+            self.ids.songs_playlist.add_song(item)
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.dialog_add_song = None
         self.add_card = []
         self.player = None
-        self.song_list = []
 
     def load_constant(self , type):
         constant_pos = constantBL().get_constant(type)
@@ -224,7 +218,7 @@ class AddFlashCardScreen(MDScreen):
             'type_id': self.ids.type_field.selected_Id or 0,
             'box_id': self.ids.box_field.selected_Id or 0,
             'level_id': self.ids.level_field.selected_Id or 0,
-            'files': self.song_list,
+            'files': self.ids.songs_playlist.songs,
         }
 
     def show_success_message(self, saved_card):
@@ -262,7 +256,7 @@ Title: {saved_card['title']} ID: #{saved_card['id']}"""
         """نمایش خطای عمومی"""
         app = MDApp.get_running_app()
         app.show_message(
-            "An unexpected error occurred.",
+            f"An unexpected error occurred {error_message}",
             msg_type="error",
             duration=5
         )
@@ -278,84 +272,79 @@ Title: {saved_card['title']} ID: #{saved_card['id']}"""
         )
 
     def show_add_song_dialog(self):
-        """Show dialog for adding new item"""
-        if not self.dialog_add_song:
-            # Create content layout
-            content = MDBoxLayout(
-                orientation="vertical",
-                spacing="12dp",
-                size_hint_y=None,
-                height="120dp"
-            )
-            
-            # add file from DropDown
-            self.from_DropDown_field = DropDownA(
-                    text_h = "from",
-                    selected_value = "",
-                    is_required = True,
-                    item_menu = self.load_constant('source_type')
-                    )
-            
-            content.add_widget(self.from_DropDown_field)
 
-            # Text field for item name
-            self.value_field = MDTextFieldA(
-                hint_text="value",
-                mode="rectangle",
-                size_hint_x=None,
-                width="300dp"
-            )
-            content.add_widget(self.value_field)
-            
-            # Create dialog
+        if not self.dialog_add_song:
+
+            self.song_dialog_content = Builder.load_string("""
+MDBoxLayout:
+    orientation: "vertical"
+    spacing: dp(15)
+    padding: dp(15)
+    size_hint_y: None
+    height: dp(180)
+
+    MDSeparator:
+        height: dp(1)
+
+
+    DropDownA:
+        id: source_field
+        text_h: "Source Type"
+        icon: "source-branch"
+        selected_value: ""
+        is_required: True
+        size_hint_y: None
+        height: dp(55)
+                                   
+    TextInput:
+        id: song_path_fields
+        text_h: "Song URL / File Path"
+        hint_text: "Enter song URL or local file path"
+        icon: "music-note"
+        mode: "rectangle"
+        multiline: True
+        size_hint_y: None
+        height: dp(100)
+""")
+
+            self.song_dialog_content.ids.source_field.item_menu = self.load_constant('source_type')
             self.dialog_add_song = MDDialog(
-                title="Add New Item",
+                title="Add New Song",
                 type="custom",
-                content_cls=content,
+                content_cls=self.song_dialog_content,
                 buttons=[
-                    BaseButtonA(
-                        text="CANCEL",
-                        theme_text_color="Custom",
-                        text_color=self.theme_cls.primary_color,
-                        on_release=self.close_dialog_add_song
-                    ),
-                    BaseButtonA(
-                        text="ADD",
-                        theme_text_color="Custom",
-                        text_color=self.theme_cls.primary_color,
-                        on_release=self.add_new_song_item
-                    ),
-                ],
+                    BaseButtonA( text="CANCEL", icon="close",
+                        on_release=self.close_dialog_add_song),
+                    BaseButtonA( text="ADD", icon="plus",
+                        on_release=self.add_new_song_item),
+                ]
             )
-        
-        # Clear text field and open dialog
-        self.value_field.text = ""
-        self.from_DropDown_field.clear_selection()
+
+        self.song_dialog_content.ids.song_path_fields.text = ""
+        self.song_dialog_content.ids.source_field.clear_selection()
         self.dialog_add_song.open()
-    
+
     def close_dialog_add_song(self , *args):
         """Close the dialog"""
         if self.dialog_add_song:
             self.dialog_add_song.dismiss()
 
-    def add_new_song_item(self , *args):
-        item={
-                "from_type_id": self.from_DropDown_field.selected_Id,
-                "fileName": unquote(basename(urlparse( self.value_field.text).path)) ,
-                "from_type_caption": self.from_DropDown_field.selected_value,
-                "value":self.value_field.text
+    def add_new_song_item(self, *args):
+    
+        source = self.song_dialog_content.ids.source_field
+        path = self.song_dialog_content.ids.song_path_fields
+        paths = [p.strip() for p in path.text.splitlines() if p.strip()]
+        for p in paths:
+            item = {
+                "from_type_id": source.selected_Id,
+                "fileName": unquote(basename(urlparse(p).path)),
+                "from_type_caption": source.selected_value,
+                "value": p
             }
-        self.add_List_song(item)
+
+            self.ids.songs_playlist.add_song(item)
+    
         self.close_dialog_add_song()
-        pass
-
-    def add_List_song(self, item):
-        """Add a song item to the list"""
-        if 'id' not in item:
-            item['id'] = f"new_{uuid.uuid4()}"
-
-        self.song_list.append(item)
-        self.ids.songs_playlist.songs = self.song_list
         
     def reset_form(self):
         self.card_id = -1
@@ -386,7 +375,7 @@ Title: {saved_card['title']} ID: #{saved_card['id']}"""
                 field.clear_selection()
         
         self.song_list = []
-        self.ids.songs_playlist.songs = []
+        self.ids.songs_playlist.clear()
 
     def befor_delete(self):
         return self.card_id > 0
@@ -410,11 +399,3 @@ Title: {saved_card['title']} ID: #{saved_card['id']}"""
         flashCardBL = FlashCardBL()
         result = flashCardBL.delete_card(self.card_id)
         return result
-
-    def song_deleted(self, song):
-
-        self.song_list = [
-            s for s in self.song_list
-            if s["id"] != song["id"]
-        ]
-        self.ids.songs_playlist.songs = self.song_list

@@ -73,8 +73,9 @@ class FileManager:
     def delete_audio_file(self, file_path):
         """حذف فایل صوتی"""
         try:
-            if os.path.exists(file_path):
-                os.remove(file_path)
+            file_path_ = self.getfilepath(file_path)
+            if os.path.exists(file_path_):
+                os.remove(file_path_)
                 return True
             return False
         except Exception as e:

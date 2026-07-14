@@ -20,6 +20,11 @@ from cmn.logger import logger
 
 Builder.load_file(str(PathManager.app_path("Kv/ReviewScreen.kv")))
 
+class FieldMode:
+    init = 1
+    show_answer = 2
+    hiden_answer = 3
+
 class ReviewScreen(MDScreen):
     show_answer = BooleanProperty(False)
     current_card = None
@@ -61,7 +66,7 @@ class ReviewScreen(MDScreen):
             self.remaining_cards = self.summary.remaining_reviews
             if self.current_card:
                 self.show_card_content(True)
-                self.set_fields(True , False)                
+                self.set_fields(Mode=FieldMode.init)                
                 self.update_counter()
                 
             else:
@@ -72,16 +77,52 @@ class ReviewScreen(MDScreen):
             logger.info(f"Error loading next card: {e}")
             self.show_error_message("Error loading card. Please try again.")
     
-    def set_fields(self , show_always , default):
-        """مقدار دهی فیلدهای همیشه نمایش"""
-        for field in self.fields_config():
-            if field['show_always'] == show_always:
-                if default:
-                    value = field['default']
-                else:
-                    value = self.get_card_attribute(field['card_attribute'], field['default'])
-                self._set_widget_value(field['id'], field['attribute'], value)
-    
+    def set_fields(self, Mode):
+
+        card = self.current_card
+
+        if card:
+
+            if Mode == FieldMode.init:
+
+                self.ids.title_label.text = card.title or ""
+                self.ids.pronunciation_label.text = card.pronunciation or ""
+                self.ids.collocation_label.text = card.collocation or ""
+                self.ids.example_label.text = card.example or ""
+                self.ids.songs_playlist.clear()
+                if card.files:
+                    for file in card.files:
+                        item = {
+                            "id": file.id,
+                            "fileName": file.fileName,
+                            "value": file.filePath,
+                            "from_type_id": file.sourceType_id,
+                            "from_type_caption": file.sourceType.caption
+                        }
+                        self.ids.songs_playlist.add_song(item)
+
+            if Mode == FieldMode.show_answer:
+                self.ids.pos_chip.text = card.pos.caption if card.pos else ""
+                self.ids.type_chip.text = card.type_.caption if card.type_ else ""
+                self.ids.level_chip.text = card.level.caption if card.level else ""
+                self.ids.box_chip.text = card.box.caption if card.box else ""
+
+                self.ids.past_tense_label.text = card.pastTense or ""
+                self.ids.past_participle_label.text = card.pastParticiple or ""
+
+                self.ids.definition_label.text = card.definition or ""
+
+            if Mode == FieldMode.hiden_answer or Mode == FieldMode.init: 
+                self.ids.pos_chip.text = "  "
+                self.ids.type_chip.text = " "
+                self.ids.level_chip.text = " "
+                self.ids.box_chip.text = " "
+
+                self.ids.past_tense_label.text = " "
+                self.ids.past_participle_label.text = " "
+
+                self.ids.definition_label.text = " "
+
     def show_card_content(self, show):
         """نمایش یا مخفی کردن محتوای کارت"""
         if show:
@@ -109,7 +150,7 @@ class ReviewScreen(MDScreen):
         if not self.current_card:
             return
             
-        self.set_fields(show_always=False ,default=False)
+        self.set_fields(Mode=FieldMode.show_answer)
         
         # تغییر دکمه‌ها
         self.ids.button_box.height = 0
@@ -126,7 +167,7 @@ class ReviewScreen(MDScreen):
     
     def hide_answer_fields(self):
         # ریست کردن مقادیر
-        self.set_fields(show_always=False ,default=True)
+        self.set_fields(Mode=FieldMode.hiden_answer)
         
         # تغییر وضعیت دکمه‌ها
         if not self.session_completed:
@@ -145,29 +186,7 @@ class ReviewScreen(MDScreen):
         self.ids.button_area.height = dp(52)
         
         self.show_answer = False
-    
-    def get_card_attribute(self, attribute_path, default=""):
-        """گرفتن مقدار از کارت با path داده شده"""
-        if not self.current_card:
-            return default
-            
-        try:
-            attrs = attribute_path.split('.')
-            value = self.current_card
-            for attr in attrs:
-                value = getattr(value, attr, None)
-                if value is None:
-                    return default
-            return value if value is not None else default
-        except Exception as e:
-            logger.info(f"Error getting attribute {attribute_path}: {e}")
-            return default
-    
-    def setup_playlist(self):
-        """تنظیم playlist برای صداهای کارت"""
-        # این بخش بستگی به پیاده‌سازی Playlist شما دارد
-        pass
-    
+     
     def mark_card_quality(self ,quality):
         """علامت‌گذاری کارت   """
         try:
@@ -268,110 +287,4 @@ class ReviewScreen(MDScreen):
                 msg_type="error",
                 duration=3
             )
-
-    def fields_config(self):
-        """تعریف کانفیگ فیلدها"""
-        return [
-            {
-                'id': 'title_label',
-                'attribute': 'text',
-                'card_attribute': 'title',
-                'default': '',
-                'show_always': True
-            },
-            {
-                'id': 'pronunciation_label',
-                'attribute': 'text',
-                'card_attribute': 'pronunciation',
-                'default': '',
-                'show_always': True
-            },
-            {
-                'id': 'collocation_label',
-                'attribute': 'text',
-                'card_attribute': 'collocation',
-                'default': '',
-                'show_always': True
-            },
-            {
-                'id': 'pos_chip',
-                'attribute': 'text',
-                'card_attribute': 'pos.caption',
-                'default': '',
-                'container': None,
-                'show_always': False
-            },
-            {
-                'id': 'type_chip',
-                'attribute': 'text',
-                'card_attribute': 'type_.caption',
-                'default': '',
-                'container': None,
-                'show_always': False
-            },
-            {
-                'id': 'level_chip',
-                'attribute': 'text',
-                'card_attribute': 'level.caption',
-                'default': '',
-                'container': None,
-                'show_always': False
-            },
-            {
-                'id': 'box_chip',
-                'attribute': 'text',
-                'card_attribute': 'box.caption',
-                'default': '',
-                'container': None,
-                'show_always': False
-            },
-            {
-                'id': 'past_tense_label',
-                'attribute': 'text',
-                'card_attribute': 'pastTense',
-                'default': '',
-                'container': 'verb_forms_box',
-                'show_always': False
-            },
-            {
-                'id': 'past_participle_label',
-                'attribute': 'text',
-                'card_attribute': 'pastParticiple',
-                'default': '',
-                'container': 'verb_forms_box',
-                'show_always': False
-            },
-            {
-                'id': 'example_label',
-                'attribute': 'text',
-                'card_attribute': 'example',
-                'default': '',
-                'container': 'example_box',
-                'show_always': True
-            },
-            {
-                'id': 'definition_label',
-                'attribute': 'text',
-                'card_attribute': 'definition',
-                'default': '',
-                'container': 'definition_box',
-                'show_always': False
-            },
-            {
-                'id': 'songs_playlist',
-                'attribute': 'songs',
-                'card_attribute': 'files',
-                'default': [],
-                'show_always': True
-            }
-        ]
-    
-    def _set_widget_value(self, widget_id, attribute, value):
-        """تنظیم مقدار برای widget"""
-        try:
-            if widget_id in self.ids:
-                widget = self.ids[widget_id]
-                setattr(widget, attribute, value)
-
-        except Exception as e:
-            logger.info(f"Error setting value for {widget_id}: {e}")
+            

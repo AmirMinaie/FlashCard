@@ -38,10 +38,34 @@ class FlashCardBL:
                  ,updatedAt = None
                  ,reviews = None):
         
-        filManager = FileManager()
+        file_Manager = FileManager()
         session = get_session()
-        
-        card = flashcardDA(
+        saved_files = []
+
+        try:
+            if files:
+                for file_data in files:
+                    source_type = session.query(constantDA).filter(
+                        constantDA.id == file_data["from_type_id"]
+                    ).first()
+
+                    if source_type is None:
+                        raise ValueError("Invalid source type.")
+
+                    file_info = file_Manager.save_file( file_data["value"], source_type.name )
+
+                    type_ = session.query(constantDA).filter(constantDA.name == file_info["type_"]).first()
+
+                    if type_ is None:
+                        raise ValueError("Invalid file type.")
+
+                    saved_files.append({
+                        "file_info": file_info,
+                        "source_type_id": source_type.id,
+                        "type_id": type_.id
+                    })
+
+            card = flashcardDA(
                         title= title ,
                         definition= definition,
                         example= example,
@@ -56,54 +80,57 @@ class FlashCardBL:
                         notion_content = notion_content,
                         createAt = createAt,
                         updatedAt = updatedAt)
-        session.add(card)
-        session.flush()
         
-        if reviews:
+            session.add(card)
+            session.flush()
+        
+            if reviews is None:
+                reviews = {
+                    "quality": None,
+                    "ease_factor": SM2Algorithm.INITIAL_EASE,
+                    "interval": 1,
+                    "repetitions": 0,
+                    "review_date": datetime.now()
+                }
             review = reviewFlashcardDA(
-                flashcard_id = card.id ,
-                quality = reviews['quality'],
-                ease_factor = reviews['ease_factor'],
-                interval = reviews['interval'],
-                repetitions = reviews['repetitions'],
-                review_date = reviews['review_date'],
+                flashcard_id=card.id,
+                **reviews
             )
-        else:
-            review = reviewFlashcardDA(
-                flashcard_id = card.id ,
-                quality = None,
-                ease_factor = SM2Algorithm.INITIAL_EASE,
-                interval = 1,
-                repetitions = 0, 
-                review_date = datetime.now()
-            )
+            session.add(review)
 
-        session.add(review)
+            for item in saved_files:
+                info = item["file_info"]
 
-        if files:
-            for file in files:
-                try:
-                    sourceType = session.query(constantDA).where(constantDA.id == file['from_type_id']).first()
-                    fileInfo = filManager.save_file( file['value'] ,sourceType.name)
-                    type_ = session.query(constantDA).where(constantDA.name == fileInfo['type_']).first()
-
-                    file = fileFlashcardDA(
-                        flashcard_id = card.id ,
-                        filePath = fileInfo['filePath'],
-                        fileName = fileInfo['fileName'] ,
-                        fileSize = fileInfo['fileSize'] ,
-                        type_id = type_.id ,
-                        sourceType_id = sourceType.id
+                session.add(
+                    fileFlashcardDA(
+                        flashcard_id=card.id,
+                        filePath=info["filePath"],
+                        fileName=info["fileName"],
+                        fileSize=info["fileSize"],
+                        type_id=item["type_id"],
+                        sourceType_id=item["source_type_id"]
                     )
-                    session.add(file)
-                except Exception as e:
-                    logger.error(str(e))
+                )
 
-        session.commit()
-        card_saved ={"id":card.id , "title":card.title}
-        session.close()
-        return card_saved
+            session.commit()
 
+            return { "id": card.id, "title": card.title}
+        
+        except Exception as e:
+            session.rollback()
+            logger.error(str(e))
+
+            for item in saved_files:
+                try:
+                    file_Manager.delete_audio_file(item["file_info"]["filePath"])
+                except Exception:
+                    pass
+
+            raise
+    
+        finally:
+            session.close()
+            
     def get_card_by_id(self , card_id):
         session = get_session()
         card = session.query(flashcardDA).options(
@@ -115,82 +142,134 @@ class FlashCardBL:
         session.close()
         return card
 
-    def update_card(self , card_id , **data):
+    def update_card(self, card_id, **data):
+
         session = get_session()
-        card = session.query(flashcardDA).filter(
-            flashcardDA.id == card_id
-        ).first()
+        file_manager = FileManager()
 
-        if not card:
-            return False
-        
-        card.title = data["title"]
-        card.definition = data["definition"]
-        card.example = data["example"]
-        card.collocation = data["collocation"]
-        card.pastParticiple = data["pastParticiple"]
-        card.pastTense = data["pastTense"]
-        card.pronunciation = data["pronunciation"]
-        card.pos_id = data["pos_id"]
-        card.type_id = data["type_id"]
-        card.box_id = data["box_id"]
-        card.level_id = data["level_id"]
-    
-        incoming_files = data.get("files", [])
+        saved_files = []          # فایل‌های جدید
+        deleted_file_paths = []   # فایل‌های قدیمی که باید بعد از commit حذف شوند
 
-        incoming_existing_ids = {
-            f["id"]
-            for f in incoming_files
-            if isinstance(f.get("id"), int)
-        }
+        try:
 
-        # حذف فایل‌هایی که کاربر پاک کرده
-        for file_obj in list(card.files):
-            if file_obj.id not in incoming_existing_ids:
-                session.delete(file_obj)
+            card = session.query(flashcardDA).filter(
+                flashcardDA.id == card_id
+            ).first()
 
-        # اضافه کردن فایل‌های جدید
-        for file_data in incoming_files:
+            if card is None:
+                return False
 
-            if isinstance(file_data.get("id"), int):
-                continue
+            incoming_files = data.get("files", [])
 
-            filManager = FileManager()
 
-            sourceType = session.query(constantDA)\
-                .where(constantDA.id == file_data['from_type_id'])\
-                .first()
+            for file_data in incoming_files:
 
-            fileInfo = filManager.save_file(
-                file_data['value'],
-                sourceType.name
-            )
+                if isinstance(file_data.get("id"), int):
+                    continue
 
-            type_ = session.query(constantDA)\
-                .where(constantDA.name == fileInfo['type_'])\
-                .first()
+                source_type = session.query(constantDA).filter(
+                    constantDA.id == file_data["from_type_id"]
+                ).first()
 
-            new_file = fileFlashcardDA(
-                flashcard_id=card.id,
-                filePath=fileInfo['filePath'],
-                fileName=fileInfo['fileName'],
-                fileSize=fileInfo['fileSize'],
-                type_id=type_.id,
-                sourceType_id=sourceType.id
-            )
+                if source_type is None:
+                    raise ValueError("Invalid source type.")
 
-            session.add(new_file)
-        
-        
-        session.commit()
-    
-        result = {
-            "id": card.id,
-            "title": card.title
-        }
+                file_info = file_manager.save_file(
+                    file_data["value"],
+                    source_type.name
+                )
 
-        session.close()
-        return result
+                type_ = session.query(constantDA).filter(
+                    constantDA.name == file_info["type_"]
+                ).first()
+
+                if type_ is None:
+                    raise ValueError("Invalid file type.")
+
+                saved_files.append({
+                    "file_info": file_info,
+                    "source_type_id": source_type.id,
+                    "type_id": type_.id
+                })
+
+            # -------------------------
+            # Update card
+            # -------------------------
+
+            card.title = data["title"]
+            card.definition = data["definition"]
+            card.example = data["example"]
+            card.collocation = data["collocation"]
+            card.pastParticiple = data["pastParticiple"]
+            card.pastTense = data["pastTense"]
+            card.pronunciation = data["pronunciation"]
+            card.pos_id = data["pos_id"]
+            card.type_id = data["type_id"]
+            card.box_id = data["box_id"]
+            card.level_id = data["level_id"]
+
+            # -------------------------
+            # Delete removed files
+            # -------------------------
+
+            incoming_existing_ids = {
+                f["id"]
+                for f in incoming_files
+                if isinstance(f.get("id"), int)
+            }
+
+            for file_obj in list(card.files):
+
+                if file_obj.id not in incoming_existing_ids:
+                    deleted_file_paths.append(file_obj.filePath)
+                    session.delete(file_obj)
+
+            # -------------------------
+            # Add new files
+            # -------------------------
+
+            for item in saved_files:
+
+                info = item["file_info"]
+
+                session.add(
+                    fileFlashcardDA(
+                        flashcard_id=card.id,
+                        filePath=info["filePath"],
+                        fileName=info["fileName"],
+                        fileSize=info["fileSize"],
+                        type_id=item["type_id"],
+                        sourceType_id=item["source_type_id"]
+                    )
+                )
+
+            session.commit()
+
+            for path in deleted_file_paths:
+                try:
+                    file_manager.delete_audio_file(path)
+                except Exception as e:
+                    logger.error(e)
+
+            return {
+                "id": card.id,
+                "title": card.title
+            }
+
+        except Exception:
+
+            session.rollback()
+
+            for item in saved_files:
+                try:
+                    path = item["file_info"]["filePath"]
+                    file_manager.delete_audio_file(path)
+                except Exception:
+                    pass
+            raise
+
+        finally:
+            session.close()
 
     def delete_card(self, card_id):
         session = get_session()
@@ -254,6 +333,7 @@ class FlashCardBL:
                     selectinload(flashcardDA.box),
                     selectinload(flashcardDA.level),
                     selectinload(flashcardDA.files),
+                    selectinload(flashcardDA.files).selectinload(fileFlashcardDA.sourceType),
                 ).filter(or_(
                     flashcardDA.last_review_date <= today,
                     flashcardDA.last_review_date == None                  
