@@ -60,6 +60,7 @@ class FlashCardBL:
                         raise ValueError("Invalid file type.")
 
                     saved_files.append({
+                        "title":file_data["title"],
                         "file_info": file_info,
                         "source_type_id": source_type.id,
                         "type_id": type_.id
@@ -104,6 +105,7 @@ class FlashCardBL:
                 session.add(
                     fileFlashcardDA(
                         flashcard_id=card.id,
+                        title=item["title"],
                         filePath=info["filePath"],
                         fileName=info["fileName"],
                         fileSize=info["fileSize"],
@@ -187,6 +189,7 @@ class FlashCardBL:
                     raise ValueError("Invalid file type.")
 
                 saved_files.append({
+                    "title":file_data.get("title", ""),
                     "file_info": file_info,
                     "source_type_id": source_type.id,
                     "type_id": type_.id
@@ -235,6 +238,7 @@ class FlashCardBL:
                 session.add(
                     fileFlashcardDA(
                         flashcard_id=card.id,
+                        title=item["title"],
                         filePath=info["filePath"],
                         fileName=info["fileName"],
                         fileSize=info["fileSize"],
@@ -256,7 +260,7 @@ class FlashCardBL:
                 "title": card.title
             }
 
-        except Exception:
+        except Exception as e:
 
             session.rollback()
 

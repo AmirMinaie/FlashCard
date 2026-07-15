@@ -78,6 +78,7 @@ class ReviewScreen(MDScreen):
         for file in card.files or []:
             playlist.add_song({
                 "id": file.id,
+                "title" :file.title,
                 "fileName": file.fileName,
                 "value": file.filePath,
                 "from_type_id": file.sourceType_id,

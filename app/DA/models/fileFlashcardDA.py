@@ -8,6 +8,7 @@ class fileFlashcardDA(Base):
     flashcard_id = Column(Integer, ForeignKey("flashcard.id"), nullable=True)
     filePath = Column(Text, default=datetime.datetime.utcnow)
     fileName = Column(String(200))
+    title = Column(String(200))
     fileSize = Column(Integer)
     type_id = Column(Integer, ForeignKey("constant.id"), nullable=True)
     sourceType_id = Column(Integer, ForeignKey("constant.id"), nullable=True)

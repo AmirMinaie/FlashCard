@@ -286,7 +286,13 @@ class Playlist(MDBoxLayout):
 
     def create_song_widget(self, song):
 
-        text = song["fileName"]
+        fileName = song["fileName"]
+        title = song.get("title", "")
+        
+        if title and title.strip():
+            text = title
+        else:
+            text = fileName
     
         item = OneLineRightIconListItem(text=text)
         item.song = song

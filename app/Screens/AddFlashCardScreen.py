@@ -18,6 +18,7 @@ from urllib.parse import urlparse, unquote
 from os.path import basename
 from cmn.logger import logger
 from widgets.AsyncButton import AsyncButton
+from itertools import zip_longest
 
 import uuid
 from kivy.properties import StringProperty, NumericProperty, DictProperty, BooleanProperty , ObjectProperty 
@@ -31,7 +32,6 @@ class AddFlashCardScreen(MDScreen):
 
     mode = StringProperty("add")
     card_id = NumericProperty(-1)
-
 
     def update_form_mode_ui(self):
         if self.mode == "add":
@@ -72,6 +72,7 @@ class AddFlashCardScreen(MDScreen):
         for file in card.files:
             item = {
                 "id": file.id,
+                "title":file.title,
                 "fileName": file.fileName,
                 "value": file.filePath,
                 "from_type_id": file.sourceType_id,
@@ -224,14 +225,10 @@ class AddFlashCardScreen(MDScreen):
     def show_success_message(self, saved_card):
         app = MDApp.get_running_app()
 
-        message = f"""saved successfully!
-Title: {saved_card['title']} ID: #{saved_card['id']}"""
+        message = f"saved successfully!\n"
+        message +=f"Title: {saved_card['title']} ID: #{saved_card['id']}"
 
-        app.show_message(
-            message,
-            msg_type="success",
-            duration=4
-        )
+        app.show_message(message,msg_type="success",duration=4)
 
     def show_validation_error(self, error_message):
         app = MDApp.get_running_app()
@@ -281,7 +278,7 @@ MDBoxLayout:
     spacing: dp(15)
     padding: dp(15)
     size_hint_y: None
-    height: dp(180)
+    height: dp(310)
 
     MDSeparator:
         height: dp(1)
@@ -295,7 +292,17 @@ MDBoxLayout:
         is_required: True
         size_hint_y: None
         height: dp(55)
-                                   
+
+    TextInput:
+        id: song_title_field
+        text_h: "Title"
+        hint_text: "Enter a title for this song"
+        icon: "format-title"
+        mode: "rectangle"
+        multiline: True
+        size_hint_y: None
+        height: dp(100)
+                                                                  
     TextInput:
         id: song_path_fields
         text_h: "Song URL / File Path"
@@ -321,6 +328,7 @@ MDBoxLayout:
             )
 
         self.song_dialog_content.ids.song_path_fields.text = ""
+        self.song_dialog_content.ids.song_title_field.text = ""
         self.song_dialog_content.ids.source_field.clear_selection()
         self.dialog_add_song.open()
 
@@ -333,13 +341,21 @@ MDBoxLayout:
     
         source = self.song_dialog_content.ids.source_field
         path = self.song_dialog_content.ids.song_path_fields
+        title = self.song_dialog_content.ids.song_title_field
+
         paths = [p.strip() for p in path.text.splitlines() if p.strip()]
-        for p in paths:
+        titles = [t.strip() for t in title.text.splitlines()]
+
+        for title_text, path_text in zip_longest(titles, paths, fillvalue=""):
+            if not path_text:
+                continue
+            
             item = {
+                "title": title_text,
                 "from_type_id": source.selected_Id,
-                "fileName": unquote(basename(urlparse(p).path)),
+                "fileName": unquote(basename(urlparse(path_text).path)),
                 "from_type_caption": source.selected_value,
-                "value": p
+                "value": path_text,
             }
 
             self.ids.songs_playlist.add_song(item)
