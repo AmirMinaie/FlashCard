@@ -1,161 +1,186 @@
 <AddFlashCardScreen>:
     name: "AddFlashCardScreen"
 
-    BoxLayout:
+    MDBoxLayout:
         orientation: "vertical"
-        padding: 0
-        spacing: 0
+        padding: dp(12)
+        spacing: dp(8)
+
+        MDCard:
+            elevation: 1
+            radius: [16]
+            size_hint_y: None
+            height: dp(50)
+
+            MDBoxLayout:
+                padding: dp(10), dp(0)
+                spacing: dp(8)
+
+                MDLabelA:
+                    id: counter_label
+                    text: root.form_title
+                    font_style: "Subtitle1"
+                    bold: True
+                    valign: "middle"
+                    halign: "left"
+                    text_size: self.size
+
 
         ScrollView:
+            id: flashcard_Add
+
             MDBoxLayout:
                 orientation: "vertical"
-                spacing: "15dp"
-                padding: ["20dp", "10dp", "20dp", "80dp"]  
                 size_hint_y: None
                 height: self.minimum_height
+                padding:  dp(10), dp(10), dp(10), dp(10)
+                spacing: dp(8)
 
-                MDLabel:
-                    text: root.form_title
-                    font_style: "H5"
-                    halign: "center"
-                    size_hint_y: None
-                    height: dp(50)
-
-                MDTextFieldA:
-                    id: title_field
-                    text_h: "Word/Title"
-                    icon: "alphabetical"
-                    is_required: True
-
-                MDTextFieldA:
-                    id: pronunciation_field
-                    text_h: "Pronunciation"
-                    icon: "volume-high"
-                    is_required: True
-
-                MDBoxLayout:
-                    orientation: "horizontal"
-                    size_hint_y: None
-                    height: dp(60) 
-                    spacing: "10dp" 
-
-                    MDTextFieldA:
-                        id: pastParticiple_field
-                        text_h: "pastParticiple"
-                        icon: "volume-high"
-
-                    MDTextFieldA:
-                        id: pastTense_field
-                        text_h: "pastTense"
-                        icon: "volume-high"
-
-                MDBoxLayout:
-                    orientation: "horizontal"
-                    size_hint_y: None
-                    height: dp(60) 
-                    spacing: "10dp" 
-
-                    DropDownA:
-                        id: part_of_speech_field
-                        text_h: "Part of Speech"
-                        icon: "alphabetical-variant"
-                        selected_value: ""
-                        is_required: True
-                        item_menu: root.load_constant('POS')
-
-                    DropDownA:
-                        id: type_field
-                        text_h: "type"
-                        icon: "format-list-bulleted-type"
-                        selected_value: ""
-                        item_menu: root.load_constant('FlashCardtype')
-                        is_required: True
-                    
-                    DropDownA:
-                        id: level_field
-                        text_h: "level"
-                        icon: "chart-bar"
-                        selected_value: ""
-                        item_menu: root.load_constant("Level")
-                    
-                    DropDownA:
-                        id: box_field
-                        text_h: "box"
-                        icon: "package-variant"
-                        selected_value: ""
-                        item_menu: root.load_constant('Box')
-                        is_required: True
-
-                MDTextFieldA:
-                    id: example_field
-                    text_h: "Example Sentence"
-                    icon: "format-quote-open"
-                    multiline: True
-                    mode: "rectangle"
-                    size_hint_y: None
-                    height: dp(100)
-                
-                MDTextFieldA:
-                    id: definition_field
-                    text_h: "Definition"
-                    icon: "format-quote-open"
-                    multiline: True
-                    mode: "rectangle"
-                    size_hint_y: None
-                    height: dp(100)
-
-                MDTextFieldA:
-                    id: collocation_field
-                    text_h: "Collocations"
-                    icon: "link-variant"
-                    multiline: True
-                    mode: "rectangle"
-                    size_hint_y: None
-                    height: dp(80)
-                    padding: ["0dp", "5dp"]
-                
-
-                # بخش Songs با دکمه کنار عنوان
-                MDBoxLayout:
+                MDCard:
                     orientation: "vertical"
+                    size_hint_x: 1
                     size_hint_y: None
                     height: self.minimum_height
-                    spacing: "10dp"
-                    
-                    # هدر بخش Songs با عنوان و دکمه
+                    padding: dp(20)
+                    spacing: dp(8)
+                    radius: [20]
+                    elevation: 2
+
+
+                    MDTextFieldA:
+                        id: title_field
+                        text_h: "Word/Title"
+                        icon: "alphabetical"
+                        is_required: True
+
+                    MDTextFieldA:
+                        id: pronunciation_field
+                        text_h: "Pronunciation"
+                        icon: "volume-high"
+                        is_required: True
+
                     MDBoxLayout:
                         orientation: "horizontal"
                         size_hint_y: None
-                        height: dp(50)
+                        height: dp(60) 
+                        spacing: "10dp" 
+
+                        MDTextFieldA:
+                            id: pastParticiple_field
+                            text_h: "pastParticiple"
+                            icon: "volume-high"
+
+                        MDTextFieldA:
+                            id: pastTense_field
+                            text_h: "pastTense"
+                            icon: "volume-high"
+
+                    MDBoxLayout:
+                        orientation: "horizontal"
+                        size_hint_y: None
+                        height: dp(60) 
+                        spacing: "10dp" 
+
+                        DropDownA:
+                            id: part_of_speech_field
+                            text_h: "Part of Speech"
+                            icon: "alphabetical-variant"
+                            selected_value: ""
+                            is_required: True
+                            item_menu: root.load_constant('POS')
+
+                        DropDownA:
+                            id: type_field
+                            text_h: "type"
+                            icon: "format-list-bulleted-type"
+                            selected_value: ""
+                            item_menu: root.load_constant('FlashCardtype')
+                            is_required: True
+
+                        DropDownA:
+                            id: level_field
+                            text_h: "level"
+                            icon: "chart-bar"
+                            selected_value: ""
+                            item_menu: root.load_constant("Level")
+
+                        DropDownA:
+                            id: box_field
+                            text_h: "box"
+                            icon: "package-variant"
+                            selected_value: ""
+                            item_menu: root.load_constant('Box')
+                            is_required: True
+
+                    MDTextFieldA:
+                        id: example_field
+                        text_h: "Example Sentence"
+                        icon: "format-quote-open"
+                        multiline: True
+                        mode: "rectangle"
+                        size_hint_y: None
+                        height: dp(100)
+
+                    MDTextFieldA:
+                        id: definition_field
+                        text_h: "Definition"
+                        icon: "format-quote-open"
+                        multiline: True
+                        mode: "rectangle"
+                        size_hint_y: None
+                        height: dp(100)
+
+                    MDTextFieldA:
+                        id: collocation_field
+                        text_h: "Collocations"
+                        icon: "link-variant"
+                        multiline: True
+                        mode: "rectangle"
+                        size_hint_y: None
+                        height: dp(80)
+                        padding: ["0dp", "5dp"]
+
+                    # بخش Songs با دکمه کنار عنوان
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        size_hint_y: None
+                        height: self.minimum_height
                         spacing: "10dp"
-                        padding: ["0dp", "0dp", "10dp", "0dp"]
-                        
-                        MDLabel:
-                            text: "Songs"
-                            font_style: "H6"
-                            size_hint_x: 0.8
+
+                        # هدر بخش Songs با عنوان و دکمه
+                        MDBoxLayout:
+                            orientation: "horizontal"
                             size_hint_y: None
                             height: dp(50)
-                            halign: "left"
-                            valign: "center"
-                        
-                        BaseButtonA:
-                            icon: "plus"
-                            text: "Add Song"
-                            size_hint: None, None
-                            size: dp(120), dp(46)
-                            pos_hint: {"center_y": 0.5}
-                            md_bg_color: app.theme_cls.primary_color
-                            on_release: root.show_add_song_dialog()
-                    
-                    # لیست Songs
+                            spacing: "10dp"
+                            padding: ["0dp", "0dp", "10dp", "0dp"]
 
-                    Playlist:
-                        id: songs_playlist
-                        size_hint_y: None
-                        height: dp(300)
-                        allow_delete: True
-        
+                            MDLabel:
+                                text: "Songs"
+                                font_style: "H6"
+                                size_hint_x: 0.8
+                                size_hint_y: None
+                                height: dp(50)
+                                halign: "left"
+                                valign: "center"
+
+                            BaseButtonA:
+                                icon: "plus"
+                                text: "Add Song"
+                                size_hint: None, None
+                                size: dp(120), dp(46)
+                                pos_hint: {"center_y": 0.5}
+                                md_bg_color: app.theme_cls.primary_color
+                                on_release: root.show_add_song_dialog()
+
+                        # لیست Songs
+
+                        Playlist:
+                            id: songs_playlist
+                            size_hint_y: None
+                            height: dp(300)
+                            allow_delete: True
+
         MDBoxLayout:
             orientation: "horizontal"
             spacing: "10dp"

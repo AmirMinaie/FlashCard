@@ -31,12 +31,14 @@
 
                 Widget:
 
-                MDIconButton:
+                AsyncIconButton:
+                    id: refresh_btn
                     icon: "refresh"
-                    size_hint: None, None
-                    size: dp(40), dp(40)
-                    pos_hint: {"center_y": 0.5}
-                    on_release: root.refresh_session()
+
+                    before: root.before_refresh_session
+                    task: root.refresh_session
+                    after: root.after_refresh_session
+                    error_handler: root.handle_refresh_session_error
 
         ##################################################
         # Complete Session
@@ -301,14 +303,17 @@
                 size_hint_y: None
                 height: dp(46)
                 spacing: dp(10)
-        
-                BaseButtonA:
+                
+                AsyncButton:
                     id: skip_btn
                     text: "Skip"
                     icon: "skip-next"
                     size_hint_x: 0.28
                     md_bg_color: app.theme_cls.primary_light
-                    on_release: root.skip_card()
+                    before: root.before_skip_card
+                    task: root.skip_card
+                    after: root.after_skip_card
+                    error_handler: root.handle_skip_card_error
         
                 BaseButtonA:
                     id: show_answer_btn
@@ -336,42 +341,62 @@
                     md_bg_color: app.theme_cls.primary_light
                     on_release: root.hide_answer_fields()
         
-                BaseButtonA:
+                AsyncButton:
                     id: again_btn
                     text: "Again"
                     icon: "reload-alert"
                     size_hint_x: 1
                     md_bg_color: "#D32F2F"
-                    on_release: root.mark_card_quality(0)
+                    
+                    before: root.before_mark_quality
+                    task: root.mark_card_quality0
+                    after: root.after_mark_quality0
+                    error_handler: root.handle_mark_quality_error
         
-                BaseButtonA:
+                AsyncButton:
                     id: hard_btn
                     text: "Hard"
                     icon: "alert-circle"
                     size_hint_x: 1
                     md_bg_color: "#FB8C00"
-                    on_release: root.mark_card_quality(1)
+                    
+                    before: root.before_mark_quality
+                    task: root.mark_card_quality1
+                    after: root.after_mark_quality1
+                    error_handler: root.handle_mark_quality_error
         
-                BaseButtonA:
+                AsyncButton:
                     id: good_btn
                     text: "Good"
                     icon: "thumb-up"
                     size_hint_x: 1
                     md_bg_color: "#1E88E5"
-                    on_release: root.mark_card_quality(2)
+                    
+                    before: root.before_mark_quality
+                    task: root.mark_card_quality2
+                    after: root.after_mark_quality2
+                    error_handler: root.handle_mark_quality_error
         
-                BaseButtonA:
+                AsyncButton:
                     id: easy_btn
                     text: "Easy"
                     icon: "emoticon"
                     size_hint_x: 1
                     md_bg_color: "#43A047"
-                    on_release: root.mark_card_quality(3)
+                    
+                    before: root.before_mark_quality
+                    task: root.mark_card_quality3
+                    after: root.after_mark_quality3
+                    error_handler: root.handle_mark_quality_error
         
-                BaseButtonA:
+                AsyncButton:
                     id: very_easy_btn
                     text: "Very Easy"
                     icon: "emoticon-happy"
                     size_hint_x: 1
                     md_bg_color: "#2E7D32"
-                    on_release: root.mark_card_quality(4)
+                    
+                    before: root.before_mark_quality
+                    task: root.mark_card_quality4
+                    after: root.after_mark_quality4
+                    error_handler: root.handle_mark_quality_error

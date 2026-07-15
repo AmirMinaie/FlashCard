@@ -5,6 +5,7 @@ from cmn.logger import logger
 from cmn.resource_helper import *
 from kivymd.app import MDApp
 from kivy.clock import Clock
+from widgets.AsyncIconButton import AsyncIconButton
 
 
 Builder.load_file(str(PathManager.app_path("Kv/DashboardScreen.kv")))

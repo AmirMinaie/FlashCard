@@ -3,31 +3,40 @@
 
     MDBoxLayout:
         orientation: "vertical"
-        spacing: dp(10)
-        padding: dp(15)
+        padding: dp(12)
+        spacing: dp(8)
 
         # ================= Header =================
 
-        MDBoxLayout:
+        MDCard:
+            elevation: 1
+            radius: [16]
             size_hint_y: None
             height: dp(50)
 
-            MDLabel:
-                text: "Dashboard"
-                font_style: "H4"
-                bold: True
-                valign: "middle"
+            MDBoxLayout:
+                padding: dp(10), dp(0)
+                spacing: dp(8)
 
-            Widget:
+                MDLabelA:
+                    id: counter_label
+                    text: f"Dashboard"
+                    font_style: "Subtitle1"
+                    bold: True
+                    valign: "middle"
+                    halign: "left"
+                    text_size: self.size
 
-            AsyncButton:
-                id: refresh_btn
-                text: "refresh"
-                mode: "add"
-                before: root.befor_load_dashboard
-                task: root.load_dashboard_data
-                after: root.after_load_dashboard
-                error_handler: root.handle_load_dashboard
+                Widget:
+
+                AsyncIconButton:
+                    id: refresh_btn
+                    icon: "refresh"
+
+                    before: root.befor_load_dashboard
+                    task: root.load_dashboard_data
+                    after: root.after_load_dashboard
+                    error_handler: root.handle_load_dashboard
 
         # ================= Scroll =================
 

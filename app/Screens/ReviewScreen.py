@@ -4,18 +4,10 @@ from cmn.resource_helper import *
 from BL.FlashCardBL import FlashCardBL
 from BL.DashboardBL import DashboardBL
 from kivymd.app import MDApp
-from kivymd.uix.button import MDRaisedButton, MDFlatButton
-from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.label import MDLabel
-from widgets.MDChipA import MDChipA
-from kivymd.uix.dialog import MDDialog
-from kivymd.uix.button import MDRectangleFlatButton
-from kivy.properties import BooleanProperty, StringProperty, NumericProperty
-from datetime import datetime
+from kivy.properties import BooleanProperty, NumericProperty
 from kivy.clock import Clock
 from kivy.metrics import dp
 from widgets.Playlist import Playlist
-from cmn.logger import logger
 from cmn.logger import logger
 
 Builder.load_file(str(PathManager.app_path("Kv/ReviewScreen.kv")))
@@ -23,7 +15,7 @@ Builder.load_file(str(PathManager.app_path("Kv/ReviewScreen.kv")))
 class FieldMode:
     init = 1
     show_answer = 2
-    hiden_answer = 3
+    hide_answer = 3
 
 class ReviewScreen(MDScreen):
     show_answer = BooleanProperty(False)
@@ -64,195 +56,115 @@ class ReviewScreen(MDScreen):
             
             self.current_card = self.flashcard_bl.get_next_card_for_review()
             self.remaining_cards = self.summary.remaining_reviews
-            if self.current_card:
-                self.show_card_content(True)
-                self.set_fields(Mode=FieldMode.init)                
-                self.update_counter()
-                
-            else:
-                # اگر کارتی برای مرور نبود
-                self.show_session_completed()
+            self.display_current_card()
                 
         except Exception as e:
             logger.info(f"Error loading next card: {e}")
-            self.show_error_message("Error loading card. Please try again.")
-    
-    def set_fields(self, Mode):
+            self.show_message("Error loading card. Please try again.",msg_type="error",duration=3,)
 
+    def load_card_fields(self):
         card = self.current_card
+        if not card:
+            return
 
-        if card:
+        self.ids.title_label.text = card.title or ""
+        self.ids.pronunciation_label.text = card.pronunciation or ""
+        self.ids.collocation_label.text = card.collocation or ""
+        self.ids.example_label.text = card.example or ""
 
-            if Mode == FieldMode.init:
+        playlist = self.ids.songs_playlist
+        playlist.clear()
 
-                self.ids.title_label.text = card.title or ""
-                self.ids.pronunciation_label.text = card.pronunciation or ""
-                self.ids.collocation_label.text = card.collocation or ""
-                self.ids.example_label.text = card.example or ""
-                self.ids.songs_playlist.clear()
-                if card.files:
-                    for file in card.files:
-                        item = {
-                            "id": file.id,
-                            "fileName": file.fileName,
-                            "value": file.filePath,
-                            "from_type_id": file.sourceType_id,
-                            "from_type_caption": file.sourceType.caption
-                        }
-                        self.ids.songs_playlist.add_song(item)
+        for file in card.files or []:
+            playlist.add_song({
+                "id": file.id,
+                "fileName": file.fileName,
+                "value": file.filePath,
+                "from_type_id": file.sourceType_id,
+                "from_type_caption": file.sourceType.caption,
+            })
 
-            if Mode == FieldMode.show_answer:
-                self.ids.pos_chip.text = card.pos.caption if card.pos else ""
-                self.ids.type_chip.text = card.type_.caption if card.type_ else ""
-                self.ids.level_chip.text = card.level.caption if card.level else ""
-                self.ids.box_chip.text = card.box.caption if card.box else ""
+    def show_answer_data(self):
+        card = self.current_card
+        if not card:
+            return
 
-                self.ids.past_tense_label.text = card.pastTense or ""
-                self.ids.past_participle_label.text = card.pastParticiple or ""
+        self.ids.pos_chip.text = card.pos.caption if card.pos else ""
+        self.ids.type_chip.text = card.type_.caption if card.type_ else ""
+        self.ids.level_chip.text = card.level.caption if card.level else ""
+        self.ids.box_chip.text = card.box.caption if card.box else ""
 
-                self.ids.definition_label.text = card.definition or ""
+        self.ids.past_tense_label.text = card.pastTense or ""
+        self.ids.past_participle_label.text = card.pastParticiple or ""
 
-            if Mode == FieldMode.hiden_answer or Mode == FieldMode.init: 
-                self.ids.pos_chip.text = "  "
-                self.ids.type_chip.text = " "
-                self.ids.level_chip.text = " "
-                self.ids.box_chip.text = " "
+        self.ids.definition_label.text = card.definition or ""
 
-                self.ids.past_tense_label.text = " "
-                self.ids.past_participle_label.text = " "
+    def clear_answer_fields(self):
+        for widget in (
+            self.ids.pos_chip,
+            self.ids.type_chip,
+            self.ids.level_chip,
+            self.ids.box_chip,
+            self.ids.past_tense_label,
+            self.ids.past_participle_label,
+            self.ids.definition_label,
+        ):
+            widget.text = " "
 
-                self.ids.definition_label.text = " "
+    def set_fields(self, mode):
+        if mode == FieldMode.init:
+            self.load_card_fields()
+            self.clear_answer_fields()
+
+        elif mode == FieldMode.show_answer:
+            self.show_answer_data()
+
+        elif mode == FieldMode.hide_answer:
+            self.clear_answer_fields()
 
     def show_card_content(self, show):
         """نمایش یا مخفی کردن محتوای کارت"""
+
         if show:
-            self.ids.flashcard_box.opacity = 1
-            self.ids.flashcard_box.disabled = False
+            self.set_widget_state(self.ids.flashcard_box, visible=True)
             self.ids.flashcard_box.size_hint_y = 0.9
-            self.ids.flashcard_box.pos_hint = {"top": 0.9, "center_x": 0.5}
-            
-            self.ids.compleat_Session_Box.opacity = 0
-            self.ids.compleat_Session_Box.disabled = True
+            self.ids.flashcard_box.pos_hint = {"top": 0.9,"center_x": 0.5,}
+
+            self.set_widget_state(self.ids.compleat_Session_Box,visible=False,height=0,)
             self.ids.compleat_Session_Box.size_hint_y = None
-            self.ids.compleat_Session_Box.height = 0
-            
-            # فعال کردن دکمه‌ها
-            self.ids.button_box.opacity = 1
-            self.ids.button_box.disabled = False
-            self.ids.button_box.height = 60
+
+            self.set_widget_state(self.ids.button_box,visible=True,height=60,)
+
         else:
-            self.ids.flashcard_box.opacity = 0
-            self.ids.flashcard_box.disabled = True
+            self.set_widget_state(self.ids.flashcard_box, visible=False)
             self.ids.flashcard_box.size_hint_y = 0
-
-    def show_answer_fields(self):
-        """نمایش فیلدهای جواب"""
-        if not self.current_card:
-            return
-            
-        self.set_fields(Mode=FieldMode.show_answer)
-        
-        # تغییر دکمه‌ها
-        self.ids.button_box.height = 0
-        self.ids.button_box.opacity = 0
-        self.ids.button_box.disabled = True
-
-        self.ids.answer_button_box.height = dp(46)
-        self.ids.answer_button_box.opacity = 1
-        self.ids.answer_button_box.disabled = False
-
-        self.ids.button_area.height = dp(52)
-        
-        self.show_answer = True
     
     def hide_answer_fields(self):
-        # ریست کردن مقادیر
-        self.set_fields(Mode=FieldMode.hiden_answer)
+        self.set_fields(mode=FieldMode.hide_answer)
         
-        # تغییر وضعیت دکمه‌ها
         if not self.session_completed:
             self.ids.button_box.opacity = 1
             self.ids.button_box.disabled = False
         
-        # تغییر دکمه‌ها
-        self.ids.button_box.height = dp(46)
-        self.ids.button_box.opacity = 1
-        self.ids.button_box.disabled = False
-    
-        self.ids.answer_button_box.height = 0
-        self.ids.answer_button_box.opacity = 0
-        self.ids.answer_button_box.disabled = True
+        self.set_widget_state(self.ids.button_box,visible=True,height=dp(46))
+        self.set_widget_state(self.ids.answer_button_box,visible=False,height=0)
     
         self.ids.button_area.height = dp(52)
         
         self.show_answer = False
      
-    def mark_card_quality(self ,quality):
-        """علامت‌گذاری کارت   """
-        try:
-            if self.current_card:
-                success = self.flashcard_bl.mark_card_reviewed(
-                    card_id=self.current_card.id,
-                    quality_Answer=quality
-                )
-                
-                if success:
-                    self.show_success_indicator("✓ Correct")
-                    self.total_today_reviews += 1
-            
-            # لود کارت بعدی
-            Clock.schedule_once(lambda dt: self.load_next_card(), 0.5)
-            
-        except Exception as e:
-            logger.info(f"Error marking card correct: {e}")
-            self.show_error_message("Error saving review. Please try again.")
-            Clock.schedule_once(lambda dt: self.load_next_card(), 0.5)
- 
-    def skip_card(self):
-        """رد کردن کارت فعلی"""
-        try:
-            if self.current_card:
-                self.flashcard_bl.mark_card_reviewed(
-                    card_id=self.current_card.id,
-                    quality_Answer=-1
-                )
-                self.show_success_indicator("⏭ Skipped")
-            
-            # لود کارت بعدی
-            Clock.schedule_once(lambda dt: self.load_next_card(), 0.5)
-            
-        except Exception as e:
-            logger.info(f"Error skipping card: {e}")
-            self.load_next_card()
-    
     def show_session_completed(self):
         """نمایش پیام پایان جلسه مرور"""
         self.session_completed = True
         
-        # مخفی کردن دکمه‌ها
-        self.ids.button_box.opacity = 0
-        self.ids.button_box.disabled = True
-        self.ids.answer_button_box.opacity = 0
-        self.ids.answer_button_box.disabled = True
-        
-        self.ids.flashcard_box.opacity = 0
-        self.ids.flashcard_box.disabled = True
+        self.set_widget_state(self.ids.button_box, visible=False)
+        self.set_widget_state(self.ids.answer_button_box, visible=False)
+        self.set_widget_state(self.ids.flashcard_box, visible=False)
+        self.set_widget_state(self.ids.compleat_Session_Box,visible=True,height=80)
 
-        self.ids.compleat_Session_Box.opacity = 1
-        self.ids.compleat_Session_Box.disabled = False
-        self.ids.compleat_Session_Box.height = 80
-
-        
-        # نمایش پیام در کارت
-        
         self.ids.compleat_Session_lable.text = "Session Completed!\n"
         self.ids.compleat_Session_lable.text += f"You reviewed {self.total_today_reviews} cards today\n"
         self.ids.compleat_Session_lable.text += "Great job! Come back later for more reviews."
-    
-    def update_counter(self):
-        """آپدیت شمارنده کارت‌ها"""
-        counter_text = f"Done: {self.total_today_reviews} | Remaining: {self.remaining_cards}"
-        self.ids.counter_label.text = counter_text
     
     def stop_playlist(self):
         """توقف پخش صداها"""
@@ -261,30 +173,134 @@ class ReviewScreen(MDScreen):
         except:
             pass
     
-    def refresh_session(self):
-        """تازه‌سازی جلسه مرور"""
-        self.show_answer = False
-        self.session_completed = False
+    def before_skip_card(self):
         self.stop_playlist()
+
+    def skip_card(self):
+        if self.current_card:
+            self.flashcard_bl.mark_card_reviewed(
+                card_id=self.current_card.id,
+                quality_Answer=-1
+            )
+
+    def after_skip_card(self, result):
+        self.show_message("⏭ Skipped")
+        Clock.schedule_once(
+            lambda dt: self.load_next_card(),
+            0.5
+        )
+
+    def handle_skip_card_error(self, error):
+        logger.error(f"Skip error: {error}")
         self.load_next_card()
-    
-    def show_success_indicator(self, message):
-        """نمایش نشانگر موفقیت"""
+
+    def show_answer_fields(self):
+
+        if not self.current_card:
+            return
+
+        self.set_fields(mode=FieldMode.show_answer)
+
+        self.set_widget_state(self.ids.button_box,visible=False,height=0)
+        self.set_widget_state(self.ids.answer_button_box,visible=True,height=dp(46))
+
+        self.ids.button_area.height = dp(52)
+
+        self.show_answer = True
+
+    def set_widget_state(self, widget, *, visible, height=None):
+        widget.opacity = 1 if visible else 0
+        widget.disabled = not visible
+
+        if height is not None:
+            widget.height = height
+
+    def before_mark_quality(self):
+        self.stop_playlist()
+        return True
+
+    def mark_card_quality0(self):
+        self.mark_card_quality(0)
+
+    def mark_card_quality1(self):
+        self.mark_card_quality(1)
+
+    def mark_card_quality2(self):
+        self.mark_card_quality(2)
+
+    def mark_card_quality3(self):
+        self.mark_card_quality(3)
+
+    def mark_card_quality4(self):
+        self.mark_card_quality(4)
+
+    def after_mark_quality0(self, result):
+        self.after_mark_quality(0, result)
+
+    def after_mark_quality1(self, result):
+        self.after_mark_quality(1, result)
+
+    def after_mark_quality2(self, result):
+        self.after_mark_quality(2, result)
+
+    def after_mark_quality3(self, result):
+        self.after_mark_quality(3, result)
+
+    def after_mark_quality4(self, result):
+        self.after_mark_quality(4, result)
+
+    def mark_card_quality(self, quality):
+
+        if not self.current_card:
+            return
+
+        success = self.flashcard_bl.mark_card_reviewed(
+            card_id=self.current_card.id,
+            quality_Answer=quality
+        )
+
+        if success:
+            self.total_today_reviews += 1
+
+    def after_mark_quality(self, quality , result):
+
+        self.show_message("✓ Saved")
+
+        Clock.schedule_once(
+            lambda dt: self.load_next_card(),
+            0.5
+        )
+
+    def handle_mark_quality_error(self, error):
+        logger.error(f"Quality error: {error}")
+        self.show_message("Error saving review",msg_type="error",duration=3,)
+
+    def before_refresh_session(self):
+        self.stop_playlist()
+        self.hide_answer_fields()
+        return True
+
+    def refresh_session(self):
+        current_card = self.flashcard_bl.get_next_card_for_review()
+        return current_card
+        
+    def after_refresh_session(self , result):
+        self.current_card = result
+        self.display_current_card()
+        
+    def handle_refresh_session_error(self,error):
+        logger.error(f"Refresh error: {error}")
+        self.show_message("Cannot refresh session",msg_type="error",duration=3,)
+
+    def display_current_card(self):
+        if self.current_card:
+            self.show_card_content(True)
+            self.set_fields(mode=FieldMode.init)
+        else:
+            self.show_session_completed()
+
+    def show_message(self, message, msg_type="success", duration=1):
         app = MDApp.get_running_app()
-        if hasattr(app, 'show_message'):
-            app.show_message(
-                message=message,
-                msg_type="success",
-                duration=1
-            )
-    
-    def show_error_message(self, message):
-        """نمایش پیام خطا"""
-        app = MDApp.get_running_app()
-        if hasattr(app, 'show_message'):
-            app.show_message(
-                message=message,
-                msg_type="error",
-                duration=3
-            )
-            
+
+        if hasattr(app, "show_message"):
+            app.show_message(message=message,msg_type=msg_type,duration=duration,)
