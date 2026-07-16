@@ -21,11 +21,13 @@ Builder.load_string('''
     MDBoxLayout:
         adaptive_height: True
         size_hint_x: 1
+        pos_hint: {"center_y": .5}
         valign: "middle"
     
         MDLabelA:
             text: root.text
             adaptive_height: True
+            height: self.texture_size[1]  
             text_size: self.width, None
             halign: "left"
             valign: "middle"
@@ -34,6 +36,7 @@ Builder.load_string('''
         icon: "delete"
         size_hint: None, None
         size: "36dp", "36dp"
+        pos_hint: {"center_y": .5}
         opacity: 1 if root.allow_delete else 0
         disabled: not root.allow_delete
         on_release: root.on_delete()
