@@ -12,8 +12,8 @@ from urllib.parse import urlparse, unquote
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import ID3, ID3NoHeaderError, TDRC
 from cmn.logger import logger
-from cmn.config_reader import ConfigReader
 from cmn.AppName import *
+import time
 
 class FileManager:
     def __init__(self):
@@ -29,7 +29,7 @@ class FileManager:
     def generate_unique_id(self):
         return str(uuid.uuid4())
     
-    def save_file(self, source_path, source_type="local"):
+    def save_file(self, source_path, title, source_type="local"):
         """
         save file and return direction
         
@@ -55,7 +55,7 @@ class FileManager:
             fileName = FilenameExtractor.extract_filename(source_path)
             file_size = os.path.getsize(file_path['file_path'])
             type_ = FilenameExtractor.get_file_type(file_path['file_name'])
-            self.set_metadata(file_path['file_path'] , fileName ,self.AppName )
+            self.set_metadata(file_path['file_path'] , title ,self.AppName )
             
             return {
                 'file_id': file_id,
@@ -74,9 +74,21 @@ class FileManager:
         """حذف فایل صوتی"""
         try:
             file_path_ = self.getfilepath(file_path)
-            if os.path.exists(file_path_):
-                os.remove(file_path_)
+            if not os.path.exists(file_path_):
                 return True
+            
+            max_retries = 3
+            for attempt in range(max_retries):
+                try:
+                    os.remove(file_path_)
+                    return True
+                except PermissionError as e:
+                    if attempt < max_retries - 1:
+                        time.sleep(0.5)
+                        continue
+                    else:
+                        raise
+            
             return False
         except Exception as e:
             logging.error(f"Error deleting audio file: {e}")

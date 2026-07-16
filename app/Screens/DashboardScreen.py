@@ -3,7 +3,7 @@ from kivymd.uix.screen import MDScreen
 from BL.DashboardBL import DashboardBL
 from cmn.logger import logger
 from cmn.resource_helper import *
-from kivymd.app import MDApp
+from widgets.SnackbarManager import snackbar_manager , Msg_type
 from kivy.clock import Clock
 from widgets.AsyncIconButton import AsyncIconButton
 
@@ -121,12 +121,9 @@ class DashboardScreen(MDScreen):
         )
 
     def handle_load_dashboard(self, e):
+        snackbar_manager.show_snackbar( message=f"load data Error: {str(e)}", msg_type=Msg_type.error )
         logger.error(str(e))
-        MDApp.get_running_app().show_message(
-            str(e),
-            msg_type="error"
-        )
-    
+        
     def format_estimated_study_time(self ,  seconds):
 
         if seconds < 60:

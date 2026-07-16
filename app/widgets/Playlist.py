@@ -1,7 +1,7 @@
 import os
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.lang import Builder
-from kivymd.app import MDApp
+from widgets.SnackbarManager import snackbar_manager , Msg_type
 from kivy.properties import ( StringProperty, NumericProperty, BooleanProperty, ListProperty, ObjectProperty)
 from BL.fileManager import FileManager
 from kivy.core.audio import SoundLoader
@@ -11,6 +11,7 @@ from kivy.metrics import dp
 from kivy.clock import Clock
 from widgets.BaseButtonA import BaseButtonA
 from kivymd.uix.list import OneLineRightIconListItem, IconRightWidget
+from widgets.SongItem import SongItem
 import uuid
 
 Builder.load_string(
@@ -99,6 +100,8 @@ Builder.load_string(
             MDList:
                 id: song_list
                 size_hint_y: None
+                spacing: "8dp"
+                padding: "12dp", "8dp"
                 height: self.minimum_height
 """)
 
@@ -119,10 +122,6 @@ class Playlist(MDBoxLayout):
         self.current_index = 0
         self.last_volume = 100
 
-    def show_message(self, message, msg_type="info"):
-        app = MDApp.get_running_app()
-        app.show_message(   message,   msg_type=msg_type, duration=5   )
-
     def load_song(self, song):
         self.stop_player()
 
@@ -130,14 +129,14 @@ class Playlist(MDBoxLayout):
             path = FileManager.getfilepath(song["value"])
 
             if not os.path.isfile(path):
-                self.show_message("File not found", "error")
+                snackbar_manager.show_snackbar( message=f"File not found", msg_type=Msg_type.error )
                 self.current_song = "File not found"
                 return False
 
             sound = SoundLoader.load(path)
 
             if sound is None:
-                self.show_message("Audio file is not supported or corrupted", "error")
+                snackbar_manager.show_snackbar( message="Audio file is not supported or corrupted", msg_type=Msg_type.error )
                 self.current_song = "Unsupported audio"
                 return False
 
@@ -150,7 +149,7 @@ class Playlist(MDBoxLayout):
             return True
 
         except Exception as e:
-            self.show_message(f"Unexpected error while loading audio {str(e)}", "error")
+            snackbar_manager.show_snackbar( message=f"Unexpected error while loading audio {str(e)}", msg_type=Msg_type.error )
             self.sound = None
             self.current_song = "Audio error"
             self.is_playing = False
@@ -159,7 +158,7 @@ class Playlist(MDBoxLayout):
     def toggle_play(self):
         if not self.sound:
             if not self.songs:
-                self.show_message("Playlist is empty", "warning")
+                snackbar_manager.show_snackbar( message="Playlist is empty", msg_type=Msg_type.warning )
                 return
 
             if self.current_index >= len(self.songs):
@@ -184,7 +183,7 @@ class Playlist(MDBoxLayout):
             self.is_playing = True
 
         except Exception:
-            self.show_message("Cannot play this audio file", "error")
+            snackbar_manager.show_snackbar( message="Cannot play this audio file",msg_type=Msg_type.error )
             self.is_playing = False
 
     def stop_song(self):
@@ -196,12 +195,12 @@ class Playlist(MDBoxLayout):
             self.is_playing = False
 
         except Exception:
-            self.show_message("Error while stopping audio", "error")
+            snackbar_manager.show_snackbar( message="Error while stopping audio",msg_type=Msg_type.error )
             self.is_playing = False
 
     def next_song(self):
         if not self.songs:
-            self.show_message("Playlist is empty", "warning")
+            snackbar_manager.show_snackbar( message="Playlist is empty",msg_type=Msg_type.warning )
             return
 
         was_playing = self.is_playing
@@ -213,7 +212,7 @@ class Playlist(MDBoxLayout):
 
     def prev_song(self):
         if not self.songs:
-            self.show_message("Playlist is empty", "warning")
+            snackbar_manager.show_snackbar( message="Playlist is empty", msg_type=Msg_type.warning )
             return
 
         was_playing = self.is_playing
@@ -232,7 +231,7 @@ class Playlist(MDBoxLayout):
             try:
                 self.sound.volume = value / 100
             except Exception:
-                self.show_message("Volume error", "error")
+                snackbar_manager.show_snackbar( message="Volume error",msg_type=Msg_type.error )
 
     def toggle_mute(self):
         if self.volume_level > 0:
@@ -248,7 +247,7 @@ class Playlist(MDBoxLayout):
             try:
                 self.sound.stop()
             except Exception:
-                self.show_message("Audio stop error", "error")
+                snackbar_manager.show_snackbar( message="Audio stop error", msg_type=Msg_type.error )
 
         self.sound = None
         self.is_playing = False
@@ -294,16 +293,15 @@ class Playlist(MDBoxLayout):
         else:
             text = fileName
     
-        item = OneLineRightIconListItem(text=text)
+        
+        item = SongItem( text=text, song=song, allow_delete=self.allow_delete, )
+
         item.song = song
-    
-        item.bind(on_release=lambda x: self.select_song(x.song))
-    
+        
+        item.select_callback = self.select_song
+        
         if self.allow_delete:
-            btn = IconRightWidget(icon="delete")
-            btn.song = song
-            btn.bind(on_release=lambda x: self.delete_song(x.song))
-            item.add_widget(btn)
+            item.delete_callback = self.delete_song
     
         return item
 

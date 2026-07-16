@@ -40,6 +40,9 @@ class AsyncBehavior:
         self._start_task()
 
     def _start_task(self):
+        self.loading = True
+        self.disabled = True
+
         try:
             if self.before and not self.before():
                 return
@@ -52,13 +55,7 @@ class AsyncBehavior:
 
             return
 
-        self.loading = True
-        self.disabled = True
-
-        Thread(
-            target=self._run_task,
-            daemon=True
-        ).start()
+        Thread( target=self._run_task, daemon=True ).start()
 
     def _show_confirm_dialog(self):
         self.dialog = MDDialog(
@@ -101,11 +98,11 @@ class AsyncBehavior:
             )
 
     def _finish(self, result):
-        self.loading = False
-        self.disabled = False
-
         if callable(self.after):
             self.after(result)
+        
+        self.loading = False
+        self.disabled = False
 
     def _error(self, e):
         self.loading = False

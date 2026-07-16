@@ -3,7 +3,7 @@ from kivy.lang import Builder
 from cmn.resource_helper import *
 from BL.FlashCardBL import FlashCardBL
 from BL.DashboardBL import DashboardBL
-from kivymd.app import MDApp
+from widgets.SnackbarManager import snackbar_manager , Msg_type
 from kivy.properties import BooleanProperty, NumericProperty
 from kivy.clock import Clock
 from kivy.metrics import dp
@@ -60,7 +60,7 @@ class ReviewScreen(MDScreen):
                 
         except Exception as e:
             logger.info(f"Error loading next card: {e}")
-            self.show_message("Error loading card. Please try again.",msg_type="error",duration=3,)
+            snackbar_manager.show_snackbar( message="Error loading card. Please try again.", msg_type=Msg_type.error )
 
     def load_card_fields(self):
         card = self.current_card
@@ -185,11 +185,8 @@ class ReviewScreen(MDScreen):
             )
 
     def after_skip_card(self, result):
-        self.show_message("⏭ Skipped")
-        Clock.schedule_once(
-            lambda dt: self.load_next_card(),
-            0.5
-        )
+        snackbar_manager.show_snackbar( message=f"⏭ Skipped", msg_type=Msg_type.error )
+        Clock.schedule_once(lambda dt: self.load_next_card(),0.5)
 
     def handle_skip_card_error(self, error):
         logger.error(f"Skip error: {error}")
@@ -264,17 +261,13 @@ class ReviewScreen(MDScreen):
             self.total_today_reviews += 1
 
     def after_mark_quality(self, quality , result):
-
-        self.show_message("✓ Saved")
-
-        Clock.schedule_once(
-            lambda dt: self.load_next_card(),
-            0.5
-        )
+        snackbar_manager.show_snackbar( message=f"✓ Saved {quality}", msg_type=Msg_type.success )
+        Clock.schedule_once( lambda dt: self.load_next_card(), 0.5 )
 
     def handle_mark_quality_error(self, error):
         logger.error(f"Quality error: {error}")
-        self.show_message("Error saving review",msg_type="error",duration=3,)
+        snackbar_manager.show_snackbar( message=f"Error saving review {str(error)}", msg_type=Msg_type.error )
+    
 
     def before_refresh_session(self):
         self.stop_playlist()
@@ -291,7 +284,7 @@ class ReviewScreen(MDScreen):
         
     def handle_refresh_session_error(self,error):
         logger.error(f"Refresh error: {error}")
-        self.show_message("Cannot refresh session",msg_type="error",duration=3,)
+        snackbar_manager.show_snackbar( message="Cannot refresh session", msg_type=Msg_type.error )
 
     def display_current_card(self):
         if self.current_card:
@@ -299,9 +292,3 @@ class ReviewScreen(MDScreen):
             self.set_fields(mode=FieldMode.init)
         else:
             self.show_session_completed()
-
-    def show_message(self, message, msg_type="success", duration=1):
-        app = MDApp.get_running_app()
-
-        if hasattr(app, "show_message"):
-            app.show_message(message=message,msg_type=msg_type,duration=duration,)

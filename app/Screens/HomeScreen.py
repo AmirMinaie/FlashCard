@@ -1,6 +1,5 @@
 from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
-from kivymd.app import MDApp
 from kivy.core.text import LabelBase
 from widgets.MDLabelA import MDLabelA
 from kivy.properties import StringProperty , BooleanProperty , NumericProperty

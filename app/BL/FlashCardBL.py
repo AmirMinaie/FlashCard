@@ -52,7 +52,7 @@ class FlashCardBL:
                     if source_type is None:
                         raise ValueError("Invalid source type.")
 
-                    file_info = file_Manager.save_file( file_data["value"], source_type.name )
+                    file_info = file_Manager.save_file( file_data["value"],file_data["title"] , source_type.name )
 
                     type_ = session.query(constantDA).filter(constantDA.name == file_info["type_"]).first()
 
@@ -176,10 +176,7 @@ class FlashCardBL:
                 if source_type is None:
                     raise ValueError("Invalid source type.")
 
-                file_info = file_manager.save_file(
-                    file_data["value"],
-                    source_type.name
-                )
+                file_info = file_manager.save_file( file_data["value"], file_data["title"], source_type.name )
 
                 type_ = session.query(constantDA).filter(
                     constantDA.name == file_info["type_"]

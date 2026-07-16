@@ -86,14 +86,6 @@ class FlashCardApp (MDApp):
 
     def close_splash(self, dt):
         splash.close()
-    
-    def show_message(self, message, msg_type="info", duration=3):
-        from widgets.SnackbarManager import snackbar_manager
-        return snackbar_manager.show_snackbar(
-            message=message,
-            msg_type=msg_type,
-            duration=duration
-        )
 
 def get_constant(name):
     try:

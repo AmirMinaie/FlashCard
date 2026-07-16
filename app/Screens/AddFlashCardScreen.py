@@ -6,7 +6,6 @@ from widgets.MDTextFieldA import MDTextFieldA
 from widgets.DropDownA import DropDownA
 from BL.constantBL import constantBL
 from BL.FlashCardBL import FlashCardBL
-from kivymd.app import MDApp
 from kivymd.uix.list import OneLineIconListItem
 from kivymd.uix.button import MDIconButton
 from kivymd.uix.dialog import MDDialog
@@ -19,6 +18,7 @@ from os.path import basename
 from cmn.logger import logger
 from widgets.AsyncButton import AsyncButton
 from itertools import zip_longest
+from widgets.SnackbarManager import snackbar_manager , Msg_type
 
 import uuid
 from kivy.properties import StringProperty, NumericProperty, DictProperty, BooleanProperty , ObjectProperty 
@@ -92,16 +92,10 @@ class AddFlashCardScreen(MDScreen):
         return data
 
     def befor_Save_info(self):
-        from kivymd.app import MDApp
-        app = MDApp.get_running_app()
 
         validation_result = self.validate_form()
         if not validation_result["is_valid"]:
-            app.show_message(
-                message = validation_result["message"],
-                msg_type ="error",
-                duration =5
-            )
+            snackbar_manager.show_snackbar( message=validation_result["message"], msg_type=Msg_type.error )
             return False
         return True
     
@@ -223,50 +217,23 @@ class AddFlashCardScreen(MDScreen):
         }
 
     def show_success_message(self, saved_card):
-        app = MDApp.get_running_app()
-
         message = f"saved successfully!\n"
         message +=f"Title: {saved_card['title']} ID: #{saved_card['id']}"
-
-        app.show_message(message,msg_type="success",duration=4)
-
+        snackbar_manager.show_snackbar( message=message, msg_type=Msg_type.success )
+        
     def show_validation_error(self, error_message):
-        app = MDApp.get_running_app()
-        app.show_message(
-            f"Validation Error: {error_message}",
-            msg_type="error",
-            duration=5
-        )
+        snackbar_manager.show_snackbar( message=f"Validation Error: {error_message}", msg_type=Msg_type.error )
 
     def show_database_error(self, error_message):
-        """نمایش خطای دیتابیس"""
-        app = MDApp.get_running_app()
-        app.show_message(
-            "Database Error. Please try again.",
-            msg_type="error",
-            duration=5
-        )
-        # لاگ کردن خطا برای دیباگ
+        snackbar_manager.show_snackbar( message="Database Error. Please try again.", msg_type=Msg_type.error )
         logger.info(f"Database Error: {error_message}")
 
     def show_generic_error(self, error_message):
-        """نمایش خطای عمومی"""
-        app = MDApp.get_running_app()
-        app.show_message(
-            f"An unexpected error occurred {error_message}",
-            msg_type="error",
-            duration=5
-        )
+        snackbar_manager.show_snackbar( message=f"An unexpected error occurred {error_message}", msg_type=Msg_type.error )
         logger.info(f"Error: {error_message}")
 
     def show_save_failed_message(self):
-        """نمایش پیام عدم موفقیت در ذخیره"""
-        app = MDApp.get_running_app()
-        app.show_message(
-            "Failed to save flash card. Please check your data and try again.",
-            msg_type="warning",
-            duration=5
-        )
+        snackbar_manager.show_snackbar( message="Failed to save flash card. Please check your data and try again.", msg_type=Msg_type.warning )
 
     def show_add_song_dialog(self):
 
@@ -397,14 +364,7 @@ MDBoxLayout:
         return self.card_id > 0
     
     def After_delete(self , result):
-        app = MDApp.get_running_app()
-
-        app.show_message(
-            "Flash card deleted successfully",
-            msg_type="success",
-            duration=4
-        )
-
+        snackbar_manager.show_snackbar( message="Flash card deleted successfully", msg_type=Msg_type.success )
         self.reset_form()
 
     def handle_delete(self , e):
