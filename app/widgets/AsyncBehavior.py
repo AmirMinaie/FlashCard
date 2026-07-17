@@ -45,6 +45,8 @@ class AsyncBehavior:
 
         try:
             if self.before and not self.before():
+                self.loading = False
+                self.disabled = False 
                 return
 
         except Exception as e:
@@ -88,21 +90,17 @@ class AsyncBehavior:
         try:
             result = self.task() if callable(self.task) else None
 
-            Clock.schedule_once(
-                lambda dt: self._finish(result)
-            )
+            Clock.schedule_once( lambda dt: self._finish(result) )
 
         except Exception as e:
-            Clock.schedule_once(
-                lambda dt, err=e: self._error(err)
-            )
+            Clock.schedule_once( lambda dt, err=e: self._error(err) )
 
     def _finish(self, result):
         if callable(self.after):
             self.after(result)
         
         self.loading = False
-        self.disabled = False
+        self.disabled = False 
 
     def _error(self, e):
         self.loading = False

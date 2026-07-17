@@ -94,6 +94,7 @@ class AddFlashCardScreen(MDScreen):
     def befor_Save_info(self):
 
         validation_result = self.validate_form()
+        self.ids.songs_playlist.stop_player()
         if not validation_result["is_valid"]:
             snackbar_manager.show_snackbar( message=validation_result["message"], msg_type=Msg_type.error )
             return False

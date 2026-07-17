@@ -248,8 +248,8 @@ class Playlist(MDBoxLayout):
                 self.sound.stop()
             except Exception:
                 snackbar_manager.show_snackbar( message="Audio stop error", msg_type=Msg_type.error )
-
-        self.sound = None
+            finally:
+                self.sound = None
         self.is_playing = False
 
     def on_stop(self):

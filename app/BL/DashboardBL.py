@@ -37,6 +37,12 @@ class TodayPerformance:
     average_quality: float
     success_rate: float
 
+@dataclass
+class ReviewStats:
+    words_read_yesterday: int
+    avg_words_reviewed_last_two_weeks: float
+
+
 class DashboardBL:
 
     def __init__(self):
@@ -292,4 +298,48 @@ class DashboardBL:
         return TodayPerformance(
             average_quality=result.average_quality or 0,
             success_rate=result.success_rate or 0,
+        )
+
+
+    def get_Review_Stats(self):
+        session = get_session()
+
+        yesterday = self.today - timedelta(days=1)
+        two_weeks_ago = self.today - timedelta(days=14)
+
+        words_read_yesterday = (
+            session.query(func.count(reviewFlashcardDA.id))
+            .filter(
+                func.date(reviewFlashcardDA.createAt) == yesterday,
+                reviewFlashcardDA.quality.isnot(None) 
+            )
+            .scalar()
+        )
+
+        daily_reviews = (
+            session.query(
+                func.date(reviewFlashcardDA.createAt).label('review_date'),
+                func.count(reviewFlashcardDA.id).label('review_count')
+            )
+            .filter(
+                func.date(reviewFlashcardDA.createAt) >= two_weeks_ago,
+                func.date(reviewFlashcardDA.createAt) < self.today, 
+                reviewFlashcardDA.quality.isnot(None) 
+            )
+            .group_by(func.date(reviewFlashcardDA.createAt))
+            .all()
+        )
+
+
+        if daily_reviews:
+            total_reviews = sum(review.review_count for review in daily_reviews)
+            avg_words_reviewed = total_reviews / 14 
+        else:
+            avg_words_reviewed = 0
+
+        session.close()
+
+        return ReviewStats(
+            words_read_yesterday=words_read_yesterday or 0,
+            avg_words_reviewed_last_two_weeks=round(avg_words_reviewed, 1)
         )

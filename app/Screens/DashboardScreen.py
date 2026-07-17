@@ -12,7 +12,7 @@ Builder.load_file(str(PathManager.app_path("Kv/DashboardScreen.kv")))
 
 
 class DashboardScreen(MDScreen):
-
+    
     def on_kv_post(self, *args):
         Clock.schedule_once(lambda dt: self.ids.refresh_btn._on_press(), 0)
 
@@ -26,6 +26,7 @@ class DashboardScreen(MDScreen):
             "upcoming_reviews": dashboardBl.get_upcoming_reviews(),
             "estimated_study_time": dashboardBl.get_estimated_study_time(),
             "today_performance": dashboardBl.get_today_performance(),
+            "ReviewStats" : dashboardBl.get_Review_Stats(),
         }
 
     def befor_load_dashboard(self):
@@ -38,12 +39,18 @@ class DashboardScreen(MDScreen):
         self.upcoming_reviews = data["upcoming_reviews"]
         self.estimated_study_time = data["estimated_study_time"]
         self.today_performance = data["today_performance"]
+        self.ReviewStats = data["ReviewStats"]
 
         ####################################################
         # TODAY
         ####################################################
 
         self.ids.today_review_label.text = f"{self.summary.today_reviews} Reviews Completed"
+        if self.summary.today_reviews >= self.ReviewStats.avg_words_reviewed_last_two_weeks:
+            self.ids.today_review_label.color = (0, 0.8, 0, 1)  
+        else:
+            self.ids.today_review_label.color = (0.8, 0, 0, 1)  
+
         self.ids.remaining_label.text = f"{self.summary.remaining_reviews} cards remaining"
         self.ids.completion_percent.text = f"{self.summary.today_progress:.2f}%"
         self.ids.today_progress.value = self.summary.today_progress
@@ -56,7 +63,14 @@ class DashboardScreen(MDScreen):
         self.ids.due_today_label.text = str(self.summary.due_today)
         self.ids.total_cards_label.text = f"{self.learning_progress.total_cards:,}"
         self.ids.mature_label.text = str(self.learning_progress.mature_cards)
-
+        self.ids.words_read_yesterday.text = f"{self.ReviewStats.words_read_yesterday}  card"
+        if self.ReviewStats.words_read_yesterday >= self.ReviewStats.avg_words_reviewed_last_two_weeks:
+            self.ids.words_read_yesterday.color = (0, 0.8, 0, 1)  
+        else:
+            self.ids.words_read_yesterday.color = (0.8, 0, 0, 1)  
+        
+        self.ids.avg_words_reviewed_last_two_weeks.text = f"{self.ReviewStats.avg_words_reviewed_last_two_weeks:.2f} card"
+        
         quality = self.today_performance.average_quality
 
         self.ids.Today_Performance_label.text = (

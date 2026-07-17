@@ -420,6 +420,91 @@
                                         text: "3.30 (70%)"
                                         adaptive_width: True
                                         bold: True
+
+                    ##################################################
+                    # words_read_yesterday
+                    ##################################################
+                
+                    MDCard:
+                        size_hint_y: None
+                        height: dp(100)
+                        radius: [14,14,14,14]
+                        elevation: 2
+                
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            padding: dp(16)
+                            spacing: dp(8)
+
+                            MDBoxLayout:
+                                orientation: "horizontal"
+                                size_hint_y: None
+                                height: dp(32)
+                                spacing: dp(8)
+                
+                                MDIcon:
+                                    icon: "calendar-today"
+                                    icon_size: "24sp"
+                                    size_hint: None, None
+                                    size: dp(24), dp(24)
+
+                                MDLabel:
+                                    text: "Review yesterday"
+                                    bold: True
+                                    size_hint_y: None
+                                    height: self.texture_size[1]
+                
+                            MDLabel:
+                                id: words_read_yesterday
+                                text: "0"
+                                font_style: "H5"
+                                bold: True
+                                halign: "center"
+                                size_hint_y: None
+                                height: self.texture_size[1]
+
+                    ##################################################
+                    # avg_words_reviewed_last_two_weeks
+                    ##################################################
+                
+                    MDCard:
+                        size_hint_y: None
+                        height: dp(100)
+                        radius: [14,14,14,14]
+                        elevation: 2
+                
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            padding: dp(16)
+                            spacing: dp(8)
+
+                            MDBoxLayout:
+                                orientation: "horizontal"
+                                size_hint_y: None
+                                height: dp(32)
+                                spacing: dp(8)
+                
+                                MDIcon:
+                                    icon: "trending-up"
+                                    icon_size: "24sp"
+                                    size_hint: None, None
+                                    size: dp(24), dp(24)
+
+                                MDLabel:
+                                    text: "Avg reviewed (14 Day)"
+                                    bold: True
+                                    size_hint_y: None
+                                    height: self.texture_size[1]
+                
+                            MDLabel:
+                                id: avg_words_reviewed_last_two_weeks
+                                text: "0"
+                                font_style: "H5"
+                                bold: True
+                                halign: "center"
+                                size_hint_y: None
+                                height: self.texture_size[1]
+
                 ##################################################
                 # LEARNING PROGRESS
                 ##################################################
