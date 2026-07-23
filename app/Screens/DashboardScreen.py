@@ -6,7 +6,7 @@ from cmn.resource_helper import *
 from widgets.SnackbarManager import snackbar_manager , Msg_type
 from kivy.clock import Clock
 from widgets.AsyncIconButton import AsyncIconButton
-
+from cmn.get_progress_color import get_progress_color
 
 Builder.load_file(str(PathManager.app_path("Kv/DashboardScreen.kv")))
 
@@ -44,12 +44,16 @@ class DashboardScreen(MDScreen):
         ####################################################
         # TODAY
         ####################################################
+        today_reviews = self.summary.today_reviews
+        avg = self.ReviewStats.avg_words_reviewed_last_two_weeks
 
         self.ids.today_review_label.text = f"{self.summary.today_reviews} Reviews Completed"
-        if self.summary.today_reviews >= self.ReviewStats.avg_words_reviewed_last_two_weeks:
-            self.ids.today_review_label.color = (0, 0.8, 0, 1)  
+        
+        if avg > 0:
+            ratio = today_reviews / avg
         else:
-            self.ids.today_review_label.color = (0.8, 0, 0, 1)  
+            ratio = 0
+        self.ids.today_review_label.color = get_progress_color(ratio)
 
         self.ids.remaining_label.text = f"{self.summary.remaining_reviews} cards remaining"
         self.ids.completion_percent.text = f"{self.summary.today_progress:.2f}%"
@@ -59,15 +63,19 @@ class DashboardScreen(MDScreen):
         # SUMMARY
         ####################################################
 
-        self.ids.streak_label.text = f"{self.summary.streak} Days"
+        self.ids.streak_label.text = f"{self.format_days(self.summary.streak)}"
         self.ids.due_today_label.text = str(self.summary.due_today)
         self.ids.total_cards_label.text = f"{self.learning_progress.total_cards:,}"
         self.ids.mature_label.text = str(self.learning_progress.mature_cards)
         self.ids.words_read_yesterday.text = f"{self.ReviewStats.words_read_yesterday}  card"
-        if self.ReviewStats.words_read_yesterday >= self.ReviewStats.avg_words_reviewed_last_two_weeks:
-            self.ids.words_read_yesterday.color = (0, 0.8, 0, 1)  
+        
+        yesterday = self.ReviewStats.words_read_yesterday
+
+        if avg > 0:
+            ratio = yesterday / avg
         else:
-            self.ids.words_read_yesterday.color = (0.8, 0, 0, 1)  
+            ratio = 0
+        self.ids.words_read_yesterday.color = get_progress_color(ratio)
         
         self.ids.avg_words_reviewed_last_two_weeks.text = f"{self.ReviewStats.avg_words_reviewed_last_two_weeks:.2f} card"
         
@@ -152,3 +160,26 @@ class DashboardScreen(MDScreen):
         minutes %= 60
 
         return f"{hours}h {minutes} m"
+
+    def format_days(self, days: int) -> str:
+        if days <= 0:
+            return "No Start"
+
+        years = days // 365
+        days %= 365
+
+        months = days // 30
+        days %= 30
+
+        parts = []
+
+        if years:
+            parts.append(f"{years} Year" if years == 1 else f"{years} Years")
+
+        if months:
+            parts.append(f"{months} Month" if months == 1 else f"{months} Months")
+
+        if days:
+            parts.append(f"{days} Day" if days == 1 else f"{days} Days")
+
+        return " ".join(parts)

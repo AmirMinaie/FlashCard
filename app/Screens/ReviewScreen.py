@@ -9,6 +9,7 @@ from kivy.clock import Clock
 from kivy.metrics import dp
 from widgets.Playlist import Playlist
 from cmn.logger import logger
+from cmn.get_progress_color import get_progress_color
 
 Builder.load_file(str(PathManager.app_path("Kv/ReviewScreen.kv")))
 
@@ -28,6 +29,7 @@ class ReviewScreen(MDScreen):
         super().__init__(*args, **kwargs)
         self.flashcard_bl = FlashCardBL()
         self.summary = DashboardBL().get_summary()
+        self.Review_Stats = DashboardBL().get_Review_Stats()
         self.current_card = None
         self.session_dialog = None
         self.no_more_cards_dialog = None
@@ -43,6 +45,10 @@ class ReviewScreen(MDScreen):
         self.show_answer = False
         self.session_completed = False
         self.total_today_reviews = self.summary.today_reviews
+        self.Avg = self.Review_Stats.avg_words_reviewed_last_two_weeks
+        if self.Avg == 0:
+            self.Avg = 1
+        self.ids.counter_label.color = get_progress_color(self.total_today_reviews / self.Avg)
         self.load_next_card()
     
     def load_next_card(self):
@@ -259,6 +265,7 @@ class ReviewScreen(MDScreen):
 
         if success:
             self.total_today_reviews += 1
+            self.ids.counter_label.color = get_progress_color(self.total_today_reviews / self.Avg)
 
     def after_mark_quality(self, quality , result):
         snackbar_manager.show_snackbar( message=f"✓ Saved {quality}", msg_type=Msg_type.success )
