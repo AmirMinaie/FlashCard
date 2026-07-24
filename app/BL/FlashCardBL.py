@@ -135,12 +135,17 @@ class FlashCardBL:
             
     def get_card_by_id(self , card_id):
         session = get_session()
-        card = session.query(flashcardDA).options(
-            selectinload(flashcardDA.files)
-            .joinedload(fileFlashcardDA.sourceType)
-        ).filter(
-            flashcardDA.id == card_id
-        ).first()
+
+        card = session.query(flashcardDA).\
+                        options(
+                            selectinload(flashcardDA.pos),
+                            selectinload(flashcardDA.type_),
+                            selectinload(flashcardDA.box),
+                            selectinload(flashcardDA.level),
+                            selectinload(flashcardDA.files),
+                            selectinload(flashcardDA.files).selectinload(fileFlashcardDA.sourceType)).\
+                        filter( flashcardDA.id == card_id).\
+                        first()
         session.close()
         return card
 

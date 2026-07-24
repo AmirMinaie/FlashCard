@@ -33,12 +33,19 @@
 
                 AsyncIconButton:
                     id: refresh_btn
-                    icon: "refresh"
-
+                    icon: "skip-next-outline"
                     before: root.before_refresh_session
                     task: root.refresh_session
                     after: root.after_refresh_session
                     error_handler: root.handle_refresh_session_error
+
+                AsyncIconButton:
+                    id: reload_card_btn
+                    icon: "database-refresh"   # یا "reload"
+                    before: root.before_reload_card
+                    task: root.reload_current_card
+                    after: root.after_reload_card
+                    error_handler: root.handle_reload_card_error
 
         ##################################################
         # Complete Session

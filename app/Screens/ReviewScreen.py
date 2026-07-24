@@ -275,7 +275,6 @@ class ReviewScreen(MDScreen):
         logger.error(f"Quality error: {error}")
         snackbar_manager.show_snackbar( message=f"Error saving review {str(error)}", msg_type=Msg_type.error )
     
-
     def before_refresh_session(self):
         self.stop_playlist()
         self.hide_answer_fields()
@@ -299,3 +298,28 @@ class ReviewScreen(MDScreen):
             self.set_fields(mode=FieldMode.init)
         else:
             self.show_session_completed()
+
+    def before_reload_card(self):
+        self.stop_playlist()
+        self.hide_answer_fields()
+        return True
+
+    def reload_current_card(self):
+        if not self.current_card:
+            return None
+        return self.flashcard_bl.get_card_by_id(self.current_card.id)
+
+    def after_reload_card(self, result):
+        if result:
+            self.current_card = result
+            self.display_current_card()
+        else:
+            snackbar_manager.show_snackbar(
+                message="Card not found in database.", msg_type=Msg_type.error
+            )
+
+    def handle_reload_card_error(self, error):
+        logger.error(f"Reload card error: {error}")
+        snackbar_manager.show_snackbar(
+            message="Failed to reload card data.", msg_type=Msg_type.error
+        )
