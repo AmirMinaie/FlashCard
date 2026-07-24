@@ -11,15 +11,47 @@
             spacing: dp(5)
             padding: [dp(10), dp(10), dp(10), 0]
             
-            MDTextField:
-                id: search_field
-                hint_text: "search"
-                mode: "rectangle"
+            BoxLayout:
                 size_hint_y: None
                 height: dp(50)
-                on_text: root.search_flashcards(self.text)
-                icon_left: "magnify"
-                line_color_focus: app.theme_cls.primary_color
+                spacing: dp(10)
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(50)
+                    spacing: dp(5)
+
+                    MDTextField:
+                        id: search_field
+                        hint_text: "search"
+                        mode: "rectangle"
+                        size_hint_y: None
+                        height: dp(50)
+                        icon_left: "magnify"
+                        on_text: root.search_flashcards(self.text)
+
+                BoxLayout:
+                    size_hint_x: 0.15
+                    orientation: "horizontal"
+                    spacing: dp(3)
+                    padding: [0,0,0,0]
+
+
+                    MDLabel:
+                        text: "Exact"
+                        size_hint_x: None
+                        width: dp(35)
+                        halign: "center"
+                        valign: "center"
+                        font_style: "Caption"
+
+
+                    MDSwitch:
+                        id: exact_switch
+                        size_hint_x: None
+                        width: dp(40)
+                        pos_hint: {"center_y": .5}
+                        on_active: root.search_flashcards(search_field.text)
             
             ScrollView:
                 size_hint_y: None

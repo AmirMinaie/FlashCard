@@ -289,10 +289,16 @@ class FlashCardBL:
 
         return True
     
-    def get_cards(self , order=None , SearchText='', where=None):
+    def get_cards(self , order=None , SearchText='', where=None , exact_search = False, page = 1 , page_size = 20):
         session = get_session()
 
-        query = session.query(flashcardDA).options(
+        query = self._build_cards_query(
+            session,
+            SearchText,
+            where,
+            exact_search
+        )
+        query = query.options(
             selectinload(flashcardDA.pos),
             selectinload(flashcardDA.type_),
             selectinload(flashcardDA.box),
@@ -303,24 +309,45 @@ class FlashCardBL:
         if order_expressions:
             query = query.order_by(*order_expressions)
 
+        
+        query = query.limit(page_size).offset(
+            (page-1)*page_size
+        )
+        cards = query.all()
+        session.close()
+        return cards
 
+    def get_cards_count(self , order=None , SearchText='', where=None , exact_search = False):
+        session = get_session()
+        
+        query = self._build_cards_query(
+            session,
+            SearchText,
+            where,
+            exact_search
+        )
+
+        count = query.with_entities(
+            func.count(flashcardDA.id)
+        ).scalar()
+
+        session.close()
+        return count
+
+    def _build_cards_query( self, session, SearchText='', where=None , exact_search = False):
+
+        query = session.query(flashcardDA)
         where_expressions = self._get_where_expressions(where)
+
         if where_expressions:
             query = query.where(*where_expressions)
 
+        text_expressions = self._get_text_expressions(SearchText, exact_search)
 
-        text_expressions = self._get_text_expressions(SearchText)
         if text_expressions:
             query = query.where(*text_expressions)
 
-        CardsPerPage = ConfigReader().get("CardsPerPage")
-        query = query.limit(CardsPerPage)
-
-
-        cards = query.all()
-
-        session.close()
-        return cards
+        return query
 
     def get_next_card_for_review(self):
         try:
@@ -474,23 +501,26 @@ class FlashCardBL:
 
         return expressions
 
-    def _get_text_expressions(self, search_text):
+    def _get_text_expressions(self, search_text , exact_search):
         """
         search_text: str
         """
         if not search_text:
             return []
 
-        search_text = f"%{search_text}%"
+        search_text = f"%{search_text.lower()}%"
 
-        return [
-            or_(
-                flashcardDA.title.ilike(search_text),
-                flashcardDA.definition.ilike(search_text),
-                flashcardDA.example.ilike(search_text),
-                flashcardDA.collocation.ilike(search_text),
-            )
-        ]
+        if exact_search:
+            return [
+                        or_(
+                            flashcardDA.title.ilike(search_text),
+                            flashcardDA.definition.ilike(search_text),
+                            flashcardDA.example.ilike(search_text),
+                            flashcardDA.collocation.ilike(search_text),
+                        )
+                    ]
+        else:
+            return [flashcardDA.title.ilike(search_text)]
 
     def _normalize_where_value(self, value):
         """

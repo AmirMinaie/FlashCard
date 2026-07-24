@@ -1,5 +1,8 @@
 @echo off
-setlocal
+setlocal EnableDelayedExpansion
+
+:: Record build start time
+set "START=%TIME%"
 
 call venv\Scripts\activate
 
@@ -40,11 +43,35 @@ pyinstaller ^
     --hidden-import kivymd.uix.progressbar ^
     --hidden-import kivymd.uix.slider
 
+:: Record build end time
+set "END=%TIME%"
+
+:: Convert start time to seconds
+for /f "tokens=1-4 delims=:., " %%a in ("%START%") do (
+    set /a START_SEC=%%a*3600 + %%b*60 + %%c
+)
+
+:: Convert end time to seconds
+for /f "tokens=1-4 delims=:., " %%a in ("%END%") do (
+    set /a END_SEC=%%a*3600 + %%b*60 + %%c
+)
+
+:: Handle midnight rollover
+if !END_SEC! LSS !START_SEC! set /a END_SEC+=86400
+
+:: Calculate elapsed time
+set /a ELAPSED=END_SEC-START_SEC
+set /a HH=ELAPSED/3600
+set /a MM=(ELAPSED%%3600)/60
+set /a SS=ELAPSED%%60
+
 echo.
 echo ==========================================
 echo Build finished.
 echo Executable:
 echo %PROJECT_DIR%\output\dist\DuckMemo.exe
+echo.
+echo Build Time: !HH!h !MM!m !SS!s
 echo ==========================================
 
 pause

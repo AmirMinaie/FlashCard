@@ -237,7 +237,6 @@ class AddFlashCardScreen(MDScreen):
         snackbar_manager.show_snackbar( message="Failed to save flash card. Please check your data and try again.", msg_type=Msg_type.warning )
 
     def show_add_song_dialog(self):
-
         if not self.dialog_add_song:
 
             self.song_dialog_content = Builder.load_string("""

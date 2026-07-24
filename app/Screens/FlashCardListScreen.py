@@ -1,19 +1,20 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from cmn.resource_helper import *
+from widgets.SnackbarManager import snackbar_manager , Msg_type
 from widgets.MDLabelA import MDLabelA
 from widgets.MDCardA import MDCardA
 from widgets.MDChipA import MDChipA
 from kivymd.uix.behaviors import RoundedRectangularElevationBehavior
-from kivy.properties import StringProperty, ListProperty, DictProperty, BooleanProperty , ObjectProperty 
-from BL.FlashCardBL import FlashCardBL , OrderByConfig
+from kivy.properties import StringProperty, ListProperty, DictProperty, BooleanProperty, ObjectProperty 
+from BL.FlashCardBL import FlashCardBL, OrderByConfig
 from cmn.config_reader import ConfigReader
 from kivy.metrics import dp
 from kivymd.app import MDApp
+from kivy.clock import Clock
 from .AddFlashCardScreen import AddFlashCardScreen
 
-
-Builder.load_file(str(PathManager.app_path( "Kv/FlashCardListScreen.kv")))
+Builder.load_file(str(PathManager.app_path("Kv/FlashCardListScreen.kv")))
 
 class FlashCardListScreen(MDScreen):
     Filters = ConfigReader().get('filters_FlashCard_List')
@@ -23,21 +24,58 @@ class FlashCardListScreen(MDScreen):
         super().__init__(*args, **kwargs)
         self.filter_chips = {}
         self.search_text = ''
+        self.exact_search = False
+        self.flashcard_bl = FlashCardBL()
+        self.current_page = 1
+        self.page_size = ConfigReader().get("CardsPerPage")
+        self.loading_more = False
+        self.has_more = True
+        self._scroll_trigger = None
 
     def on_kv_post(self, base_widget):
         self.create_filter_chips()
-        self.load_flashcard()
+        self.load_flashcard(reset=True)
+        self.update_filter_counts()
+        # استفاده از Clock برای throttle کردن
+        self.ids.RV.bind(scroll_y=self.schedule_check_scroll)
+
+    def schedule_check_scroll(self, rv, value):
+        """زمان‌بندی بررسی اسکرول با تاخیر"""
+        if self._scroll_trigger:
+            Clock.unschedule(self._scroll_trigger)
+        self._scroll_trigger = Clock.schedule_once(
+            lambda dt: self.check_scroll(rv, value), 0.1
+        )
+
+    def check_scroll(self, rv, value):
+        """بررسی اسکرول برای لود بیشتر"""
+        self.prev_scroll_value = value
+        if value > 0.05 or value > self.prev_scroll_value:
+            return
+        
+        snackbar_manager.show_snackbar(message=f"load page {len(self.ids.RV.data)} {value}", msg_type=Msg_type.info )
+        if self.loading_more:
+            return
+        
+        if not self.has_more:
+            return
+        
+        self.loading_more = True
+        
+        self.current_page += 1
+        self.load_flashcard(reset=False)
 
     def search_flashcards(self, search_text):
         """جستجو در فلش کارت‌ها"""
-        from kivy.clock import Clock
         self.search_text = search_text
+        self.exact_search = self.ids.exact_switch.active
         Clock.unschedule(self._perform_search)
-        Clock.schedule_once(lambda dt: self._perform_search(search_text), 0.3)
+        Clock.schedule_once(lambda dt: self._perform_search(), 0.3)
     
-    def _perform_search(self, search_text):
+    def _perform_search(self):
         """انجام جستجو با تاخیر"""
-        self.load_flashcard()
+        self.load_flashcard(reset=True)
+        self.update_filter_counts()
 
     def create_filter_chips(self):
         container = self.ids.filter_chips_container
@@ -49,6 +87,7 @@ class FlashCardListScreen(MDScreen):
                 filter_id=filter_data["id"],
                 filter_icon=filter_data["icon"],
                 text=filter_data["text"],
+                base_text=filter_data["text"],
                 filter_type=filter_data["color"],
                 size_hint=(None, None),
                 size=(dp(140), dp(32)),
@@ -70,9 +109,8 @@ class FlashCardListScreen(MDScreen):
         
         selected_chip.select()
         self.Curent_Filter_Id = selected_chip.filter_id
-        self.load_flashcard()
+        self.load_flashcard(reset=True)
      
-
     def edit_card(self, card_id):
         """ویرایش کارت با آیدی مشخص"""
         app = MDApp.get_running_app()
@@ -91,40 +129,84 @@ class FlashCardListScreen(MDScreen):
                         break
                 break
 
-    def load_flashcard(self):
-        Curent_Filter = next((item for item in self.Filters if item.get("id") == self.Curent_Filter_Id), None)
-        flashcardList = FlashCardBL().get_cards(
-            order=Curent_Filter.get('order'),
+    def load_flashcard(self, reset=False):
+        """لود فلش کارت‌ها"""
+        if reset:
+            self.ids.RV.data = []
+            self.current_page = 1
+            self.has_more = True
+
+        Curent_Filter = next(
+            (item for item in self.Filters if item.get("id") == self.Curent_Filter_Id), 
+            None
+        )
+
+        flashcardList = self.flashcard_bl.get_cards(
+            order=Curent_Filter.get('order') if Curent_Filter else None,
             SearchText=self.search_text or '',
-            where=Curent_Filter.get('where')
-            )
+            exact_search=self.exact_search,
+            where=Curent_Filter.get('where') if Curent_Filter else None,
+            page=self.current_page,
+            page_size=self.page_size
+        )
+
         def make_edit_func(card_id):
             return lambda: self.edit_card(card_id)
+
+        if len(flashcardList) < self.page_size:
+            self.has_more = False
         
-        self.ids.RV.data = [
-        {       
-            'title': flashcard.title or "",
-            'example': flashcard.example or "",
-            'collocation': flashcard.collocation or "",
-            'pronunciation': flashcard.pronunciation or "",
-            'partOfSpeach': getattr(flashcard.pos, 'caption', 'N/A'),
-            'type_': getattr(flashcard.type_, 'caption', 'N/A'),
-            'box': getattr(flashcard.box, 'caption', 'N/A'),
-            'level': getattr(flashcard.level, 'caption', 'N/A'),
-            'last_review_quality': str(flashcard.last_review_quality or ""),
-            'last_review_date': (
-                flashcard.last_review_date.strftime("%Y-%m-%d")
-                if flashcard.last_review_date
-                else ""
-            ),
-            'edit_card': make_edit_func(flashcard.id)
-        }
-        for flashcard in flashcardList
-    ]
+        new_data = [
+            {       
+                'title': flashcard.title or "",
+                'example': flashcard.example or "",
+                'collocation': flashcard.collocation or "",
+                'pronunciation': flashcard.pronunciation or "",
+                'partOfSpeach': getattr(flashcard.pos, 'caption', 'N/A'),
+                'type_': getattr(flashcard.type_, 'caption', 'N/A'),
+                'box': getattr(flashcard.box, 'caption', 'N/A'),
+                'level': getattr(flashcard.level, 'caption', 'N/A'),
+                'last_review_quality': str(flashcard.last_review_quality or ""),
+                'last_review_date': (
+                    flashcard.last_review_date.strftime("%Y-%m-%d")
+                    if flashcard.last_review_date
+                    else ""
+                ),
+                'edit_card': make_edit_func(flashcard.id)
+            }
+            for flashcard in flashcardList
+        ]
+
+        if reset:
+            self.ids.RV.data = new_data
+        else:
+            if new_data:
+                self.ids.RV.data.extend(new_data)
+        
+        Clock.schedule_once(lambda dt: self.reset_loading_flag(), 0.5)
+
+    def reset_loading_flag(self):
+        """ریست فلگ لودینگ با تاخیر"""
+        self.loading_more = False
+
+    def update_filter_counts(self):
+        """به‌روزرسانی تعداد فیلترها"""
+        for filter_data in self.Filters:
+            count = self.flashcard_bl.get_cards_count(
+                SearchText=self.search_text,
+                exact_search=self.exact_search,
+                where=filter_data.get("where")
+            )
+
+            chip = self.filter_chips.get(filter_data["id"])
+
+            if chip:
+                chip.text = f"{chip.base_text} {count}"
 
 class FilterChip(MDChipA, RoundedRectangularElevationBehavior):
     """چیپ سفارشی برای فیلترها"""
     filter_type = StringProperty()
+    base_text = StringProperty("")
     filter_id = StringProperty()
     is_selected = BooleanProperty(False)
     filter_icon = StringProperty()
