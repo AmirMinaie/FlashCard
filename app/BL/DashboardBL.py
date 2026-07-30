@@ -33,15 +33,15 @@ class UpcomingReview:
     next30: int
 
 @dataclass
-class TodayPerformance:
-    average_quality: float
-    success_rate: float
+class Performance:
+    avg_quality : float
+    success_rate : float
+    avg_total_time : float
 
 @dataclass
 class ReviewStats:
     words_read_yesterday: int
     avg_words_reviewed_last_two_weeks: float
-
 
 class DashboardBL:
 
@@ -270,41 +270,46 @@ class DashboardBL:
 
         return estimated_seconds
     
-    def get_today_performance(self):
+    def get_performance(self, start_date, end_date):
 
         session = get_session()
 
         result = (
             session.query(
-                func.round( func.avg(reviewFlashcardDA.quality), 2 ).label("average_quality"),
+                func.avg(reviewFlashcardDA.quality).label("avg_quality"),
+                (func.sum(
+                        case( (reviewFlashcardDA.quality >= 4, 1), else_=0 )) * 100.0
+                    / func.count(reviewFlashcardDA.id)
+                ).label("success_rate"),
+                func.avg(reviewFlashcardDA.total_time).label("avg_total_time")
 
-                func.round(
-                    (
-                        func.sum(
-                            case( (reviewFlashcardDA.quality >= 4, 1), else_=0)
-                        ) * 100.0
-                        / func.count(reviewFlashcardDA.id)
-                    ),
-                    1
-                ).label("success_rate")
             )
-            .filter(func.date(reviewFlashcardDA.createAt) == self.today ,
-                              reviewFlashcardDA.quality != -1)
+            .filter(
+                func.date(reviewFlashcardDA.createAt) >= start_date,
+                func.date(reviewFlashcardDA.createAt) <= end_date,
+                reviewFlashcardDA.quality != -1
+            )
             .one()
         )
 
         session.close()
 
-        return TodayPerformance(
-            average_quality=result.average_quality or 0,
-            success_rate=result.success_rate or 0,
+        avg_quality = result.avg_quality or 0
+        success_rate = result.success_rate or 0
+        avg_total_time = result.avg_total_time or 0
+
+        return Performance(
+            avg_quality=avg_quality,
+            success_rate=success_rate,
+            avg_total_time=avg_total_time,
         )
 
     def get_Review_Stats(self):
         session = get_session()
 
         yesterday = self.today - timedelta(days=1)
-        two_weeks_ago = self.today - timedelta(days=14)
+        start_date = self.today - timedelta(days=15)
+        end_date = self.today - timedelta(days=2)
 
         words_read_yesterday = (
             session.query(func.count(reviewFlashcardDA.id))
@@ -321,8 +326,8 @@ class DashboardBL:
                 func.count(reviewFlashcardDA.id).label('review_count')
             )
             .filter(
-                func.date(reviewFlashcardDA.createAt) >= two_weeks_ago,
-                func.date(reviewFlashcardDA.createAt) < self.today, 
+                func.date(reviewFlashcardDA.createAt) >= start_date,
+                func.date(reviewFlashcardDA.createAt) <= end_date, 
                 reviewFlashcardDA.quality.isnot(None) 
             )
             .group_by(func.date(reviewFlashcardDA.createAt))
