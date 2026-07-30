@@ -19,4 +19,4 @@ def create_db_engine():
     else:
         raise NotImplementedError(f"Driver {driver} not supported")
     
-    return create_engine(connection_string, echo=True)
+    return create_engine(connection_string, echo=False)

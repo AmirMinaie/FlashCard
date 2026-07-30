@@ -300,7 +300,6 @@ class DashboardBL:
             success_rate=result.success_rate or 0,
         )
 
-
     def get_Review_Stats(self):
         session = get_session()
 

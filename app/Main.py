@@ -5,11 +5,16 @@ from cmn.splash_screen import SplashScreen
 from cmn.logger import logger
 import win32gui
 import win32con
-APP_WIDTH = 736
-APP_HEIGHT = 685
+import random
+from pathlib import Path
+APP_WIDTH = 700
+APP_HEIGHT = 875
 
+splash_dir = Path(PathManager.app_path("assets", "images", "splash"))
+
+selected_splash = random.choice(list(splash_dir.iterdir()))
 splash = SplashScreen(
-    str(PathManager.app_path("assets", "images", "splash.bmp")),
+    str(selected_splash),
     width= APP_WIDTH,
     height=APP_HEIGHT
 )
@@ -36,7 +41,6 @@ from kivy.core.window import Window
 from cmn.window_manager import WindowManager
 from cmn.AppName import *
 
-
 class FlashCardApp (MDApp):
     title_icon = ""
     title_text = APP_NAME
@@ -59,11 +63,11 @@ class FlashCardApp (MDApp):
         sm.current = "HomeScreen"
         return sm
 
+
     def close_app(self):
         Window.close()
 
     def toggle_maximize(self):
-        print("toggle_maximize called")
         if WindowManager.is_maximized():
             WindowManager.restore()
         else:

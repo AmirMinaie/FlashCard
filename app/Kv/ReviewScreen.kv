@@ -30,6 +30,22 @@
                     text_size: self.size
 
                 Widget:
+                MDIconButton:
+                    id: toggle_session_btn
+                    icon: "play"
+                    disabled: False
+                    theme_icon_color: "Custom"
+                    icon_color: app.theme_cls.primary_color
+                    on_release: root.toggle_session()
+                
+                MDLabelA:
+                    id: session_time_lable
+                    text: root.session_time
+                    font_style: "H6"
+                    size_hint_x: None          
+                    width: dp(60)
+                    halign: "center"          
+                    valign: "middle"          
 
                 AsyncIconButton:
                     id: refresh_btn
@@ -41,7 +57,7 @@
 
                 AsyncIconButton:
                     id: reload_card_btn
-                    icon: "database-refresh"   # یا "reload"
+                    icon: "database-refresh"
                     before: root.before_reload_card
                     task: root.reload_current_card
                     after: root.after_reload_card
@@ -55,7 +71,7 @@
             id: compleat_Session_Box
             orientation: "vertical"
             size_hint_y: None
-            height: self.minimum_height
+            height: 0
             opacity: 0
             disabled: True
             padding: dp(20)
@@ -74,11 +90,15 @@
 
         ScrollView:
             id: flashcard_box
+            size_hint_y: None
+            height: 0
+            opacity: 0
+            disabled: True
 
             MDBoxLayout:
                 orientation: "vertical"
                 size_hint_y: None
-                height: self.minimum_height
+                adaptive_height: True
 
                 padding:  dp(10), dp(10), dp(10), dp(10)
                 spacing: dp(8)
@@ -87,7 +107,7 @@
                     orientation: "vertical"
                     size_hint_x: 1
                     size_hint_y: None
-                    height: self.minimum_height
+                    adaptive_height: True
                     padding: dp(20)
                     spacing: dp(8)
                     radius: [20]
@@ -302,7 +322,7 @@
             id: button_area
             orientation: "vertical"
             size_hint_y: None
-            height: dp(60)
+            height: 0
         
             MDBoxLayout:
                 id: button_box

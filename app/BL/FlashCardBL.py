@@ -91,7 +91,10 @@ class FlashCardBL:
                     "ease_factor": SM2Algorithm.INITIAL_EASE,
                     "interval": 1,
                     "repetitions": 0,
-                    "review_date": datetime.now()
+                    "review_date": datetime.now(),
+                    "thinking_time" : -1,
+                    "answer_time" : -1,
+                    "total_time" : -1,
                 }
             review = reviewFlashcardDA(
                 flashcard_id=card.id,
@@ -378,7 +381,7 @@ class FlashCardBL:
             logger.error(f"Error getting next card for review: {e}")
             return None
 
-    def mark_card_reviewed(self, card_id, quality_Answer):
+    def mark_card_reviewed(self, card_id, quality_Answer ,thinking_time, answer_time, total_time):
         try:
             session=get_session()
             if last_review := session.query(reviewFlashcardDA).\
@@ -406,6 +409,9 @@ class FlashCardBL:
                     interval = reviewCalc['interval'],
                     repetitions = reviewCalc['repetitions'],
                     review_date = reviewCalc['next_review'],
+                    thinking_time = thinking_time ,
+                    answer_time = answer_time  ,
+                    total_time =  total_time
             )
 
             session.add(reviewCard)

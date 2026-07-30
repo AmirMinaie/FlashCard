@@ -11,8 +11,6 @@ class WindowManager:
     def initialize(cls):
         cls._hwnd = win32gui.GetActiveWindow()
 
-        print("HWND:", cls._hwnd)
-
     @classmethod
     def hwnd(cls):
         if cls._hwnd is None:
@@ -21,19 +19,16 @@ class WindowManager:
 
     @classmethod
     def maximize(cls):
-        print("maximize")
         win32gui.ShowWindow(cls.hwnd(), win32con.SW_MAXIMIZE)
 
 
     @classmethod
     def restore(cls):
-        print("restore")
         win32gui.ShowWindow(cls.hwnd(), win32con.SW_RESTORE)
 
 
     @classmethod
     def is_maximized(cls):
-        print("IsZoomed:", ctypes.windll.user32.IsZoomed(cls.hwnd()))
         return bool(ctypes.windll.user32.IsZoomed(cls.hwnd()))
 
 

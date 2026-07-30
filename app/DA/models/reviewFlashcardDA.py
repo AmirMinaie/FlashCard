@@ -15,6 +15,9 @@ class reviewFlashcardDA(Base):
     interval = Column(Integer, default=1, nullable=True)
     repetitions = Column(Integer, default=0, nullable=True)
     review_date = Column(DateTime(timezone=True),nullable=False)
+    thinking_time= Column(Integer,nullable=True)
+    answer_time= Column(Integer,nullable=True)
+    total_time= Column(Integer,nullable=True)
     
     flashcard = relationship(
         "flashcardDA",
