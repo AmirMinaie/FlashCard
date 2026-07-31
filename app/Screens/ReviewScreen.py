@@ -10,7 +10,7 @@ from kivy.clock import Clock
 from kivy.metrics import dp
 from widgets.Playlist import Playlist
 from cmn.logger import logger
-from cmn.get_progress_color import get_progress_color
+from cmn.utility import  *
 from enum import Enum, auto
 
 Builder.load_file(str(PathManager.app_path("Kv/ReviewScreen.kv")))
@@ -531,16 +531,13 @@ class ReviewScreen(MDScreen):
         snackbar_manager.show_snackbar(
             message=(
                 f"✓ Saved {quality}\n"
-                f"Thinking {self.thinking_time:.02f}s\n"
-                f"Answer {self.answer_time:.02f}s"
+                f"Thinking {format_time(self.thinking_time)}\n"
+                f"Answer {format_time(self.answer_time)}"
             ),
             msg_type=Msg_type.success
         )
 
-        Clock.schedule_once(
-            self.move_to_next_card,
-            0.5
-        )
+        Clock.schedule_once(self.move_to_next_card,0.5)
 
     def handle_mark_quality_error(self, error):
         logger.error(f"Quality error: {error}")
@@ -595,9 +592,7 @@ class ReviewScreen(MDScreen):
             self.current_card = result
             self.display_current_card()
         else:
-            snackbar_manager.show_snackbar(
-                message="Card not found in database.", msg_type=Msg_type.error
-            )
+            snackbar_manager.show_snackbar(message="Card not found in database.", msg_type=Msg_type.error)
 
     def handle_reload_card_error(self, error):
         logger.error(f"Reload card error: {error}")

@@ -6,11 +6,10 @@ from cmn.resource_helper import *
 from widgets.SnackbarManager import snackbar_manager , Msg_type
 from kivy.clock import Clock
 from widgets.AsyncIconButton import AsyncIconButton
-from cmn.get_progress_color import get_progress_color
 from datetime import datetime , timedelta
+from cmn.utility import *
 
 Builder.load_file(str(PathManager.app_path("Kv/DashboardScreen.kv")))
-
 
 class DashboardScreen(MDScreen):
     
@@ -25,10 +24,15 @@ class DashboardScreen(MDScreen):
             "learning_progress": dashboardBl.get_learning_progress(),
             "upcoming_reviews": dashboardBl.get_upcoming_reviews(),
             "estimated_study_time": dashboardBl.get_estimated_study_time(),
-            "today_performance":dashboardBl.get_performance( self.today, self.today ),
-            "yesterday_performance": dashboardBl.get_performance( self.today - timedelta(days=1), self.today - timedelta(days=1) ),
-            "last_14_days_performance": dashboardBl.get_performance( self.today - timedelta(days=15), self.today - timedelta(days=2) ),
+
+            "yesterday_performance": dashboardBl.get_performance(self.today - timedelta(days=1), self.today - timedelta(days=1) ),
+            "last_14_days_performance": dashboardBl.get_performance(self.today - timedelta(days=15), self.today - timedelta(days=2) ),
+
             "ReviewStats" : dashboardBl.get_Review_Stats(),
+
+            "today_study_time": dashboardBl.get_average_daily_time(self.today, self.today ),
+            "yesterday_study_time": dashboardBl.get_average_daily_time(self.today - timedelta(days=1), self.today - timedelta(days=1) ),
+            "last14day_study_time": dashboardBl.get_average_daily_time(self.today - timedelta(days=15), self.today - timedelta(days=2) ),
         }
 
     def befor_load_dashboard(self):
@@ -40,23 +44,33 @@ class DashboardScreen(MDScreen):
         self.learning_progress = data["learning_progress"]
         self.upcoming_reviews = data["upcoming_reviews"]
         self.estimated_study_time = data["estimated_study_time"]
-        self.today_performance = data["today_performance"]
         self.ReviewStats = data["ReviewStats"]
+
         self.yesterday_performance = data["yesterday_performance"]
         self.last_14_days_performance = data["last_14_days_performance"]
+
+        self.today_study_time = data["today_study_time"]
+        self.yesterday_study_time = data["yesterday_study_time"]
+        self.last14day_study_time = data["last14day_study_time"]
         ####################################################
         # TODAY
         ####################################################
         today_reviews = self.summary.today_reviews
-        avg = self.ReviewStats.avg_words_reviewed_last_two_weeks
+        avg_reviews = self.ReviewStats.avg_words_reviewed_last_two_weeks
 
-        self.ids.today_review_label.text = f"{self.summary.today_reviews} Reviews Completed"
-        
-        if avg > 0:
-            ratio = today_reviews / avg
-        else:
-            ratio = 0
-        self.ids.today_review_label.color = get_progress_color(ratio)
+        today_study_time = self.today_study_time
+        avg_study_time = self.last14day_study_time
+
+        self.ids.today_review_label.text = f"{today_reviews} Reviews"
+        self.ids.today_study_time_label.text = (
+            f"({format_time(today_study_time)})"
+        )
+
+        review_ratio = today_reviews / avg_reviews if avg_reviews > 0 else 1
+        study_time_ratio = (today_study_time / avg_study_time if avg_study_time > 0 else 1)
+
+        self.ids.today_review_label.color = get_progress_color(review_ratio)
+        self.ids.today_study_time_label.color = get_progress_color(study_time_ratio)
 
         self.ids.remaining_label.text = f"{self.summary.remaining_reviews} cards remaining"
         self.ids.completion_percent.text = f"{self.summary.today_progress:.2f}%"
@@ -66,7 +80,7 @@ class DashboardScreen(MDScreen):
         # SUMMARY
         ####################################################
 
-        self.ids.streak_label.text = f"{self.format_days(self.summary.streak)}"
+        self.ids.streak_label.text = f"{format_days(self.summary.streak)}"
         self.ids.due_today_label.text = str(self.summary.due_today)
         self.ids.total_cards_label.text = f"{self.learning_progress.total_cards:,}"
         self.ids.mature_label.text = str(self.learning_progress.mature_cards)
@@ -74,40 +88,25 @@ class DashboardScreen(MDScreen):
         yesterday = self.ReviewStats.words_read_yesterday
         avg = self.ReviewStats.avg_words_reviewed_last_two_weeks
         difference = yesterday - avg
-
-        if difference > 0:
-            arrow = "↑"
-        elif difference < 0:
-            arrow = "↓"
-        else:
-            arrow = "→"
-
         ratio = yesterday / avg if avg > 0 else 0
         self.ids.reviewed_count_performance.color = get_progress_color(ratio)
-        self.ids.reviewed_count_performance.text = (f"{arrow} {abs(yesterday):.0f} ({avg:.0f}) card")
+        self.ids.reviewed_count_performance.text = (f"{self.arrow(difference)} {abs(yesterday):.0f} ({avg:.0f}) card")
 
+        yesterday_time = self.yesterday_study_time
+        avg_time = self.last14day_study_time
+        ratio_time = yesterday_time / avg_time if avg_time > 0 else 0
+        difference_time = yesterday_time- avg_time
+        self.ids.study_time.color = get_progress_color(ratio_time)
+        self.ids.study_time.text = (f"{self.arrow(difference_time)} {format_time(yesterday_time)} ({format_time(avg_time)})")
 
-        yesterday_score = self.calculate_performance(
-            self.yesterday_performance,
-            self.ReviewStats.words_read_yesterday)
-
-        last14_score = self.calculate_performance(
-            self.last_14_days_performance,
-            self.ReviewStats.avg_words_reviewed_last_two_weeks)
+        yesterday_score = self.calculate_performance(self.yesterday_performance,self.ReviewStats.words_read_yesterday)
+        last14_score = self.calculate_performance(self.last_14_days_performance,self.ReviewStats.avg_words_reviewed_last_two_weeks)
 
         difference_performanc = yesterday_score - last14_score
-
-        if difference_performanc > 0:
-            arrow_performanc = "↑"
-        elif difference_performanc < 0:
-            arrow_performanc = "↓"
-        else:
-            arrow_performanc = "→"
-
         ratio_p = yesterday_score / last14_score if last14_score > 0 else 0
         self.ids.yesterday_Performance_lable.color = get_progress_color(ratio_p)
         self.ids.yesterday_Performance_lable.text = (
-            (f"{arrow_performanc} {abs(yesterday_score):.0f} ({last14_score:.0f}) %")
+            (f"{self.arrow(difference_performanc)} {abs(yesterday_score):.0f} ({last14_score:.0f}) %")
         )
 
         stars = [
@@ -133,21 +132,10 @@ class DashboardScreen(MDScreen):
         # LEARNING PROGRESS
         ####################################################
 
-        self.ids.new_count.text = (
-            f"{self.learning_progress.new_cards} ({self.learning_progress.new_percent:.2f}%)"
-        )
-
-        self.ids.learning_count.text = (
-            f"{self.learning_progress.learning_cards} ({self.learning_progress.learning_percent:.2f}%)"
-        )
-
-        self.ids.review_count.text = (
-            f"{self.learning_progress.review_cards} ({self.learning_progress.review_percent:.2f}%)"
-        )
-
-        self.ids.mature_count.text = (
-            f"{self.learning_progress.mature_cards} ({self.learning_progress.mature_percent:.2f}%)"
-        )
+        self.ids.new_count.text = ( f"{self.learning_progress.new_cards} ({self.learning_progress.new_percent:.2f}%)" )
+        self.ids.learning_count.text = ( f"{self.learning_progress.learning_cards} ({self.learning_progress.learning_percent:.2f}%)" )
+        self.ids.review_count.text = ( f"{self.learning_progress.review_cards} ({self.learning_progress.review_percent:.2f}%)" )
+        self.ids.mature_count.text = ( f"{self.learning_progress.mature_cards} ({self.learning_progress.mature_percent:.2f}%)" )
 
         self.ids.new_progress.value = self.learning_progress.new_percent
         self.ids.learning_progress.value = self.learning_progress.learning_percent
@@ -163,9 +151,7 @@ class DashboardScreen(MDScreen):
         self.ids.next7_label.text = str(self.upcoming_reviews.next7)
         self.ids.next30_label.text = str(self.upcoming_reviews.next30)
 
-        self.ids.study_time_label.text = self.format_estimated_study_time(
-            self.estimated_study_time
-        )
+        self.ids.study_time_label.text = format_time(self.estimated_study_time)
 
     def calculate_performance(self,performance, cards):
 
@@ -200,41 +186,10 @@ class DashboardScreen(MDScreen):
     def handle_load_dashboard(self, e):
         snackbar_manager.show_snackbar( message=f"load data Error: {str(e)}", msg_type=Msg_type.error )
         logger.error(str(e))
-        
-    def format_estimated_study_time(self ,  seconds):
 
-        if seconds < 60:
-            return f"{seconds} s"
-
-        minutes = seconds // 60
-
-        if minutes < 60:
-            return f"{minutes} m"
-
-        hours = minutes // 60
-        minutes %= 60
-
-        return f"{hours}h {minutes} m"
-
-    def format_days(self, days: int) -> str:
-        if days <= 0:
-            return "No Start"
-
-        years = days // 365
-        days %= 365
-
-        months = days // 30
-        days %= 30
-
-        parts = []
-
-        if years:
-            parts.append(f"{years} Year" if years == 1 else f"{years} Years")
-
-        if months:
-            parts.append(f"{months} Month" if months == 1 else f"{months} Months")
-
-        if days:
-            parts.append(f"{days} Day" if days == 1 else f"{days} Days")
-
-        return " ".join(parts)
+    def arrow(self, difference):
+        if difference > 0:
+            return "↑"
+        if difference < 0:
+            return "↓"
+        return "→"

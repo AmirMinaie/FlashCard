@@ -83,7 +83,7 @@ class FlashCardApp (MDApp):
             str(PathManager.app_path("assets", "images", "icon.ico"))
         )
 
-        Clock.schedule_once(self.close_splash, 1)
+        Clock.schedule_once(self.close_splash, 20)
 
     def _init_window(self, dt):
         WindowManager.initialize()

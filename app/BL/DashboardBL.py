@@ -347,3 +347,30 @@ class DashboardBL:
             words_read_yesterday=words_read_yesterday or 0,
             avg_words_reviewed_last_two_weeks=round(avg_words_reviewed, 1)
         )
+
+    def get_average_daily_time(self, start_date, end_date):
+
+        session = get_session()
+
+        daily_times = (
+            session.query( 
+            func.coalesce(
+            func.sum(reviewFlashcardDA.total_time),0).label("daily_total")
+            )
+            .filter(
+                func.date(reviewFlashcardDA.createAt) >= start_date,
+                func.date(reviewFlashcardDA.createAt) <= end_date,
+                reviewFlashcardDA.quality != -1,
+            )
+            .group_by(func.date(reviewFlashcardDA.createAt))
+            .all()
+        )
+
+        session.close()
+
+        if not daily_times:
+            return 0
+
+        total = sum(row.daily_total for row in daily_times)
+
+        return total / len(daily_times)
