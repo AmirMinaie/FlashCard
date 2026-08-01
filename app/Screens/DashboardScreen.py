@@ -88,13 +88,13 @@ class DashboardScreen(MDScreen):
         yesterday = self.ReviewStats.words_read_yesterday
         avg = self.ReviewStats.avg_words_reviewed_last_two_weeks
         difference = yesterday - avg
-        ratio = yesterday / avg if avg > 0 else 0
+        ratio = yesterday / avg if avg > 0 else 1
         self.ids.reviewed_count_performance.color = get_progress_color(ratio)
         self.ids.reviewed_count_performance.text = (f"{self.arrow(difference)} {abs(yesterday):.0f} ({avg:.0f}) card")
 
         yesterday_time = self.yesterday_study_time
         avg_time = self.last14day_study_time
-        ratio_time = yesterday_time / avg_time if avg_time > 0 else 0
+        ratio_time = yesterday_time / avg_time if avg_time > 0 else 1
         difference_time = yesterday_time- avg_time
         self.ids.study_time.color = get_progress_color(ratio_time)
         self.ids.study_time.text = (f"{self.arrow(difference_time)} {format_time(yesterday_time)} ({format_time(avg_time)})")
@@ -103,7 +103,7 @@ class DashboardScreen(MDScreen):
         last14_score = self.calculate_performance(self.last_14_days_performance,self.ReviewStats.avg_words_reviewed_last_two_weeks)
 
         difference_performanc = yesterday_score - last14_score
-        ratio_p = yesterday_score / last14_score if last14_score > 0 else 0
+        ratio_p = yesterday_score / last14_score if last14_score > 0 else 1
         self.ids.yesterday_Performance_lable.color = get_progress_color(ratio_p)
         self.ids.yesterday_Performance_lable.text = (
             (f"{self.arrow(difference_performanc)} {abs(yesterday_score):.0f} ({last14_score:.0f}) %")
@@ -151,7 +151,7 @@ class DashboardScreen(MDScreen):
         self.ids.next7_label.text = str(self.upcoming_reviews.next7)
         self.ids.next30_label.text = str(self.upcoming_reviews.next30)
 
-        self.ids.study_time_label.text = format_time(self.estimated_study_time)
+        self.ids.estimate_study_time_label.text = format_time(self.estimated_study_time)
 
     def calculate_performance(self,performance, cards):
 

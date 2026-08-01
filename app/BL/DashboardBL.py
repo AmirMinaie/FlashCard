@@ -1,9 +1,10 @@
 from dataclasses import dataclass
-from sqlalchemy import func, case
-from datetime import datetime, timedelta
+from sqlalchemy import func, case , or_
+from datetime import datetime, timedelta , date
 from DA.session import get_session
 from DA.models import flashcardDA , fileFlashcardDA , constantDA , reviewFlashcardDA
 from cmn.config_reader import ConfigReader
+from BL.ReviewBL import ReviewBL
 
 @dataclass
 class DashboardSummary:
@@ -60,24 +61,21 @@ class DashboardBL:
         session = get_session()
         
         today_reviews = (
-            session.query(func.count(reviewFlashcardDA.id))
-            .filter(
-                func.date(reviewFlashcardDA.createAt) == self.today,
-                reviewFlashcardDA.quality.isnot(None)
-            )
-            .scalar()
+        ReviewBL.completed_reviews_query( session, self.today, self.today )
+        .count()
         )
         
         remaining_reviews = (
-            session.query(func.count(flashcardDA.id))
-            .filter(
-                flashcardDA.last_review_date <= datetime.now()
-            )
-            .scalar()
+            ReviewBL.get_due_cards_query(session)
+            .count()
         )
         due_today= remaining_reviews + today_reviews
 
-        today_progress = (today_reviews * 100) / due_today
+        today_progress = (
+            (today_reviews * 100) / due_today
+            if due_today > 0
+            else 0
+        )
         
         session.close()
 
@@ -194,9 +192,7 @@ class DashboardBL:
         session = get_session()
 
         review_days = (
-            session.query(
-                func.date(reviewFlashcardDA.createAt)
-            )
+            session.query(func.date(reviewFlashcardDA.createAt))
             .distinct()
             .order_by(func.date(reviewFlashcardDA.createAt).desc())
             .all()
@@ -226,68 +222,91 @@ class DashboardBL:
 
         session.close()
         return streak
-    
+
+    def get_global_average_review_time(self, session, limit=1000):
+        global_avg = (
+            session.query(func.avg(reviewFlashcardDA.total_time))
+            .filter(
+                reviewFlashcardDA.id.in_(
+                    session.query(reviewFlashcardDA.id)
+                    .filter(reviewFlashcardDA.total_time.isnot(None))
+                    .order_by(reviewFlashcardDA.review_date.desc())
+                    .limit(limit)
+                )
+            )
+            .scalar()
+        )
+        if not global_avg:
+            return 60
+
+        return global_avg
+
     def get_estimated_study_time(self):
         session = get_session()
+        today = date.today()
 
-        now = datetime.now()
+        due_card_ids = (
+            ReviewBL.get_due_cards_query(session)
+            .with_entities(flashcardDA.id)
+            .all()
+        )
 
-        new_due = (
-            session.query(func.count(flashcardDA.id))
-            .filter(
-                flashcardDA.last_review_date <= now,
-                flashcardDA.last_review_quality.is_(None)
+        due_card_ids = [card.id for card in due_card_ids]
+
+        if not due_card_ids:
+            return 0.0
+
+        card_averages = (
+            session.query(
+                reviewFlashcardDA.flashcard_id,
+                func.avg(reviewFlashcardDA.total_time).label("avg_time"),
+                func.count(reviewFlashcardDA.id).label("review_count"),
             )
-            .scalar()
-        )
-
-        learning_due = (
-            session.query(func.count(flashcardDA.id))
             .filter(
-                flashcardDA.last_review_date <= now,
-                flashcardDA.last_review_quality.isnot(None),
-                flashcardDA.last_repetitions < self.REVIEW_THRESHOLD
+                reviewFlashcardDA.flashcard_id.in_(due_card_ids),
+                reviewFlashcardDA.total_time.isnot(None)
             )
-            .scalar()
+            .group_by(reviewFlashcardDA.flashcard_id)
+            .all()
         )
 
-        review_due = (
-            session.query(func.count(flashcardDA.id))
-            .filter(
-                flashcardDA.last_review_date <= now,
-                flashcardDA.last_repetitions >= self.REVIEW_THRESHOLD
-            )
-            .scalar()
-        )
+        card_stats = {
+            card_id: {"avg": avg_time, "count": review_count}
+            for card_id, avg_time, review_count in card_averages
+        }
 
-        session.close()
+        global_avg = self.get_global_average_review_time(session) or 0
 
-        estimated_seconds = (
-            new_due * self.NEW_CARD_TIME +
-            learning_due * self.LEARNING_CARD_TIME +
-            review_due * self.REVIEW_CARD_TIME
-        )
+        MIN_REVIEWS = 3
+        BUFFER = 1.05
 
-        return estimated_seconds
-    
+        estimated = 0
+        for card_id in due_card_ids:
+            if card_id in card_stats and card_stats[card_id]["count"] >= MIN_REVIEWS and card_stats[card_id]["avg"] > 0:
+                estimated += card_stats[card_id]["avg"]
+            else:
+                estimated += global_avg
+        estimated = estimated * BUFFER
+        return estimated
+
     def get_performance(self, start_date, end_date):
 
         session = get_session()
 
         result = (
-            session.query(
+            ReviewBL.completed_reviews_query(session, start_date, end_date)
+            .with_entities(
                 func.avg(reviewFlashcardDA.quality).label("avg_quality"),
-                (func.sum(
-                        case( (reviewFlashcardDA.quality >= 4, 1), else_=0 )) * 100.0
+                (
+                    func.sum(
+                        case(
+                            (reviewFlashcardDA.quality >= 4, 1),
+                            else_=0
+                        )
+                    ) * 100.0
                     / func.count(reviewFlashcardDA.id)
                 ).label("success_rate"),
-                func.avg(reviewFlashcardDA.total_time).label("avg_total_time")
-
-            )
-            .filter(
-                func.date(reviewFlashcardDA.createAt) >= start_date,
-                func.date(reviewFlashcardDA.createAt) <= end_date,
-                reviewFlashcardDA.quality != -1
+                func.avg(reviewFlashcardDA.total_time).label("avg_total_time"),
             )
             .one()
         )
@@ -312,23 +331,15 @@ class DashboardBL:
         end_date = self.today - timedelta(days=2)
 
         words_read_yesterday = (
-            session.query(func.count(reviewFlashcardDA.id))
-            .filter(
-                func.date(reviewFlashcardDA.createAt) == yesterday,
-                reviewFlashcardDA.quality.isnot(None) 
-            )
-            .scalar()
+            ReviewBL.completed_reviews_query(session, yesterday, yesterday)
+            .count()
         )
 
         daily_reviews = (
-            session.query(
-                func.date(reviewFlashcardDA.createAt).label('review_date'),
-                func.count(reviewFlashcardDA.id).label('review_count')
-            )
-            .filter(
-                func.date(reviewFlashcardDA.createAt) >= start_date,
-                func.date(reviewFlashcardDA.createAt) <= end_date, 
-                reviewFlashcardDA.quality.isnot(None) 
+            ReviewBL.completed_reviews_query(session, start_date, end_date)
+            .with_entities(
+                func.date(reviewFlashcardDA.createAt).label("review_date"),
+                func.count(reviewFlashcardDA.id).label("review_count"),
             )
             .group_by(func.date(reviewFlashcardDA.createAt))
             .all()
@@ -353,14 +364,11 @@ class DashboardBL:
         session = get_session()
 
         daily_times = (
-            session.query( 
-            func.coalesce(
-            func.sum(reviewFlashcardDA.total_time),0).label("daily_total")
-            )
-            .filter(
-                func.date(reviewFlashcardDA.createAt) >= start_date,
-                func.date(reviewFlashcardDA.createAt) <= end_date,
-                reviewFlashcardDA.quality != -1,
+            ReviewBL.completed_reviews_query(session, start_date, end_date)
+            .with_entities(
+                func.coalesce(
+                    func.sum(reviewFlashcardDA.total_time), 0
+                ).label("daily_total")
             )
             .group_by(func.date(reviewFlashcardDA.createAt))
             .all()

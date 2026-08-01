@@ -10,6 +10,7 @@ from datetime import datetime, date , timedelta
 from .SM2Algorithm import SM2Algorithm
 from cmn.logger import logger
 from cmn.config_reader import ConfigReader
+from BL.ReviewBL import ReviewBL
 
 @dataclass
 class OrderByConfig:
@@ -360,20 +361,18 @@ class FlashCardBL:
     def get_next_card_for_review(self):
         try:
             session = get_session()
-            today = date.today()
             
-            card_data = session.query(flashcardDA).\
+            card_data = ReviewBL.get_due_cards_query(session).\
                 options(
                     selectinload(flashcardDA.pos),
                     selectinload(flashcardDA.type_),
                     selectinload(flashcardDA.box),
                     selectinload(flashcardDA.level),
                     selectinload(flashcardDA.files),
-                    selectinload(flashcardDA.files).selectinload(fileFlashcardDA.sourceType),
-                ).filter(or_(
-                    flashcardDA.last_review_date <= today,
-                    flashcardDA.last_review_date == None                  
-                )).order_by(func.random()).first()
+                    selectinload(flashcardDA.files).selectinload(fileFlashcardDA.sourceType),).\
+                order_by(func.random()).\
+                first()
+            
             session.close()
             return card_data
         
