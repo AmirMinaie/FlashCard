@@ -153,29 +153,24 @@ class DashboardBL:
         
 
         tomorrow_count = (
-            session.query(func.count(flashcardDA.id))
-            .filter(func.date(flashcardDA.last_review_date) <= tomorrow)
-            .scalar()
-        )
+                ReviewBL.get_due_cards_query( session, next_Day= 1 )
+                .count()
+            )
 
-
-        next3_count = (
-            session.query(func.count(flashcardDA.id))
-            .filter(flashcardDA.last_review_date <= next3_end)
-            .scalar()
-        )
+        next3_count =(
+                ReviewBL.get_due_cards_query( session, next_Day= 3 )
+                .count()
+            )
 
         next7_count = (
-            session.query(func.count(flashcardDA.id))
-            .filter(flashcardDA.last_review_date <= next7_end)
-            .scalar()
-        )
+                ReviewBL.get_due_cards_query( session, next_Day= 7 )
+                .count()
+            )
 
         next30_count = (
-            session.query(func.count(flashcardDA.id))
-            .filter(flashcardDA.last_review_date <= next30_end)
-            .scalar()
-        )
+                ReviewBL.get_due_cards_query( session, next_Day= 30 )
+                .count()
+            )
 
 
         session.close()
@@ -243,7 +238,6 @@ class DashboardBL:
 
     def get_estimated_study_time(self):
         session = get_session()
-        today = date.today()
 
         due_card_ids = (
             ReviewBL.get_due_cards_query(session)
@@ -371,6 +365,7 @@ class DashboardBL:
                 ).label("daily_total")
             )
             .group_by(func.date(reviewFlashcardDA.createAt))
+            .having(func.sum(reviewFlashcardDA.total_time) > 0)
             .all()
         )
 

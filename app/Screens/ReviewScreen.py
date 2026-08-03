@@ -53,10 +53,6 @@ class ReviewScreen(MDScreen):
         self.pause_start_time = None
                 
     @property
-    def session_active(self):
-        return self.session_state == SessionState.RUNNING
-    
-    @property
     def session_completed(self):
         return self.session_state == SessionState.COMPLETED
 
@@ -73,14 +69,8 @@ class ReviewScreen(MDScreen):
             case SessionState.RUNNING:
                 self.start_session_timer()
 
-                self.ids.compleat_Session_Box.size_hint_y = None
-                self.ids.compleat_Session_Box.height = 0
-                self.ids.compleat_Session_Box.opacity = 0
-                self.ids.compleat_Session_Box.disabled = True
-
-                # اگر از Pause برگشته‌ایم، همان کارت قبلی را نشان بده
                 if old_state == SessionState.PAUSED and self.current_card:
-                    self.show_card_content(True)
+                    self.update_layout(True)
 
                     if self.show_answer:
                         self.set_widget_state(self.ids.button_box,visible=False,height=0)
@@ -92,13 +82,13 @@ class ReviewScreen(MDScreen):
 
                     return
 
-                # شروع جلسه جدید
                 self.move_to_next_card()
 
             case SessionState.PAUSED:
                 self.stop_session_timer()
                 self.stop_playlist()
                 self.show_session_status(SessionState.PAUSED)
+                self.update_layout(False)
 
             case SessionState.COMPLETED:
                 self.stop_session_timer()
@@ -115,9 +105,8 @@ class ReviewScreen(MDScreen):
 
                 self.current_card = None
                 self.show_answer = False
-
-                self.show_card_content(False)
                 self.show_session_status(SessionState.STOPPED)
+                self.update_layout(False)
 
         self.update_toggle_button()
 
@@ -270,69 +259,45 @@ class ReviewScreen(MDScreen):
         elif mode == FieldMode.hide_answer:
             self.clear_answer_fields()
 
-    def show_card_content(self, show):
-        """نمایش یا مخفی‌کردن محتوای کارت"""
+    def update_layout(self, show_card: bool):
+        """تنها متد مسئول نمایش Layout صفحه"""
+
         flashcard_box = self.ids.flashcard_box
         complete_box = self.ids.compleat_Session_Box
         button_area = self.ids.button_area
 
-        if show:
-            # نمایش کارت و گرفتن فضای باقی‌مانده
+        if show_card:
+            # ---------- Flashcard ----------
             flashcard_box.size_hint_y = 1
             flashcard_box.height = 0
             flashcard_box.opacity = 1
             flashcard_box.disabled = False
 
-            # pos_hint داخل BoxLayout عمودی لازم نیست
-            flashcard_box.pos_hint = {}
-
-            # مخفی‌کردن پیام وضعیت
+            # ---------- Status ----------
             complete_box.size_hint_y = None
             complete_box.height = 0
             complete_box.opacity = 0
             complete_box.disabled = True
 
-            # نمایش دکمه‌ها
+            # ---------- Buttons ----------
             button_area.height = dp(52)
 
-            self.set_widget_state(
-                self.ids.button_box,
-                visible=True,
-                height=dp(46)
-            )
-
-            self.set_widget_state(
-                self.ids.answer_button_box,
-                visible=False,
-                height=0
-            )
-
         else:
-            # مهم: هم size_hint و هم height باید اصلاح شوند
+            # ---------- Flashcard ----------
             flashcard_box.size_hint_y = None
             flashcard_box.height = 0
             flashcard_box.opacity = 0
             flashcard_box.disabled = True
 
-            self.set_widget_state(
-                self.ids.button_box,
-                visible=False,
-                height=0
-            )
+            # ---------- Status ----------
+            complete_box.size_hint_y = 1
+            complete_box.height = 0
+            complete_box.opacity = 1
+            complete_box.disabled = False
 
-            self.set_widget_state(
-                self.ids.answer_button_box,
-                visible=False,
-                height=0
-            )
-
+            # ---------- Buttons ----------
             button_area.height = 0
 
-            complete_box.size_hint_y = None
-            complete_box.height = 0
-            complete_box.opacity = 0
-            complete_box.disabled = True
- 
     def hide_answer_fields(self):
         self.set_fields(mode=FieldMode.hide_answer)
         
@@ -347,50 +312,28 @@ class ReviewScreen(MDScreen):
         
         self.show_answer = False
      
-    def show_session_status(self, state: SessionState):
-        """نمایش وضعیت جلسه"""
-        # مخفی‌کردن کامل ScrollView
-        self.ids.flashcard_box.size_hint_y = None
-        self.ids.flashcard_box.height = 0
-        self.ids.flashcard_box.opacity = 0
-        self.ids.flashcard_box.disabled = True
+    def show_session_status(self, state):
 
-        # مخفی‌کردن کامل ناحیه دکمه‌ها
-        self.ids.button_area.height = 0
+        if state == SessionState.STOPPED:
 
-        self.set_widget_state(self.ids.button_box,visible=False,height=0)
+            self.ids.session_status_icon.icon = "play-circle-outline"
+            self.ids.session_title.text = "Ready to Review"
+            self.ids.session_description.text = (
+                "Press Start to begin your review session."
+            )
 
-        self.set_widget_state( self.ids.answer_button_box, visible=False, height=0 )
+        elif state == SessionState.PAUSED:
 
-        match state:
-            case SessionState.STOPPED:
-                text = (
-                    "▶ Ready to Review\n"
-                    "Press Start to begin your review session."
-                )
+            self.ids.session_status_icon.icon = "pause-circle-outline"
+            self.ids.session_title.text = "Session Paused"
+            self.ids.session_description.text = ("Press Start to continue reviewing.")
 
-            case SessionState.PAUSED:
-                text = (
-                    "⏸ Session Paused\n"
-                    "Press ▶ Start to continue reviewing."
-                )
+        elif state == SessionState.COMPLETED:
 
-            case SessionState.COMPLETED:
-                text = (
-                    "🎉 Session Completed!\n"
-                    f"You reviewed {self.total_today_reviews} cards today."
-                )
+            self.ids.session_status_icon.icon = "check-decagram"
+            self.ids.session_title.text = "Session Completed"
 
-            case _:
-                text = ""
-
-        self.ids.compleat_Session_lable.text = text
-
-        # نمایش کادر وضعیت در فضای باقی‌مانده
-        self.ids.compleat_Session_Box.size_hint_y = 1
-        self.ids.compleat_Session_Box.height = 0
-        self.ids.compleat_Session_Box.opacity = 1
-        self.ids.compleat_Session_Box.disabled = False
+            self.ids.session_description.text = (f"You reviewed {self.total_today_reviews} cards today.")
 
     def stop_playlist(self):
         """توقف پخش صداها"""
@@ -427,7 +370,7 @@ class ReviewScreen(MDScreen):
             return
 
         snackbar_manager.show_snackbar( message="⏭ Skipped", msg_type=Msg_type.success )
-        Clock.schedule_once( self.move_to_next_card, 0.5 )
+        Clock.schedule_once( self.move_to_next_card, 0.01 )
 
     def handle_skip_card_error(self, error):
         logger.error(f"Skip error: {error}")
@@ -529,11 +472,7 @@ class ReviewScreen(MDScreen):
         self.ids.counter_label.color = get_progress_color(progress)
 
         snackbar_manager.show_snackbar(
-            message=(
-                f"✓ Saved {quality}\n"
-                f"Thinking {format_time(self.thinking_time)}\n"
-                f"Answer {format_time(self.answer_time)}"
-            ),
+            message=(f"✓ Saved {quality}\n"f"Thinking {format_time(self.thinking_time)}\n"f"Answer {format_time(self.answer_time)}"),
             msg_type=Msg_type.success
         )
 
@@ -572,7 +511,7 @@ class ReviewScreen(MDScreen):
     def display_current_card(self):
         if not self.current_card:
             return
-        self.show_card_content(True)
+        self.update_layout(True)
         self.set_fields(mode=FieldMode.init)
         self.card_start_time = time.perf_counter()
         self.answer_show_time = None
@@ -609,6 +548,9 @@ class ReviewScreen(MDScreen):
         self.current_card = None
 
         card = self.load_next_card()
+
+        self.set_widget_state(self.ids.button_box,visible=True,height=dp(46))
+        self.set_widget_state(self.ids.answer_button_box,visible=False,height=0)
 
         if card:
             self.current_card = card

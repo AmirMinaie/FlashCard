@@ -30,13 +30,6 @@
                     text_size: self.size
 
                 Widget:
-                MDIconButton:
-                    id: toggle_session_btn
-                    icon: "play"
-                    disabled: False
-                    theme_icon_color: "Custom"
-                    icon_color: app.theme_cls.primary_color
-                    on_release: root.toggle_session()
                 
                 MDLabelA:
                     id: session_time_lable
@@ -46,6 +39,14 @@
                     width: dp(60)
                     halign: "center"          
                     valign: "middle"          
+
+                MDIconButton:
+                    id: toggle_session_btn
+                    icon: "play"
+                    disabled: False
+                    theme_icon_color: "Custom"
+                    icon_color: app.theme_cls.primary_color
+                    on_release: root.toggle_session()
 
                 AsyncIconButton:
                     id: refresh_btn
@@ -66,24 +67,35 @@
         ##################################################
         # Complete Session
         ##################################################
-
         MDBoxLayout:
             id: compleat_Session_Box
             orientation: "vertical"
-            size_hint_y: None
-            height: 0
-            opacity: 0
-            disabled: True
-            padding: dp(20)
+            
+            Widget:
+            
+            MDIconButton:
+                id: session_status_icon
+                icon: "pause-circle-outline"
+                halign: "center"
+                icon_size: "72sp"
+                theme_icon_color: "Custom"
+                icon_color: app.theme_cls.primary_color
+                on_release: root.toggle_session()
+                pos_hint: {"center_x": .5}
 
             MDLabelA:
-                id: compleat_Session_lable
+                id: session_title
+                font_style: "H4"
+                bold: True
                 halign: "center"
-                valign: "middle"
-                text_size: self.width, None
-                size_hint_y: None
-                height: self.texture_size[1]
 
+            MDLabelA:
+                id: session_description
+                font_style: "Body1"
+                halign: "center"
+                theme_text_color: "Secondary"
+
+            Widget:
         ##################################################
         # Flash Card
         ##################################################

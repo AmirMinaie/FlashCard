@@ -35,9 +35,9 @@ def format_time(seconds):
     minutes = (seconds % 3600) // 60
     secs = seconds % 60
     if hours > 0:
-        return f"{hours}h {minutes}m {secs}s"  
+        return f"{hours}h {minutes}m"  
     if minutes > 0:
-        return f"{minutes}m {secs}s"   
+        return f"{minutes}m"   
     return f"{secs}s"
 
 def format_days(days: int) -> str:

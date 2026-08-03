@@ -43,6 +43,7 @@ class AddFlashCardScreen(MDScreen):
             self.save_button_text = "Update FlashCard"
 
     def set_card_id(self, card_id):
+        print("set_card_id")
         self.card_id = card_id
         self.mode = "edit"
         self.update_form_mode_ui()

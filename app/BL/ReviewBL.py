@@ -5,14 +5,14 @@ from sqlalchemy import func, case , or_
 class ReviewBL:
 
     @staticmethod
-    def get_due_cards_query(session):
-        today = date.today()
+    def get_due_cards_query(session, next_Day=0):
+        start = date.today() + timedelta(days=next_Day)
 
         return (
             session.query(flashcardDA)
             .filter(
                 or_(
-                    flashcardDA.last_review_date <= today,
+                    flashcardDA.last_review_date <= start,
                     flashcardDA.last_review_date.is_(None)
                 )
             )
