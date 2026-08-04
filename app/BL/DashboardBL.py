@@ -143,35 +143,12 @@ class DashboardBL:
         )
 
     def get_upcoming_reviews(self):
-        
         session = get_session()
 
-        tomorrow = datetime.combine(self.today + timedelta(days=1), datetime.max.time())
-        next3_end = datetime.combine(self.today + timedelta(days=3), datetime.max.time())
-        next7_end = datetime.combine(self.today + timedelta(days=7), datetime.max.time())
-        next30_end = datetime.combine(self.today + timedelta(days=30), datetime.max.time())
-        
-
-        tomorrow_count = (
-                ReviewBL.get_due_cards_query( session, next_Day= 1 )
-                .count()
-            )
-
-        next3_count =(
-                ReviewBL.get_due_cards_query( session, next_Day= 3 )
-                .count()
-            )
-
-        next7_count = (
-                ReviewBL.get_due_cards_query( session, next_Day= 7 )
-                .count()
-            )
-
-        next30_count = (
-                ReviewBL.get_due_cards_query( session, next_Day= 30 )
-                .count()
-            )
-
+        tomorrow_count = (ReviewBL.get_due_cards_query( session, next_Day= 1 ).count())
+        next3_count =(ReviewBL.get_due_cards_query( session, next_Day= 3 ).count())
+        next7_count = (ReviewBL.get_due_cards_query( session, next_Day= 7 ).count())
+        next30_count = (ReviewBL.get_due_cards_query( session, next_Day= 30 ) .count() )
 
         session.close()
 
