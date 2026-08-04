@@ -99,7 +99,6 @@
         ##################################################
         # Flash Card
         ##################################################
-
         ScrollView:
             id: flashcard_box
             size_hint_y: None
@@ -388,8 +387,8 @@
                     md_bg_color: "#D32F2F"
                     
                     before: root.before_mark_quality
-                    task: root.mark_card_quality0
-                    after: root.after_mark_quality0
+                    task: root.quality_task(0)
+                    after: root.quality_after(0)
                     error_handler: root.handle_mark_quality_error
         
                 AsyncButton:
@@ -400,8 +399,8 @@
                     md_bg_color: "#FB8C00"
                     
                     before: root.before_mark_quality
-                    task: root.mark_card_quality1
-                    after: root.after_mark_quality1
+                    task: root.quality_task(1)
+                    after: root.quality_after(1)
                     error_handler: root.handle_mark_quality_error
         
                 AsyncButton:
@@ -412,8 +411,8 @@
                     md_bg_color: "#1E88E5"
                     
                     before: root.before_mark_quality
-                    task: root.mark_card_quality2
-                    after: root.after_mark_quality2
+                    task: root.quality_task(2)
+                    after: root.quality_after(2)
                     error_handler: root.handle_mark_quality_error
         
                 AsyncButton:
@@ -424,8 +423,8 @@
                     md_bg_color: "#43A047"
                     
                     before: root.before_mark_quality
-                    task: root.mark_card_quality3
-                    after: root.after_mark_quality3
+                    task: root.quality_task(3)
+                    after: root.quality_after(3)
                     error_handler: root.handle_mark_quality_error
         
                 AsyncButton:
@@ -434,8 +433,7 @@
                     icon: "emoticon-happy"
                     size_hint_x: 1
                     md_bg_color: "#2E7D32"
-                    
                     before: root.before_mark_quality
-                    task: root.mark_card_quality4
-                    after: root.after_mark_quality4
+                    task: root.quality_task(4)
+                    after: root.quality_after(4)
                     error_handler: root.handle_mark_quality_error

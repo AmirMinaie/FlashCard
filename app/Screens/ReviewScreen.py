@@ -1,5 +1,6 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
+from functools import partial
 import time
 from cmn.resource_helper import *
 from BL.FlashCardBL import FlashCardBL
@@ -36,8 +37,9 @@ class ReviewScreen(MDScreen):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.flashcard_bl = FlashCardBL()
-        self.summary = DashboardBL().get_summary()
-        self.Review_Stats = DashboardBL().get_Review_Stats()
+        self.dashboard_bl = DashboardBL()
+        self.summary = self.dashboard_bl.get_summary()
+        self.Review_Stats = self.dashboard_bl.get_Review_Stats()
         self.current_card = None
         self.session_dialog = None
         self.no_more_cards_dialog = None
@@ -51,10 +53,6 @@ class ReviewScreen(MDScreen):
         self.session_timer = None
         self.elapsed_time = 0
         self.pause_start_time = None
-                
-    @property
-    def session_completed(self):
-        return self.session_state == SessionState.COMPLETED
 
     def set_session_state(self, state: SessionState):
         old_state = self.session_state
@@ -173,7 +171,7 @@ class ReviewScreen(MDScreen):
         self.Avg = self.Review_Stats.avg_words_reviewed_last_two_weeks
         if self.Avg == 0:
             self.Avg = 1
-        self.ids.counter_label.color = get_progress_color(self.total_today_reviews / self.Avg)
+        self.set_widget_state( self.ids.counter_label, color=get_progress_color(self.total_today_reviews / self.Avg), )
         self.reset_session_timer()
         self.set_session_state(SessionState.STOPPED)
   
@@ -183,7 +181,7 @@ class ReviewScreen(MDScreen):
 
             card = self.flashcard_bl.get_next_card_for_review()
 
-            self.summary = DashboardBL().get_summary()
+            self.summary = self.dashboard_bl.get_summary()
             self.remaining_cards = self.summary.remaining_reviews
 
             return card
@@ -261,79 +259,58 @@ class ReviewScreen(MDScreen):
 
     def update_layout(self, show_card: bool):
         """تنها متد مسئول نمایش Layout صفحه"""
-
-        flashcard_box = self.ids.flashcard_box
-        complete_box = self.ids.compleat_Session_Box
-        button_area = self.ids.button_area
-
-        if show_card:
-            # ---------- Flashcard ----------
-            flashcard_box.size_hint_y = 1
-            flashcard_box.height = 0
-            flashcard_box.opacity = 1
-            flashcard_box.disabled = False
-
-            # ---------- Status ----------
-            complete_box.size_hint_y = None
-            complete_box.height = 0
-            complete_box.opacity = 0
-            complete_box.disabled = True
-
-            # ---------- Buttons ----------
-            button_area.height = dp(52)
-
-        else:
-            # ---------- Flashcard ----------
-            flashcard_box.size_hint_y = None
-            flashcard_box.height = 0
-            flashcard_box.opacity = 0
-            flashcard_box.disabled = True
-
-            # ---------- Status ----------
-            complete_box.size_hint_y = 1
-            complete_box.height = 0
-            complete_box.opacity = 1
-            complete_box.disabled = False
-
-            # ---------- Buttons ----------
-            button_area.height = 0
+    
+        self.set_widget_state(
+            self.ids.flashcard_box,
+            visible=show_card,
+            size_hint_y=1 if show_card else None,
+            height=0,
+        )
+    
+        self.set_widget_state(
+            self.ids.compleat_Session_Box,
+            visible=not show_card,
+            size_hint_y=None if show_card else 1,
+            height=0,
+        )
+    
+        self.set_widget_state(
+            self.ids.button_area,
+            visible=show_card,
+            height= dp(52) if show_card else 0,
+        )
 
     def hide_answer_fields(self):
-        self.set_fields(mode=FieldMode.hide_answer)
-        
-        if not self.session_completed:
-            self.ids.button_box.opacity = 1
-            self.ids.button_box.disabled = False
-        
-        self.set_widget_state(self.ids.button_box,visible=True,height=dp(46))
-        self.set_widget_state(self.ids.answer_button_box,visible=False,height=0)
-    
-        self.ids.button_area.height = dp(52)
-        
+        self.set_fields(FieldMode.hide_answer)
+        self.set_widget_state(self.ids.button_box,visible=True,height=dp(46),)
+        self.set_widget_state( self.ids.answer_button_box, visible=False, height=0, )
+        self.set_widget_state( self.ids.button_area, height=dp(52), )
+
         self.show_answer = False
      
     def show_session_status(self, state):
 
         if state == SessionState.STOPPED:
-
-            self.ids.session_status_icon.icon = "play-circle-outline"
-            self.ids.session_title.text = "Ready to Review"
-            self.ids.session_description.text = (
-                "Press Start to begin your review session."
-            )
+            icon = "play-circle-outline"
+            title = "Ready to Review"
+            description = "Press Start to begin your review session."
 
         elif state == SessionState.PAUSED:
-
-            self.ids.session_status_icon.icon = "pause-circle-outline"
-            self.ids.session_title.text = "Session Paused"
-            self.ids.session_description.text = ("Press Start to continue reviewing.")
+            icon = "pause-circle-outline"
+            title = "Session Paused"
+            description = "Press Start to continue reviewing."
 
         elif state == SessionState.COMPLETED:
+            icon = "check-decagram"
+            title = "Session Completed"
+            description = f"You reviewed {self.total_today_reviews} cards today."
 
-            self.ids.session_status_icon.icon = "check-decagram"
-            self.ids.session_title.text = "Session Completed"
+        else:
+            return
 
-            self.ids.session_description.text = (f"You reviewed {self.total_today_reviews} cards today.")
+        self.set_widget_state(self.ids.session_status_icon, icon=icon)
+        self.set_widget_state(self.ids.session_title, text=title)
+        self.set_widget_state(self.ids.session_description, text=description)
 
     def stop_playlist(self):
         """توقف پخش صداها"""
@@ -386,54 +363,32 @@ class ReviewScreen(MDScreen):
 
         self.set_widget_state(self.ids.button_box,visible=False,height=0)
         self.set_widget_state(self.ids.answer_button_box,visible=True,height=dp(46))
-
-        self.ids.button_area.height = dp(52)
+        self.set_widget_state( self.ids.button_area, height=dp(52))
 
         self.show_answer = True
         self.thinking_time = (time.perf_counter() - self.card_start_time)
         self.answer_show_time = time.perf_counter()
 
-    def set_widget_state(self, widget, *, visible, height=None):
-        widget.opacity = 1 if visible else 0
-        widget.disabled = not visible
+    def set_widget_state(self, widget, **kwargs):
+        visible = kwargs.pop("visible", None)
 
-        if height is not None:
-            widget.height = height
+        if visible is not None:
+            widget.opacity = 1 if visible else 0
+            widget.disabled = not visible
+
+        for prop, value in kwargs.items():
+            setattr(widget, prop, value)
 
     def before_mark_quality(self):
         self.stop_playlist()
         return True
 
-    def mark_card_quality0(self):
-        return self.mark_card_quality(0)
+    def quality_task(self, quality):
+        return partial(self.mark_card_quality, quality)
 
-    def mark_card_quality1(self):
-        return self.mark_card_quality(1)
-
-    def mark_card_quality2(self):
-        return self.mark_card_quality(2)
-
-    def mark_card_quality3(self):
-        return self.mark_card_quality(3)
-
-    def mark_card_quality4(self):
-        return self.mark_card_quality(4)
-
-    def after_mark_quality0(self, result):
-        self.after_mark_quality(0, result)
-
-    def after_mark_quality1(self, result):
-        self.after_mark_quality(1, result)
-
-    def after_mark_quality2(self, result):
-        self.after_mark_quality(2, result)
-
-    def after_mark_quality3(self, result):
-        self.after_mark_quality(3, result)
-
-    def after_mark_quality4(self, result):
-        self.after_mark_quality(4, result)
-
+    def quality_after(self, result):
+        return partial(self.after_mark_quality, result)
+    
     def mark_card_quality(self, quality):
         if not self.current_card:
             return False
@@ -476,7 +431,7 @@ class ReviewScreen(MDScreen):
             msg_type=Msg_type.success
         )
 
-        Clock.schedule_once(self.move_to_next_card,0.5)
+        Clock.schedule_once(self.move_to_next_card,0.01)
 
     def handle_mark_quality_error(self, error):
         logger.error(f"Quality error: {error}")
@@ -499,7 +454,7 @@ class ReviewScreen(MDScreen):
 
         self.current_card = result
 
-        self.summary = DashboardBL().get_summary()
+        self.summary = self.dashboard_bl.get_summary()
         self.remaining_cards = self.summary.remaining_reviews
 
         self.display_current_card()
@@ -540,8 +495,6 @@ class ReviewScreen(MDScreen):
         )
 
     def move_to_next_card(self, dt=0):
-        """لود و نمایش کارت بعدی بدون تغییر وضعیت جلسه."""
-
         if self.session_state != SessionState.RUNNING:
             return
 
@@ -559,9 +512,8 @@ class ReviewScreen(MDScreen):
             self.set_session_state(SessionState.COMPLETED)
 
     def update_toggle_button(self):
-        button = self.ids.toggle_session_btn
-        if self.session_state == SessionState.RUNNING:
-            button.icon = "pause"
-        else:
-            button.icon = "play"
-        button.disabled = False
+        self.set_widget_state(
+            self.ids.toggle_session_btn,
+            icon="pause" if self.session_state == SessionState.RUNNING else "play",
+            disabled=False,
+        )
