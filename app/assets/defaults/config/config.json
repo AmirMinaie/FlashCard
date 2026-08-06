@@ -5,6 +5,8 @@
   "LEARNING_CARD_TIME": 60,
   "REVIEW_CARD_TIME": 30,
 
+  "DEFAULT_FONT" : "CharisSIL",
+  
   "CardsPerPage": 30 ,
 
   "network_backend": "wininet",

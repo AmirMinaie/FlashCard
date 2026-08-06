@@ -32,7 +32,7 @@ class ReviewScreen(MDScreen):
     current_card = None
     total_today_reviews = NumericProperty(0)
     remaining_cards = NumericProperty(0)
-    session_time = StringProperty("00:00")
+    session_time = StringProperty("0s")
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -48,7 +48,7 @@ class ReviewScreen(MDScreen):
         self.answer_show_time = None
         self.thinking_time = 0
         self.session_state = None
-
+        self.arrow = ""
         self.session_start_time = None
         self.session_timer = None
         self.elapsed_time = 0
@@ -126,10 +126,7 @@ class ReviewScreen(MDScreen):
         current_elapsed = int(time.perf_counter() - self.session_start_time)
         total_elapsed = self.elapsed_time + current_elapsed
 
-        minutes = total_elapsed // 60
-        seconds = total_elapsed % 60
-
-        self.session_time = f"{minutes:02}:{seconds:02}"
+        self.session_time = format_time(total_elapsed)
 
     def start_session_timer(self):
 
@@ -157,7 +154,7 @@ class ReviewScreen(MDScreen):
 
         self.session_start_time = None
         self.elapsed_time = 0
-        self.session_time = "00:00"
+        self.session_time = "0s"
 
     def on_parent(self, widget, parent):
         """وقتی صفحه به والد اضافه شد"""
@@ -171,6 +168,8 @@ class ReviewScreen(MDScreen):
         self.Avg = self.Review_Stats.avg_words_reviewed_last_two_weeks
         if self.Avg == 0:
             self.Avg = 1
+
+        self.arrow = f"{arrow(0)}"
         self.set_widget_state( self.ids.counter_label, color=get_progress_color(self.total_today_reviews / self.Avg), )
         self.reset_session_timer()
         self.set_session_state(SessionState.STOPPED)
@@ -424,6 +423,7 @@ class ReviewScreen(MDScreen):
         self.total_today_reviews += 1
 
         progress = self.total_today_reviews / self.Avg
+        self.arrow = f"{arrow(progress)}"
         self.ids.counter_label.color = get_progress_color(progress)
 
         snackbar_manager.show_snackbar(

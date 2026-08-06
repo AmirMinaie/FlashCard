@@ -1,33 +1,43 @@
 from kivy.core.text import LabelBase
 from cmn.resource_helper import PathManager
+from cmn.config_reader import ConfigReader
+from cmn.logger import logger
 
 
 class FontManager:
-    DEFAULT_FONT = "CharisSIL"
-
+    FONT_NAME = None
+    REQUIRED_STYLES = ["regular", "bold"]
+    FONT_DIR = "assets/fonts"
     _registered = False
 
     @classmethod
-    def register_fonts(cls):
-        """
-        فونت‌ها را فقط یک بار در کل اجرای برنامه ثبت می‌کند.
-        این متد باید قبل از Builder.load_file اجرا شود.
-        """
-        if cls._registered:
+    def register_fonts(self):
+        if self._registered:
             return
 
-        LabelBase.register(
-            name=cls.DEFAULT_FONT,
-            fn_regular=PathManager.app_path( "assets", "fonts", "CharisSIL-Regular.ttf"
-            ).__str__(),
-            fn_bold=PathManager.app_path("assets", "fonts", "CharisSIL-Bold.ttf"
-            ).__str__(),
-        )
+        self.FONT_NAME = ConfigReader().get("DEFAULT_FONT",None)
+        if self.FONT_NAME is None:
+            raise ValueError("Set DEFAULT_FONT in Config")
 
-        cls._registered = True
+        font_kwargs = {}
+        for style in self.REQUIRED_STYLES:
+            arg = f"fn_{style}"
+            full_path = PathManager.app_path(
+                self.FONT_DIR ,
+                self.FONT_NAME, 
+                f"{self.FONT_NAME}-{style}.ttf")
+            if not full_path.exists():
+                raise FileNotFoundError(f"Fonts directory not found: {str(full_path)}")
+
+            font_kwargs[arg] = full_path.__str__()
+
+            
+        LabelBase.register(name=self.FONT_NAME,**font_kwargs)
+
+        self._registered = True
 
     @classmethod
-    def apply_kivymd_default_font(cls, theme_cls):
+    def apply_kivymd_default_font(self, theme_cls):
         
         font_styles = (
             "H1",
@@ -47,4 +57,4 @@ class FontManager:
 
         for style_name in font_styles:
             if style_name in theme_cls.font_styles:
-                theme_cls.font_styles[style_name][0] = cls.DEFAULT_FONT
+                theme_cls.font_styles[style_name][0] = self.FONT_NAME

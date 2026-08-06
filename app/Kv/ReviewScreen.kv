@@ -22,23 +22,26 @@
 
                 MDLabelA:
                     id: counter_label
-                    text: f"Done: {root.total_today_reviews}  | Remaining: {root.remaining_cards}"
+                    text: f"{root.arrow} Done: {root.total_today_reviews}  | Remaining: {root.remaining_cards}"
                     font_style: "Subtitle1"
                     bold: True
                     valign: "middle"
                     halign: "left"
-                    text_size: self.size
+                    size_hint_x: 1
+                    shorten: True
+                    shorten_from: "right"
+                    max_lines: 1
 
-                Widget:
-                
                 MDLabelA:
                     id: session_time_lable
                     text: root.session_time
                     font_style: "H6"
-                    size_hint_x: None          
-                    width: dp(60)
-                    halign: "center"          
-                    valign: "middle"          
+                    size_hint_x: 1
+                    shorten: True
+                    shorten_from: "left"        
+                    halign: "right"          
+                    valign: "middle"
+                    max_lines: 1        
 
                 MDIconButton:
                     id: toggle_session_btn

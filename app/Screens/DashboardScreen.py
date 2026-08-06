@@ -61,13 +61,13 @@ class DashboardScreen(MDScreen):
         today_study_time = self.today_study_time
         avg_study_time = self.last14day_study_time
 
-        self.ids.today_review_label.text = f"{today_reviews} Reviews"
-        self.ids.today_study_time_label.text = (
-            f"({format_time(today_study_time)})"
-        )
-
         review_ratio = today_reviews / avg_reviews if avg_reviews > 0 else 1
         study_time_ratio = (today_study_time / avg_study_time if avg_study_time > 0 else 1)
+
+        self.ids.today_review_label.text = f"{arrow(review_ratio)}{today_reviews} Reviews"
+        self.ids.today_study_time_label.text = (
+            f"({arrow(study_time_ratio)}{format_time(today_study_time)})"
+        )
 
         self.ids.today_review_label.color = get_progress_color(review_ratio)
         self.ids.today_study_time_label.color = get_progress_color(study_time_ratio)
@@ -87,26 +87,25 @@ class DashboardScreen(MDScreen):
 
         yesterday = self.ReviewStats.words_read_yesterday
         avg = self.ReviewStats.avg_words_reviewed_last_two_weeks
-        difference = yesterday - avg
+
         ratio = yesterday / avg if avg > 0 else 1
         self.ids.reviewed_count_performance.color = get_progress_color(ratio)
-        self.ids.reviewed_count_performance.text = (f"{self.arrow(difference)} {abs(yesterday):.0f} ({avg:.0f}) card")
+        self.ids.reviewed_count_performance.text = (f"{arrow(ratio)} {abs(yesterday):.0f} ({avg:.0f}) card")
 
         yesterday_time = self.yesterday_study_time
         avg_time = self.last14day_study_time
         ratio_time = yesterday_time / avg_time if avg_time > 0 else 1
-        difference_time = yesterday_time- avg_time
+
         self.ids.study_time.color = get_progress_color(ratio_time)
-        self.ids.study_time.text = (f"{self.arrow(difference_time)} {format_time(yesterday_time)} ({format_time(avg_time)})")
+        self.ids.study_time.text = (f"{arrow(ratio_time)} {format_time(yesterday_time)} ({format_time(avg_time)})")
 
         yesterday_score = self.calculate_performance(self.yesterday_performance,self.ReviewStats.words_read_yesterday)
         last14_score = self.calculate_performance(self.last_14_days_performance,self.ReviewStats.avg_words_reviewed_last_two_weeks)
 
-        difference_performanc = yesterday_score - last14_score
         ratio_p = yesterday_score / last14_score if last14_score > 0 else 1
         self.ids.yesterday_Performance_lable.color = get_progress_color(ratio_p)
         self.ids.yesterday_Performance_lable.text = (
-            (f"{self.arrow(difference_performanc)} {abs(yesterday_score):.0f} ({last14_score:.0f}) %")
+            (f"{arrow(ratio_p)} {abs(yesterday_score):.0f} ({last14_score:.0f}) %")
         )
 
         stars = [
@@ -189,7 +188,7 @@ class DashboardScreen(MDScreen):
 
     def arrow(self, difference):
         if difference > 0:
-            return "↑"
+            return "▲"
         if difference < 0:
-            return "↓"
-        return "→"
+            return "▼"
+        return "●"

@@ -115,15 +115,14 @@ class AddFlashCardScreen(MDScreen):
             return  saved_card
 
         except ValueError as e:
-            
-            self.show_validation_error(str(e))
+            snackbar_manager.show_snackbar( message=f"Validation Error: {str(e)}", msg_type=Msg_type.error )
 
         except Exception as e:
             self.show_generic_error(str(e))
     
     def handle_save_error(self , e):
         if isinstance(e, ValueError):
-            self.show_validation_error(str(e))
+            snackbar_manager.show_snackbar( message=f"Validation Error: {str(e)}", msg_type=Msg_type.error )
         else:
             self.show_generic_error(str(e))
 
@@ -131,11 +130,13 @@ class AddFlashCardScreen(MDScreen):
         try:
             saved_card = result 
             if saved_card and saved_card['id']:
-                self.show_success_message(saved_card)
+                message = f"saved successfully!\n"
+                message +=f"Title: {saved_card['title']} ID: #{saved_card['id']}"
+                snackbar_manager.show_snackbar( message=message, msg_type=Msg_type.success )
                 self.reset_form()
 
             else:
-                self.show_save_failed_message()
+                snackbar_manager.show_snackbar( message="Failed to save flash card. Please check your data and try again.", msg_type=Msg_type.warning )
                 
         except Exception as e:
             self.show_generic_error(str(e))
@@ -218,24 +219,9 @@ class AddFlashCardScreen(MDScreen):
             'files': self.ids.songs_playlist.songs,
         }
 
-    def show_success_message(self, saved_card):
-        message = f"saved successfully!\n"
-        message +=f"Title: {saved_card['title']} ID: #{saved_card['id']}"
-        snackbar_manager.show_snackbar( message=message, msg_type=Msg_type.success )
-        
-    def show_validation_error(self, error_message):
-        snackbar_manager.show_snackbar( message=f"Validation Error: {error_message}", msg_type=Msg_type.error )
-
-    def show_database_error(self, error_message):
-        snackbar_manager.show_snackbar( message="Database Error. Please try again.", msg_type=Msg_type.error )
-        logger.info(f"Database Error: {error_message}")
-
     def show_generic_error(self, error_message):
         snackbar_manager.show_snackbar( message=f"An unexpected error occurred {error_message}", msg_type=Msg_type.error )
         logger.info(f"Error: {error_message}")
-
-    def show_save_failed_message(self):
-        snackbar_manager.show_snackbar( message="Failed to save flash card. Please check your data and try again.", msg_type=Msg_type.warning )
 
     def show_add_song_dialog(self):
         if not self.dialog_add_song:

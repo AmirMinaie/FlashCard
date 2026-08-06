@@ -29,5 +29,5 @@ class MDTextFieldA(MDTextField):
 
     def __init__(self, **kwargs):
         # فونت ثبت‌شده مثل "NotoSans" را می‌دهد، نه متن DEFAULT_FONT
-        kwargs.setdefault("font_name", FontManager.DEFAULT_FONT)
+        kwargs.setdefault("font_name", FontManager.FONT_NAME)
         super().__init__(**kwargs)

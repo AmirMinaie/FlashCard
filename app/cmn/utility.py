@@ -29,6 +29,13 @@ def get_progress_color(value):
 
     return colors[index]
 
+def arrow(difference):
+    if difference > 1:
+        return "▲"
+    if difference < 1:
+        return "▼"
+    return "●"
+
 def format_time(seconds):
     seconds = int(round(seconds))  
     hours = seconds // 3600
@@ -37,7 +44,7 @@ def format_time(seconds):
     if hours > 0:
         return f"{hours}h {minutes}m"  
     if minutes > 0:
-        return f"{minutes}m"   
+        return f"{minutes}m {secs}s"   
     return f"{secs}s"
 
 def format_days(days: int) -> str:

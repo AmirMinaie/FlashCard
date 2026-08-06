@@ -9,7 +9,7 @@ class BaseButtonA(MDRaisedButton):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        kwargs.setdefault("font_name", FontManager.DEFAULT_FONT)
+        kwargs.setdefault("font_name", FontManager.FONT_NAME)
 
         self.size_hint_y = None
         self.height = dp(46)
