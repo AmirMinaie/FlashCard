@@ -1,8 +1,7 @@
 from kivy.lang import Builder
 from kivy.properties import BooleanProperty, ColorProperty, StringProperty
 from kivymd.uix.textfield import MDTextField
-
-from cmn.font_manage import FontManager
+from widgets.ApplyFont import ApplyFont
 
 
 Builder.load_string('''
@@ -20,14 +19,11 @@ Builder.load_string('''
     height: dp(60)
 ''')
 
-
-class MDTextFieldA(MDTextField):
+class MDTextFieldA(ApplyFont, MDTextField):
     text_h = StringProperty("")
     icon = StringProperty("")
     is_required = BooleanProperty(False)
     required_color = ColorProperty([1, 0, 0, 1])
 
     def __init__(self, **kwargs):
-        # فونت ثبت‌شده مثل "NotoSans" را می‌دهد، نه متن DEFAULT_FONT
-        kwargs.setdefault("font_name", FontManager.FONT_NAME)
         super().__init__(**kwargs)

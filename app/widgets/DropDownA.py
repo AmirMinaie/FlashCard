@@ -6,7 +6,7 @@ from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.list import OneLineIconListItem, IconLeftWidget
 from kivymd.uix.behaviors import RectangularRippleBehavior
 from kivymd.uix.button import MDFlatButton
-from cmn.font_manage import FontManager
+from widgets.ApplyFont import ApplyFont
 
 Builder.load_string('''
 <DropDownA>:
@@ -17,7 +17,7 @@ Builder.load_string('''
     padding: "8dp"
     adaptive_height: True
     
-    MDLabel:
+    MDLabelA:
         text: root.text_h + (" *" if root.is_required else "")
         size_hint_y: None
         height: dp(20)
@@ -43,7 +43,7 @@ Builder.load_string('''
             theme_text_color: "Custom"
             text_color: (0.9, 0.2, 0.2, 0.9) if root.is_required and not root.selected_value else (0.5, 0.5, 0.5, 1)
         
-        MDLabel:
+        MDLabelA:
             id: dropdown_btn
             text: root.selected_value if root.selected_value else "Select..."
             size_hint_x: 1
@@ -73,8 +73,6 @@ class IconListItem(OneLineIconListItem):
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if FontManager.FONT_NAME:
-            self.font_name = FontManager.FONT_NAME
         
         self.icon_widget = IconLeftWidget(
             icon=self.icon,
@@ -107,7 +105,6 @@ class DropDownA(MDBoxLayout):
             selected_value=self._update_text,
             is_required=self._update_appearance
         )
-        # اضافه کردن قابلیت کلیک به کل باکس
         self.bind(pos=self._update_touch_area)
     
     def _update_touch_area(self, *args):

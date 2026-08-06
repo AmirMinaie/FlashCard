@@ -6,6 +6,7 @@
   "REVIEW_CARD_TIME": 30,
 
   "DEFAULT_FONT" : "CharisSIL",
+  "IPA_FONT" : "NotoSans",
   
   "CardsPerPage": 30 ,
 

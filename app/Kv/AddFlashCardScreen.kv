@@ -25,7 +25,6 @@
                     halign: "left"
                     text_size: self.size
 
-
         ScrollView:
             id: flashcard_Add
 
@@ -46,7 +45,6 @@
                     radius: [20]
                     elevation: 2
 
-
                     MDTextFieldA:
                         id: title_field
                         text_h: "Word/Title"
@@ -56,6 +54,7 @@
                     MDTextFieldA:
                         id: pronunciation_field
                         text_h: "Pronunciation"
+                        font_name : root.IPA_FONT
                         icon: "volume-high"
                         is_required: True
 

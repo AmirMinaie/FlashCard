@@ -19,6 +19,7 @@ from cmn.logger import logger
 from widgets.AsyncButton import AsyncButton
 from itertools import zip_longest
 from widgets.SnackbarManager import snackbar_manager , Msg_type
+from cmn.font_manage import FontManager
 
 import uuid
 from kivy.properties import StringProperty, NumericProperty, DictProperty, BooleanProperty , ObjectProperty 
@@ -29,7 +30,7 @@ Builder.load_file(str(PathManager.app_path( "Kv/AddFlashCardScreen.kv")))
 class AddFlashCardScreen(MDScreen):
     form_title = StringProperty("Add New FlashCard")
     save_button_text = StringProperty("Save FlashCard")
-
+    IPA_FONT = None
     mode = StringProperty("add")
     card_id = NumericProperty(-1)
 
@@ -83,9 +84,11 @@ class AddFlashCardScreen(MDScreen):
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         self.dialog_add_song = None
         self.add_card = []
         self.player = None
+        self.IPA_FONT = FontManager.IPA_FONT
 
     def load_constant(self , type):
         constant_pos = constantBL().get_constant(type)
@@ -226,17 +229,16 @@ class AddFlashCardScreen(MDScreen):
     def show_add_song_dialog(self):
         if not self.dialog_add_song:
 
-            self.song_dialog_content = Builder.load_string("""
+            self.song_dialog_content = Builder.load_string(f"""
 MDBoxLayout:
     orientation: "vertical"
     spacing: dp(15)
     padding: dp(15)
     size_hint_y: None
-    height: dp(310)
+    height: dp(320)
 
     MDSeparator:
         height: dp(1)
-
 
     DropDownA:
         id: source_field
@@ -253,6 +255,7 @@ MDBoxLayout:
         hint_text: "Enter a title for this song"
         icon: "format-title"
         mode: "rectangle"
+        font_name:"{FontManager.DEFAULT_FONT}"
         multiline: True
         size_hint_y: None
         height: dp(100)
@@ -263,6 +266,7 @@ MDBoxLayout:
         hint_text: "Enter song URL or local file path"
         icon: "music-note"
         mode: "rectangle"
+        font_name: "{FontManager.DEFAULT_FONT}"
         multiline: True
         size_hint_y: None
         height: dp(100)

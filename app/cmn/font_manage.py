@@ -5,7 +5,8 @@ from cmn.logger import logger
 
 
 class FontManager:
-    FONT_NAME = None
+    DEFAULT_FONT = None
+    IPA_FONT = None
     REQUIRED_STYLES = ["regular", "bold"]
     FONT_DIR = "assets/fonts"
     _registered = False
@@ -15,24 +16,41 @@ class FontManager:
         if self._registered:
             return
 
-        self.FONT_NAME = ConfigReader().get("DEFAULT_FONT",None)
-        if self.FONT_NAME is None:
-            raise ValueError("Set DEFAULT_FONT in Config")
+        self.DEFAULT_FONT = ConfigReader().get("DEFAULT_FONT",None)
+        self.IPA_FONT = ConfigReader().get("IPA_FONT",None)
+
+        if self.DEFAULT_FONT is None or self.IPA_FONT is None:
+            raise ValueError("DEFAULT_FONT and IPA_FONT must be configured.")
 
         font_kwargs = {}
         for style in self.REQUIRED_STYLES:
             arg = f"fn_{style}"
             full_path = PathManager.app_path(
                 self.FONT_DIR ,
-                self.FONT_NAME, 
-                f"{self.FONT_NAME}-{style}.ttf")
+                self.DEFAULT_FONT, 
+                f"{self.DEFAULT_FONT}-{style}.ttf")
             if not full_path.exists():
                 raise FileNotFoundError(f"Fonts directory not found: {str(full_path)}")
 
             font_kwargs[arg] = full_path.__str__()
 
             
-        LabelBase.register(name=self.FONT_NAME,**font_kwargs)
+        LabelBase.register(name=self.DEFAULT_FONT,**font_kwargs)
+
+        Ipafont_kwargs = {}
+        for style in self.REQUIRED_STYLES:
+            arg = f"fn_{style}"
+            full_path = PathManager.app_path(
+                self.FONT_DIR ,
+                self.IPA_FONT, 
+                f"{self.IPA_FONT}-{style}.ttf")
+            if not full_path.exists():
+                raise FileNotFoundError(f"Fonts directory not found: {str(full_path)}")
+
+            Ipafont_kwargs[arg] = full_path.__str__()
+
+            
+        LabelBase.register(name=self.IPA_FONT,**Ipafont_kwargs)
 
         self._registered = True
 
@@ -57,4 +75,4 @@ class FontManager:
 
         for style_name in font_styles:
             if style_name in theme_cls.font_styles:
-                theme_cls.font_styles[style_name][0] = self.FONT_NAME
+                theme_cls.font_styles[style_name][0] = self.DEFAULT_FONT

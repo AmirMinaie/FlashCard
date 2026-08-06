@@ -2,14 +2,12 @@ from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import BooleanProperty
 from kivymd.uix.button import MDRaisedButton
-from cmn.font_manage import FontManager
+from widgets.ApplyFont import ApplyFont
 
-
-class BaseButtonA(MDRaisedButton):
+class BaseButtonA(ApplyFont, MDRaisedButton):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        kwargs.setdefault("font_name", FontManager.FONT_NAME)
 
         self.size_hint_y = None
         self.height = dp(46)

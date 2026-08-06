@@ -2,6 +2,7 @@ from kivy.lang import Builder
 from kivy.properties import StringProperty , ObjectProperty
 from kivymd.uix.card import MDCard
 from cmn.resource_helper import PathManager
+from cmn.font_manage import FontManager
 
 Builder.load_string(
     
@@ -176,3 +177,7 @@ class MDCardA(MDCard):
     last_review_date = StringProperty()
     edit_card = ObjectProperty(None)
     pass  
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.ids.pronunciation_label.font_name = FontManager.IPA_FONT

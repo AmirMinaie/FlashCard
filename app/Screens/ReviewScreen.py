@@ -13,6 +13,7 @@ from widgets.Playlist import Playlist
 from cmn.logger import logger
 from cmn.utility import  *
 from enum import Enum, auto
+from cmn.font_manage import FontManager
 
 Builder.load_file(str(PathManager.app_path("Kv/ReviewScreen.kv")))
 
@@ -33,6 +34,7 @@ class ReviewScreen(MDScreen):
     total_today_reviews = NumericProperty(0)
     remaining_cards = NumericProperty(0)
     session_time = StringProperty("0s")
+    IPA_FONT = None
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -53,6 +55,7 @@ class ReviewScreen(MDScreen):
         self.session_timer = None
         self.elapsed_time = 0
         self.pause_start_time = None
+        self.IPA_FONT = FontManager.IPA_FONT
 
     def set_session_state(self, state: SessionState):
         old_state = self.session_state

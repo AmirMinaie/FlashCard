@@ -1,12 +1,7 @@
 from kivymd.uix.label import MDLabel
-from cmn.font_manage import FontManager
+from widgets.ApplyFont import ApplyFont
 
-
-class MDLabelA(MDLabel):
+class MDLabelA(ApplyFont, MDLabel):
 
     def __init__(self, style="title", haligna="left", **kwargs):
-
-        kwargs.setdefault("font_name", FontManager.FONT_NAME)
-
-
         super().__init__(**kwargs)
