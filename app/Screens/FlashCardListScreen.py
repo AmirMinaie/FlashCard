@@ -125,7 +125,6 @@ class FlashCardListScreen(MDScreen):
                             add_flashcard = add_screen.children[0]
                             if hasattr(add_flashcard, 'set_card_id'):
                                 add_flashcard.set_card_id(card_id)
-                                print("before switch")
                                 child.switch_tab("add_tab")
                         break
                 break

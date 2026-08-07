@@ -114,7 +114,8 @@ class FlashCardBL:
                         fileName=info["fileName"],
                         fileSize=info["fileSize"],
                         type_id=item["type_id"],
-                        sourceType_id=item["source_type_id"]
+                        sourceType_id=item["source_type_id"],
+                        view_count = 0
                     )
                 )
 
@@ -171,7 +172,6 @@ class FlashCardBL:
                 return False
 
             incoming_files = data.get("files", [])
-
 
             for file_data in incoming_files:
 
@@ -249,7 +249,8 @@ class FlashCardBL:
                         fileName=info["fileName"],
                         fileSize=info["fileSize"],
                         type_id=item["type_id"],
-                        sourceType_id=item["source_type_id"]
+                        sourceType_id=item["source_type_id"],
+                        view_count = 0
                     )
                 )
 
@@ -278,6 +279,28 @@ class FlashCardBL:
                     pass
             raise
 
+        finally:
+            session.close()
+
+    def view_file(self, file_id):
+        session = get_session()
+        try:
+            file = session.query(fileFlashcardDA).filter(
+                fileFlashcardDA.id == file_id
+            ).first()
+            
+            if file is None:
+                return False
+            
+            file.view_count += 1
+            session.commit()
+            return True
+            
+        except Exception as e:
+            logger.error(f"error view file bl {str(e)}")
+            session.rollback()
+            return False
+            
         finally:
             session.close()
 
@@ -422,6 +445,8 @@ class FlashCardBL:
         except Exception as e:
             logger.error(f"Error marking card reviewed: {e}")
             return False
+
+
 
     def _get_field(self, field_name):
         field_mapping = {

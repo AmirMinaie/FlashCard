@@ -5,7 +5,7 @@
   "LEARNING_CARD_TIME": 60,
   "REVIEW_CARD_TIME": 30,
 
-  "DEFAULT_FONT" : "CharisSIL",
+  "DEFAULT_FONT" : "Segoe_Print",
   "IPA_FONT" : "NotoSans",
   
   "CardsPerPage": 30 ,

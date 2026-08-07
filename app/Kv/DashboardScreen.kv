@@ -18,9 +18,9 @@
                 padding: dp(10), dp(0)
                 spacing: dp(8)
 
-                MDLabelA:
+                MDLabel:
                     id: counter_label
-                    text: f"Dashboard"
+                    text: "Dashboard"
                     font_style: "Subtitle1"
                     bold: True
                     valign: "middle"
@@ -55,7 +55,7 @@
                 MDCard:
                     orientation: "vertical"
                     size_hint_y: None
-                    height: dp(230)
+                    height: dp(200)
 
                     radius: [16, 16, 16, 16]
                     elevation: 2
@@ -63,13 +63,12 @@
 
                     MDBoxLayout:
                         orientation: "vertical"
-                        spacing: dp(14)
-                        padding: [dp(20), dp(20), dp(20), dp(20)]
-                        spacing: dp(14)
+                        spacing: dp(10)
+                        padding: [dp(16), dp(12), dp(16), dp(12)]
 
                         MDLabel:
                             text: "Today's Progress"
-                            font_style: "H6"
+                            font_style: "Subtitle1"
                             bold: True
                             size_hint_y: None
                             height: self.texture_size[1]
@@ -105,30 +104,32 @@
                             value: 0
                             max: 100
                             size_hint_y: None
-                            height: dp(8)
+                            height: dp(6)
 
                         MDBoxLayout:
                             size_hint_y: None
-                            height: dp(24)
+                            height: dp(20)
 
                             MDLabel:
                                 id: remaining_label
                                 text: "0 cards remaining"
                                 theme_text_color: "Secondary"
+                                font_style: "Caption"
 
                             MDLabel:
                                 id: completion_percent
                                 text: "0%"
                                 halign: "right"
                                 bold: True
+                                font_style: "Body2"
 
                 ##################################################
                 # SUMMARY
                 ##################################################
                 MDGridLayout:
                     cols: 2
-                    spacing: dp(12)
-                    row_default_height: dp(100)
+                    spacing: dp(10)
+                    row_default_height: dp(85)
                     row_force_default: True
                     size_hint_y: None
                     height: self.minimum_height
@@ -139,33 +140,34 @@
                 
                     MDCard:
                         size_hint_y: None
-                        height: dp(100)
+                        height: dp(85)
                         radius: [14,14,14,14]
                         elevation: 2
                 
                         MDBoxLayout:
                             orientation: "vertical"
-                            padding: dp(16)
-                            spacing: dp(8)
+                            padding: dp(10)
+                            spacing: dp(2)
                 
                             MDBoxLayout:
                                 orientation: "horizontal"
                                 size_hint_y: None
-                                height: dp(32)
-                                spacing: dp(8)
+                                height: dp(22)
+                                spacing: dp(4)
 
                                 MDIcon:
                                     icon: "fire"
                                     theme_text_color: "Custom"
                                     text_color: 1.00, 0.44, 0.26, 1
-                                    icon_size: "24sp"
+                                    icon_size: "16sp"
                                     size_hint: None, None
-                                    size: dp(24), dp(24)
+                                    size: dp(16), dp(16)
                                     pos_hint: {"center_y": 0.5}
 
                                 MDLabel:
-                                    text: "Current Streak"
+                                    text: "Streak"
                                     bold: True
+                                    font_style: "Caption"
                                     size_hint_y: None
                                     height: self.texture_size[1]
                 
@@ -183,32 +185,33 @@
                     ##################################################
                     MDCard:
                         size_hint_y: None
-                        height: dp(100)
+                        height: dp(85)
                         radius: [14,14,14,14]
                         elevation: 2
                 
                         MDBoxLayout:
                             orientation: "vertical"
-                            padding: dp(16)
-                            spacing: dp(8)
+                            padding: dp(10)
+                            spacing: dp(2)
 
                             MDBoxLayout:
                                 orientation: "horizontal"
                                 size_hint_y: None
-                                height: dp(32)
-                                spacing: dp(8)                            
+                                height: dp(22)
+                                spacing: dp(4)                            
                 
                                 MDIcon:
                                     icon: "calendar-clock"
                                     theme_text_color: "Custom"
-                                    text_color:0.94, 0.33, 0.31, 1
-                                    icon_size: "24sp"
+                                    text_color: 0.94, 0.33, 0.31, 1
+                                    icon_size: "16sp"
                                     size_hint: None, None
-                                    size: dp(24), dp(24)
+                                    size: dp(16), dp(16)
 
                                 MDLabel:
                                     text: "Due Today"
                                     bold: True
+                                    font_style: "Caption"
                                     size_hint_y: None
                                     height: self.texture_size[1]
                 
@@ -226,32 +229,33 @@
                     ##################################################
                     MDCard:
                         size_hint_y: None
-                        height: dp(100)
+                        height: dp(85)
                         radius: [14,14,14,14]
                         elevation: 2
                 
                         MDBoxLayout:
                             orientation: "vertical"
-                            padding: dp(16)
-                            spacing: dp(8)
+                            padding: dp(10)
+                            spacing: dp(2)
 
                             MDBoxLayout:
                                 orientation: "horizontal"
                                 size_hint_y: None
-                                height: dp(32)
-                                spacing: dp(8)                            
+                                height: dp(22)
+                                spacing: dp(4)                            
                 
                                 MDIcon:
                                     icon: "cards"
                                     theme_text_color: "Custom"
                                     text_color: 0.13, 0.59, 0.95, 1
-                                    icon_size: "24sp"
+                                    icon_size: "16sp"
                                     size_hint: None, None
-                                    size: dp(24), dp(24)
+                                    size: dp(16), dp(16)
 
                                 MDLabel:
                                     text: "Total Cards"
                                     bold: True
+                                    font_style: "Caption"
                                     size_hint_y: None
                                     height: self.texture_size[1]
                 
@@ -269,32 +273,33 @@
                     ##################################################
                     MDCard:
                         size_hint_y: None
-                        height: dp(100)
+                        height: dp(85)
                         radius: [14,14,14,14]
                         elevation: 2
                 
                         MDBoxLayout:
                             orientation: "vertical"
-                            padding: dp(16)
-                            spacing: dp(8)
+                            padding: dp(10)
+                            spacing: dp(2)
 
                             MDBoxLayout:
                                 orientation: "horizontal"
                                 size_hint_y: None
-                                height: dp(32)
-                                spacing: dp(8)
+                                height: dp(22)
+                                spacing: dp(4)
                 
                                 MDIcon:
                                     icon: "school"
                                     theme_text_color: "Custom"
-                                    text_color:0.30, 0.69, 0.31, 1
-                                    icon_size: "24sp"
+                                    text_color: 0.30, 0.69, 0.31, 1
+                                    icon_size: "16sp"
                                     size_hint: None, None
-                                    size: dp(24), dp(24)
+                                    size: dp(16), dp(16)
 
                                 MDLabel:
-                                    text: "Mature Cards"
+                                    text: "Mature"
                                     bold: True
+                                    font_style: "Caption"
                                     size_hint_y: None
                                     height: self.texture_size[1]
                 
@@ -308,36 +313,37 @@
                                 height: self.texture_size[1]
 
                     ##################################################
-                    # estimate study time
+                    # ESTIMATE STUDY TIME
                     ##################################################
                     MDCard:
                         size_hint_y: None
-                        height: dp(100)
+                        height: dp(85)
                         radius: [14,14,14,14]
                         elevation: 2
                 
                         MDBoxLayout:
                             orientation: "vertical"
-                            padding: dp(16)
-                            spacing: dp(8)
+                            padding: dp(10)
+                            spacing: dp(2)
 
                             MDBoxLayout:
                                 orientation: "horizontal"
                                 size_hint_y: None
-                                height: dp(32)
-                                spacing: dp(8)
+                                height: dp(22)
+                                spacing: dp(4)
                 
                                 MDIcon:
                                     icon: "book-open-page-variant"
                                     theme_text_color: "Custom"
-                                    text_color:0.61, 0.15, 0.69, 1
-                                    icon_size: "24sp"
+                                    text_color: 0.61, 0.15, 0.69, 1
+                                    icon_size: "16sp"
                                     size_hint: None, None
-                                    size: dp(24), dp(24)
+                                    size: dp(16), dp(16)
 
                                 MDLabel:
-                                    text: "estimate study time"
+                                    text: "Est. Time"
                                     bold: True
+                                    font_style: "Caption"
                                     size_hint_y: None
                                     height: self.texture_size[1]
                 
@@ -351,46 +357,40 @@
                                 height: self.texture_size[1]
 
                     ##################################################
-                    # Today's Performance
+                    # TODAY'S PERFORMANCE
                     ##################################################
                     MDCard:
                         size_hint_y: None
-                        height: dp(100)
+                        height: dp(85)
                         radius: [14,14,14,14]
                         elevation: 2
 
                         MDBoxLayout:
                             orientation: "vertical"
-                            padding: dp(16)
-                            spacing: dp(8)
+                            padding: dp(10)
+                            spacing: dp(2)
 
-                            ##################################################
-                            # Header
-                            ##################################################
                             MDBoxLayout:
                                 orientation: "horizontal"
                                 size_hint_y: None
-                                height: dp(32)
-                                spacing: dp(8)
+                                height: dp(22)
+                                spacing: dp(4)
 
                                 MDIcon:
                                     icon: "star-circle"
                                     theme_text_color: "Custom"
-                                    text_color:1.00, 0.76, 0.03, 1
-                                    icon_size: "24sp"
+                                    text_color: 1.00, 0.76, 0.03, 1
+                                    icon_size: "16sp"
                                     size_hint: None, None
-                                    size: dp(24), dp(24)
+                                    size: dp(16), dp(16)
 
                                 MDLabel:
-                                    text: "Today's Performance"
+                                    text: "Performance"
                                     bold: True
+                                    font_style: "Caption"
                                     size_hint_y: None
                                     height: self.texture_size[1]
 
-                            ##################################################
-                            # yesterday Performance
-                            ##################################################
-                            
                             AnchorLayout:
                                 anchor_x: "center"
                                 anchor_y: "center"
@@ -398,90 +398,92 @@
                                 MDBoxLayout:
                                     adaptive_width: True
                                     size_hint_y: None
-                                    height: dp(22)
-                                    spacing: dp(4)
+                                    height: dp(20)
+                                    spacing: dp(2)
 
-                                    # ستاره‌ها
                                     MDBoxLayout:
                                         adaptive_width: True
-                                        spacing: dp(2)
+                                        spacing: dp(1)
 
                                         MDIcon:
                                             id: star1
                                             theme_text_color: "Custom"
-                                            text_color:1.00, 0.84, 0.31, 1
+                                            text_color: 1.00, 0.84, 0.31, 1
                                             icon: "star-outline"
                                             size_hint: None, None
-                                            size: dp(20), dp(20)
+                                            size: dp(14), dp(14)
 
                                         MDIcon:
                                             id: star2
                                             theme_text_color: "Custom"
-                                            text_color:1.00, 0.84, 0.31, 1
+                                            text_color: 1.00, 0.84, 0.31, 1
                                             icon: "star-outline"
                                             size_hint: None, None
-                                            size: dp(20), dp(20)
+                                            size: dp(14), dp(14)
 
                                         MDIcon:
                                             id: star3
                                             theme_text_color: "Custom"
-                                            text_color:1.00, 0.84, 0.31, 1
+                                            text_color: 1.00, 0.84, 0.31, 1
                                             icon: "star-outline"
                                             size_hint: None, None
-                                            size: dp(20), dp(20)
+                                            size: dp(14), dp(14)
 
                                         MDIcon:
                                             id: star4
                                             theme_text_color: "Custom"
-                                            text_color:1.00, 0.84, 0.31, 1
+                                            text_color: 1.00, 0.84, 0.31, 1
                                             icon: "star-outline"
                                             size_hint: None, None
-                                            size: dp(20), dp(20)
+                                            size: dp(14), dp(14)
 
                                         MDIcon:
                                             id: star5
                                             theme_text_color: "Custom"
-                                            text_color:1.00, 0.84, 0.31, 1
+                                            text_color: 1.00, 0.84, 0.31, 1
                                             icon: "star-outline"
                                             size_hint: None, None
-                                            size: dp(20), dp(20)
+                                            size: dp(14), dp(14)
 
                                     MDLabel:
-                                        id: yesterday_Performance_lable
+                                        id: yesterday_performance_label
                                         text: "0.0 (0%)"
                                         adaptive_width: True
                                         bold: True
+                                        font_style: "Body2"
+
                     ##################################################
-                    #reviewed count Performance
+                    # REVIEWED COUNT PERFORMANCE
                     ##################################################
                     MDCard:
                         size_hint_y: None
-                        height: dp(100)
+                        height: dp(85)
                         radius: [14,14,14,14]
                         elevation: 2
                 
                         MDBoxLayout:
                             orientation: "vertical"
-                            padding: dp(16)
-                            spacing: dp(8)
+                            padding: dp(10)
+                            spacing: dp(2)
 
                             MDBoxLayout:
                                 orientation: "horizontal"
                                 size_hint_y: None
-                                height: dp(32)
-                                spacing: dp(8)
+                                height: dp(22)
+                                spacing: dp(4)
                 
                                 MDIcon:
                                     icon: "trending-up"
                                     theme_text_color: "Custom"
-                                    text_color:0.00, 0.78, 0.33, 1
-                                    icon_size: "24sp"
+                                    text_color: 0.00, 0.78, 0.33, 1
+                                    icon_size: "16sp"
                                     size_hint: None, None
-                                    size: dp(24), dp(24)
+                                    size: dp(16), dp(16)
 
                                 MDLabel:
-                                    text: "reviewed count Performance"
+                                    text: "Reviewed"
                                     bold: True
+                                    font_style: "Caption"
                                     size_hint_y: None
                                     height: self.texture_size[1]
                 
@@ -495,36 +497,37 @@
                                 height: self.texture_size[1]
 
                     ##################################################
-                    #study_time
+                    # STUDY TIME
                     ##################################################
                     MDCard:
                         size_hint_y: None
-                        height: dp(100)
+                        height: dp(85)
                         radius: [14,14,14,14]
                         elevation: 2
                 
                         MDBoxLayout:
                             orientation: "vertical"
-                            padding: dp(16)
-                            spacing: dp(8)
+                            padding: dp(10)
+                            spacing: dp(2)
 
                             MDBoxLayout:
                                 orientation: "horizontal"
                                 size_hint_y: None
-                                height: dp(32)
-                                spacing: dp(8)
+                                height: dp(22)
+                                spacing: dp(4)
                 
                                 MDIcon:
                                     icon: "clock-check-outline"
                                     theme_text_color: "Custom"
                                     text_color: 0.20, 0.60, 0.86, 1
-                                    icon_size: "24sp"
+                                    icon_size: "16sp"
                                     size_hint: None, None
-                                    size: dp(24), dp(24)
+                                    size: dp(16), dp(16)
 
                                 MDLabel:
-                                    text: "study time"
+                                    text: "Study Time"
                                     bold: True
+                                    font_style: "Caption"
                                     size_hint_y: None
                                     height: self.texture_size[1]
                 
@@ -542,18 +545,18 @@
                 ##################################################
                 MDCard:
                     size_hint_y: None
-                    height: dp(315)
+                    height: dp(235)
                     radius: [16,16,16,16]
                     elevation: 2
 
                     MDBoxLayout:
                         orientation: "vertical"
-                        padding: dp(20)
-                        spacing: dp(14)
+                        padding: dp(14)
+                        spacing: dp(8)
 
                         MDLabel:
                             text: "Learning Progress"
-                            font_style: "H6"
+                            font_style: "Subtitle1"
                             bold: True
                             size_hint_y: None
                             height: self.texture_size[1]
@@ -566,33 +569,35 @@
 
                         MDBoxLayout:
                             size_hint_y: None
-                            height: dp(24)
-                            spacing: dp(8)
+                            height: dp(20)
+                            spacing: dp(6)
 
                             MDIcon:
                                 icon: "plus-box"
                                 theme_text_color: "Custom"
-                                text_color:0.26, 0.65, 0.96, 1
-                                width: dp(24)
-                                icon_size: "24sp"
+                                text_color: 0.26, 0.65, 0.96, 1
+                                width: dp(18)
+                                icon_size: "18sp"
                                 size_hint: None, None
-                                size: dp(24), dp(24)
-
+                                size: dp(18), dp(18)
 
                             MDLabel:
                                 text: "New Cards"
+                                font_style: "Caption"
 
                             MDLabel:
                                 id: new_count
                                 text: "0 (0%)"
                                 halign: "right"
+                                font_style: "Caption"
+                                bold: True
 
                         MDProgressBar:
                             id: new_progress
                             value: 0
                             max: 100
                             size_hint_y: None
-                            height: dp(8)
+                            height: dp(4)
 
                         ##################################################
                         # LEARNING
@@ -600,32 +605,35 @@
 
                         MDBoxLayout:
                             size_hint_y: None
-                            height: dp(24)
-                            spacing: dp(8)
+                            height: dp(20)
+                            spacing: dp(6)
 
                             MDIcon:
                                 icon: "brain"
                                 theme_text_color: "Custom"
-                                text_color:0.49, 0.34, 0.76, 1
-                                width: dp(24)
-                                icon_size: "24sp"
+                                text_color: 0.49, 0.34, 0.76, 1
+                                width: dp(18)
+                                icon_size: "18sp"
                                 size_hint: None, None
-                                size: dp(24), dp(24)
+                                size: dp(18), dp(18)
 
                             MDLabel:
                                 text: "Learning"
+                                font_style: "Caption"
 
                             MDLabel:
                                 id: learning_count
                                 text: "0 (0%)"
                                 halign: "right"
+                                font_style: "Caption"
+                                bold: True
 
                         MDProgressBar:
                             id: learning_progress
                             value: 0
                             max: 100
                             size_hint_y: None
-                            height: dp(8)
+                            height: dp(4)
 
                         ##################################################
                         # REVIEW
@@ -633,32 +641,35 @@
 
                         MDBoxLayout:
                             size_hint_y: None
-                            height: dp(24)
-                            spacing: dp(8)
+                            height: dp(20)
+                            spacing: dp(6)
 
                             MDIcon:
                                 icon: "refresh"
                                 theme_text_color: "Custom"
-                                text_color:0.98, 0.55, 0.00, 1
-                                width: dp(24)
-                                icon_size: "24sp"
+                                text_color: 0.98, 0.55, 0.00, 1
+                                width: dp(18)
+                                icon_size: "18sp"
                                 size_hint: None, None
-                                size: dp(24), dp(24)
+                                size: dp(18), dp(18)
 
                             MDLabel:
                                 text: "Review"
+                                font_style: "Caption"
 
                             MDLabel:
                                 id: review_count
                                 text: "0 (0%)"
                                 halign: "right"
+                                font_style: "Caption"
+                                bold: True
 
                         MDProgressBar:
                             id: review_progress
                             value: 0
                             max: 100
                             size_hint_y: None
-                            height: dp(8)
+                            height: dp(4)
 
                         ##################################################
                         # MATURE
@@ -666,49 +677,53 @@
 
                         MDBoxLayout:
                             size_hint_y: None
-                            height: dp(24)
-                            spacing: dp(8)
+                            height: dp(20)
+                            spacing: dp(6)
 
                             MDIcon:
                                 icon: "school"
                                 theme_text_color: "Custom"
                                 text_color: 0.30, 0.69, 0.31, 1
-                                width: dp(24)
-                                icon_size: "24sp"
+                                width: dp(18)
+                                icon_size: "18sp"
                                 size_hint: None, None
-                                size: dp(24), dp(24)
+                                size: dp(18), dp(18)
 
                             MDLabel:
                                 text: "Mature"
+                                font_style: "Caption"
 
                             MDLabel:
                                 id: mature_count
                                 text: "0 (0%)"
                                 halign: "right"
+                                font_style: "Caption"
+                                bold: True
 
                         MDProgressBar:
                             id: mature_progress
                             value: 0
                             max: 100
                             size_hint_y: None
-                            height: dp(8)
+                            height: dp(4)
+
                 ##################################################
                 # UPCOMING REVIEWS
                 ##################################################
                 MDCard:
                     size_hint_y: None
-                    height: dp(225)
+                    height: dp(185)
                     radius: [16,16,16,16]
                     elevation: 2
 
                     MDBoxLayout:
                         orientation: "vertical"
-                        padding: dp(20)
-                        spacing: dp(12)
+                        padding: dp(14)
+                        spacing: dp(8)
 
                         MDLabel:
                             text: "Upcoming Reviews"
-                            font_style: "H6"
+                            font_style: "Subtitle1"
                             bold: True
                             size_hint_y: None
                             height: self.texture_size[1]
@@ -717,48 +732,60 @@
 
                         MDBoxLayout:
                             size_hint_y: None
-                            height: dp(24)
+                            height: dp(20)
 
                             MDLabel:
                                 text: "Tomorrow"
+                                font_style: "Caption"
 
                             MDLabel:
                                 id: tomorrow_label
                                 text: "0"
                                 halign: "right"
+                                font_style: "Caption"
+                                bold: True
 
                         MDBoxLayout:
                             size_hint_y: None
-                            height: dp(24)
+                            height: dp(20)
 
                             MDLabel:
                                 text: "Next 3 Days"
+                                font_style: "Caption"
 
                             MDLabel:
                                 id: next3_label
                                 text: "0"
                                 halign: "right"
+                                font_style: "Caption"
+                                bold: True
 
                         MDBoxLayout:
                             size_hint_y: None
-                            height: dp(24)
+                            height: dp(20)
 
                             MDLabel:
                                 text: "Next 7 Days"
+                                font_style: "Caption"
 
                             MDLabel:
                                 id: next7_label
                                 text: "0"
                                 halign: "right"
+                                font_style: "Caption"
+                                bold: True
 
                         MDBoxLayout:
                             size_hint_y: None
-                            height: dp(24)
+                            height: dp(20)
 
                             MDLabel:
                                 text: "Next 30 Days"
+                                font_style: "Caption"
 
                             MDLabel:
                                 id: next30_label
                                 text: "0"
                                 halign: "right"
+                                font_style: "Caption"
+                                bold: True

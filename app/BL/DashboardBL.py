@@ -17,6 +17,7 @@ class DashboardSummary:
 @dataclass
 class LearningProgress:
     new_cards: int
+    total_review : int
     learning_cards: int
     review_cards: int
     mature_cards: int
@@ -43,6 +44,11 @@ class Performance:
 class ReviewStats:
     words_read_yesterday: int
     avg_words_reviewed_last_two_weeks: float
+
+@dataclass
+class EstimateTime:
+    estimated : int
+    global_avg : int
 
 class DashboardBL:
 
@@ -95,6 +101,9 @@ class DashboardBL:
 
         total_cards = session.query(func.count(flashcardDA.id)).scalar()
 
+        total_review = ReviewBL.completed_reviews_query(session=session).\
+            with_entities(func.count(reviewFlashcardDA.id)).scalar()
+
         new_cards = (
             session.query(func.count(flashcardDA.id))
             .filter(flashcardDA.last_review_quality == None)
@@ -132,6 +141,7 @@ class DashboardBL:
 
         return LearningProgress(
             new_cards=new_cards,
+            total_review = total_review,
             learning_cards= learning_cards,
             review_cards= review_cards,
             mature_cards= mature_cards,
@@ -175,7 +185,6 @@ class DashboardBL:
         if not review_days:
             return 0
 
-        # اگر امروز مرور نکرده ولی دیروز کرده، استریک از دیروز حساب می‌شود
         if review_days[0] == str(self.today):
             expected = self.today
         elif review_days[0] == str(self.today - timedelta(days=1)):
@@ -223,43 +232,47 @@ class DashboardBL:
         )
 
         due_card_ids = [card.id for card in due_card_ids]
-
-        if not due_card_ids:
-            return 0.0
-
-        card_averages = (
-            session.query(
-                reviewFlashcardDA.flashcard_id,
-                func.avg(reviewFlashcardDA.total_time).label("avg_time"),
-                func.count(reviewFlashcardDA.id).label("review_count"),
-            )
-            .filter(
-                reviewFlashcardDA.flashcard_id.in_(due_card_ids),
-                reviewFlashcardDA.total_time.isnot(None)
-            )
-            .group_by(reviewFlashcardDA.flashcard_id)
-            .all()
-        )
-
-        card_stats = {
-            card_id: {"avg": avg_time, "count": review_count}
-            for card_id, avg_time, review_count in card_averages
-        }
-
         global_avg = self.get_global_average_review_time(session) or 0
 
-        MIN_REVIEWS = 3
-        BUFFER = 1.05
+        if due_card_ids:
+            card_averages = (
+                session.query(
+                    reviewFlashcardDA.flashcard_id,
+                    func.avg(reviewFlashcardDA.total_time).label("avg_time"),
+                    func.count(reviewFlashcardDA.id).label("review_count"),
+                )
+                .filter(
+                    reviewFlashcardDA.flashcard_id.in_(due_card_ids),
+                    reviewFlashcardDA.total_time.isnot(None)
+                )
+                .group_by(reviewFlashcardDA.flashcard_id)
+                .all()
+            )
 
-        estimated = 0
-        for card_id in due_card_ids:
-            if card_id in card_stats and card_stats[card_id]["count"] >= MIN_REVIEWS and card_stats[card_id]["avg"] > 0:
-                estimated += card_stats[card_id]["avg"]
-            else:
-                estimated += global_avg
-        estimated = estimated * BUFFER
-        return estimated
+            card_stats = {
+                card_id: {"avg": avg_time, "count": review_count}
+                for card_id, avg_time, review_count in card_averages
+            }
 
+            MIN_REVIEWS = 3
+            BUFFER = 1.05
+
+            estimated = 0
+            for card_id in due_card_ids:
+                if card_id in card_stats and card_stats[card_id]["count"] >= MIN_REVIEWS and card_stats[card_id]["avg"] > 0:
+                    estimated += card_stats[card_id]["avg"]
+                else:
+                    estimated += global_avg
+            estimated = estimated * BUFFER
+
+        else:
+            estimated = 0
+
+        return EstimateTime(
+            estimated = estimated,
+            global_avg= global_avg
+        )
+    
     def get_performance(self, start_date, end_date):
 
         session = get_session()

@@ -1,6 +1,7 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from functools import partial
+import random
 import time
 from cmn.resource_helper import *
 from BL.FlashCardBL import FlashCardBL
@@ -63,8 +64,6 @@ class ReviewScreen(MDScreen):
             return
 
         self.session_state = state
-        self.update_toggle_button()
-
         match state:
 
             case SessionState.RUNNING:
@@ -73,13 +72,8 @@ class ReviewScreen(MDScreen):
                 if old_state == SessionState.PAUSED and self.current_card:
                     self.update_layout(True)
 
-                    if self.show_answer:
-                        self.set_widget_state(self.ids.button_box,visible=False,height=0)
-                        self.set_widget_state(self.ids.answer_button_box,visible=True,height=dp(46))
-
-                    else:
-                        self.set_widget_state(self.ids.button_box,visible=True,height=dp(46))
-                        self.set_widget_state(self.ids.answer_button_box,visible=False,height=0)
+                    self.set_widget_state(self.ids.button_box,visible=True,height=dp(46))
+                    self.set_widget_state(self.ids.answer_button_box,visible=False,height=0)
 
                     return
 
@@ -97,7 +91,7 @@ class ReviewScreen(MDScreen):
 
                 self.current_card = None
                 self.show_answer = False
-
+                self.update_layout(False)
                 self.show_session_status(SessionState.COMPLETED)
 
             case SessionState.STOPPED:
@@ -219,6 +213,7 @@ class ReviewScreen(MDScreen):
                 "value": file.filePath,
                 "from_type_id": file.sourceType_id,
                 "from_type_caption": file.sourceType.caption,
+                "view_count" : file.view_count
             })
 
     def show_answer_data(self):
@@ -294,23 +289,26 @@ class ReviewScreen(MDScreen):
 
         if state == SessionState.STOPPED:
             icon = "play-circle-outline"
+            icon_color = self.theme_cls.primary_color
             title = "Ready to Review"
-            description = "Press Start to begin your review session."
+            description = self.get_motivational_text(state)
 
         elif state == SessionState.PAUSED:
             icon = "pause-circle-outline"
+            icon_color = "#FFC107"
             title = "Session Paused"
-            description = "Press Start to continue reviewing."
+            description = self.get_motivational_text(state)
 
         elif state == SessionState.COMPLETED:
             icon = "check-decagram"
+            icon_color = "#4CAF50"
             title = "Session Completed"
-            description = f"You reviewed {self.total_today_reviews} cards today."
+            description = self.get_motivational_text(state , self.total_today_reviews)
 
         else:
             return
 
-        self.set_widget_state(self.ids.session_status_icon, icon=icon)
+        self.set_widget_state(self.ids.session_status_icon, icon=icon , icon_color = icon_color)
         self.set_widget_state(self.ids.session_title, text=title)
         self.set_widget_state(self.ids.session_description, text=description)
 
@@ -520,3 +518,37 @@ class ReviewScreen(MDScreen):
             icon="pause" if self.session_state == SessionState.RUNNING else "play",
             disabled=False,
         )
+
+    def get_motivational_text(self ,SessionState: SessionState, value: int | None = None) -> str:
+        _MOTIVATIONAL_TEXTS = {
+            SessionState.STOPPED: [
+                "Every review strengthens your memory.",
+                "Small steps every day lead to lasting knowledge.",
+                "Your future self will thank you.",
+                "One review session can make a big difference.",
+                "Learning is built one card at a time.",
+                "Today's effort becomes tomorrow's confidence.",
+                "Start now. Progress comes from consistency.",
+            ],
+
+            SessionState.PAUSED: [
+                "Take your time. Your progress is waiting.",
+                "A short break is part of the process.",
+                "Rest a little, then continue stronger.",
+                "Consistency matters more than speed.",
+                "Whenever you're ready, your cards will be here.",
+                "Learning isn't a race. Keep going when you're ready.",
+            ],
+
+            SessionState.COMPLETED: [
+                "Great work! You reviewed {value} cards today.",
+                "{value} cards reviewed. Another step toward mastery.",
+                "Session complete! {value} cards are now stronger in your memory.",
+                "Nice job! {value} cards reviewed today.",
+                "{value} reviews completed. Keep the momentum going!",
+                "Excellent work! Your future self appreciates those {value} reviews.",
+            ],
+        }
+
+        text = random.choice(_MOTIVATIONAL_TEXTS[SessionState])
+        return text.format(value=value if value is not None else "")

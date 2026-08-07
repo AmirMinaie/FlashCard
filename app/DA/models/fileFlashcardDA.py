@@ -12,6 +12,7 @@ class fileFlashcardDA(Base):
     fileSize = Column(Integer)
     type_id = Column(Integer, ForeignKey("constant.id"), nullable=True)
     sourceType_id = Column(Integer, ForeignKey("constant.id"), nullable=True)
+    view_count= Column(Integer, nullable=True)
     
     flashcard = relationship(
         "flashcardDA",

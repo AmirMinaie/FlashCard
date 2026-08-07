@@ -82,7 +82,7 @@ class DashboardScreen(MDScreen):
 
         self.ids.streak_label.text = f"{format_days(self.summary.streak)}"
         self.ids.due_today_label.text = str(self.summary.due_today)
-        self.ids.total_cards_label.text = f"{self.learning_progress.total_cards:,}"
+        self.ids.total_cards_label.text = f"{self.learning_progress.total_cards:,} ({self.learning_progress.total_review:,} done)"
         self.ids.mature_label.text = str(self.learning_progress.mature_cards)
 
         yesterday = self.ReviewStats.words_read_yesterday
@@ -99,12 +99,12 @@ class DashboardScreen(MDScreen):
         self.ids.study_time.color = get_progress_color(ratio_time)
         self.ids.study_time.text = (f"{arrow(ratio_time)} {format_time(yesterday_time)} ({format_time(avg_time)})")
 
-        yesterday_score = self.calculate_performance(self.yesterday_performance,self.ReviewStats.words_read_yesterday)
-        last14_score = self.calculate_performance(self.last_14_days_performance,self.ReviewStats.avg_words_reviewed_last_two_weeks)
+        yesterday_score = round(self.calculate_performance(self.yesterday_performance,self.ReviewStats.words_read_yesterday))
+        last14_score = round(self.calculate_performance(self.last_14_days_performance,self.ReviewStats.avg_words_reviewed_last_two_weeks))
 
         ratio_p = yesterday_score / last14_score if last14_score > 0 else 1
-        self.ids.yesterday_Performance_lable.color = get_progress_color(ratio_p)
-        self.ids.yesterday_Performance_lable.text = (
+        self.ids.yesterday_performance_label.color = get_progress_color(ratio_p)
+        self.ids.yesterday_performance_label.text = (
             (f"{arrow(ratio_p)} {abs(yesterday_score):.0f} ({last14_score:.0f}) %")
         )
 
@@ -150,7 +150,7 @@ class DashboardScreen(MDScreen):
         self.ids.next7_label.text = str(self.upcoming_reviews.next7)
         self.ids.next30_label.text = str(self.upcoming_reviews.next30)
 
-        self.ids.estimate_study_time_label.text = format_time(self.estimated_study_time)
+        self.ids.estimate_study_time_label.text = f"{format_time(self.estimated_study_time.estimated)} ({self.estimated_study_time.global_avg:.0f} s/card)"
 
     def calculate_performance(self,performance, cards):
 

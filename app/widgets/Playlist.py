@@ -13,6 +13,10 @@ from widgets.BaseButtonA import BaseButtonA
 from kivymd.uix.list import OneLineRightIconListItem, IconRightWidget
 from widgets.SongItem import SongItem
 import uuid
+import threading
+from BL.FlashCardBL import FlashCardBL
+from logging import Logger
+
 
 Builder.load_string(
     
@@ -182,9 +186,25 @@ class Playlist(MDBoxLayout):
             self.sound.play()
             self.is_playing = True
 
+            if self.songs:
+                current_song = self.songs[self.current_index]
+                file_id = current_song.get("id")
+                threading.Thread(
+                    target=self._increment_view_count,
+                    args=(file_id,),
+                    daemon=True
+                ).start()
+
         except Exception:
             snackbar_manager.show_snackbar( message="Cannot play this audio file",msg_type=Msg_type.error )
             self.is_playing = False
+
+    def _increment_view_count(self, file_id):
+        try:
+            flashCard_BL = FlashCardBL()
+            flashCard_BL.view_file(file_id)
+        except Exception as e:
+            Logger.error(f"Error incrementing view count: {e}")
 
     def stop_song(self):
         if not self.sound:
@@ -286,7 +306,7 @@ class Playlist(MDBoxLayout):
     def create_song_widget(self, song):
 
         fileName = song["fileName"]
-        title = song.get("title", "")
+        title = f'{song.get("view_count", "0")} - {song.get("title", "")}'
         
         if title and title.strip():
             text = title

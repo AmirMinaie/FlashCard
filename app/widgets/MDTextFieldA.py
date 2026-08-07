@@ -27,3 +27,4 @@ class MDTextFieldA(ApplyFont, MDTextField):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self._hint_text_label.font_name =  self.font_name

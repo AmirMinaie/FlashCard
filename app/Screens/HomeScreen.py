@@ -13,7 +13,6 @@ from cmn.logger import logger
 
 class HomeScreen(MDScreen):
     def on_tab_switch(self, bottom_navigation, tab, tab_item):
-        print("on_tab_switch")
         try:
             if len(tab.children) > 0:
                 screen = tab.children[0]

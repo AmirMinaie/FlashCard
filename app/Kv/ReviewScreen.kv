@@ -9,7 +9,6 @@
         ##################################################
         # Header
         ##################################################
-
         MDCard:
             elevation: 1
             radius: [16]
@@ -73,6 +72,8 @@
         MDBoxLayout:
             id: compleat_Session_Box
             orientation: "vertical"
+            spacing: dp(16)
+            padding: dp(32)
             
             Widget:
             
@@ -80,7 +81,7 @@
                 id: session_status_icon
                 icon: "pause-circle-outline"
                 halign: "center"
-                icon_size: "72sp"
+                icon_size: "84sp"
                 theme_icon_color: "Custom"
                 icon_color: app.theme_cls.primary_color
                 on_release: root.toggle_session()
@@ -88,7 +89,7 @@
 
             MDLabelA:
                 id: session_title
-                font_style: "H4"
+                font_style: "H5"
                 bold: True
                 halign: "center"
 
@@ -99,6 +100,7 @@
                 theme_text_color: "Secondary"
 
             Widget:
+        
         ##################################################
         # Flash Card
         ##################################################

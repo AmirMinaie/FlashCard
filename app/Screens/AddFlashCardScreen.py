@@ -44,7 +44,6 @@ class AddFlashCardScreen(MDScreen):
             self.save_button_text = "Update FlashCard"
 
     def set_card_id(self, card_id):
-        print("set_card_id")
         self.card_id = card_id
         self.mode = "edit"
         self.update_form_mode_ui()
@@ -78,7 +77,8 @@ class AddFlashCardScreen(MDScreen):
                 "fileName": file.fileName,
                 "value": file.filePath,
                 "from_type_id": file.sourceType_id,
-                "from_type_caption": file.sourceType.caption
+                "from_type_caption": file.sourceType.caption,
+                "view_count" : file.view_count
             }
             self.ids.songs_playlist.add_song(item)
         
