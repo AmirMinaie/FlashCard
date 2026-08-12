@@ -294,7 +294,7 @@ class FlashCardBL:
             
             file.view_count += 1
             session.commit()
-            return True
+            return file.view_count
             
         except Exception as e:
             logger.error(f"error view file bl {str(e)}")

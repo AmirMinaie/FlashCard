@@ -4,6 +4,8 @@
     { "name": "grammar", "caption": "Grammar", "type": "FlashCardtype" },
     { "name": "past_tense", "caption": "Past Tense", "type": "FlashCardtype" },
 
+    { "name": "tutorial", "caption": "tutorial", "type": "tutorial" },
+
     { "name": "online", "caption": "online", "type": "source_type" },
     { "name": "local", "caption": "local", "type": "source_type" },
 
