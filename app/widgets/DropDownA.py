@@ -165,8 +165,11 @@ class DropDownA(MDBoxLayout):
             self.pos_menu.open()
     
     def set_selected_value(self, item):
-        self.selected_value = item['caption']
-        self.selected_Id = item['id']
+        if item['id'] == self.selected_Id:
+            self.clear_selection()
+        else:
+            self.selected_value = item['caption']
+            self.selected_Id = item['id']
         
         if self.pos_menu:
             self.pos_menu.dismiss()

@@ -306,14 +306,14 @@ class Playlist(MDBoxLayout):
     def create_song_widget(self, song):
 
         fileName = song["fileName"]
-        title = f'{song.get("view_count", "0")} - {song.get("title", "")}'
+        title = song.get("title", "")
         
         if title and title.strip():
             text = title
         else:
             text = fileName
     
-        
+        text = f'{song.get("view_count", "0")} - {text}'
         item = SongItem( text=text, song=song, allow_delete=self.allow_delete, )
 
         item.song = song

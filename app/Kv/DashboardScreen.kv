@@ -1,3 +1,8 @@
+<DashboardLabel@MDLabelA>:
+    max_lines: 1
+    shorten: True
+    halign: "left"
+
 <DashboardScreen>:
     name: "DashboardScreen"
 
@@ -18,7 +23,7 @@
                 padding: dp(10), dp(0)
                 spacing: dp(8)
 
-                MDLabel:
+                DashboardLabel:
                     id: counter_label
                     text: "Dashboard"
                     font_style: "Subtitle1"
@@ -66,7 +71,7 @@
                         spacing: dp(10)
                         padding: [dp(16), dp(12), dp(16), dp(12)]
 
-                        MDLabel:
+                        DashboardLabel:
                             text: "Today's Progress"
                             font_style: "Subtitle1"
                             bold: True
@@ -83,14 +88,14 @@
                             width: self.minimum_width
                             height: self.minimum_height
 
-                            MDLabel:
+                            DashboardLabel:
                                 id: today_review_label
                                 text: "2 Reviews"
                                 font_style: "H4"
                                 bold: True
                                 adaptive_size: True
                             
-                            MDLabel:
+                            DashboardLabel:
                                 id: today_study_time_label
                                 text: "(1.0m)"
                                 font_style: "H5"
@@ -110,13 +115,13 @@
                             size_hint_y: None
                             height: dp(20)
 
-                            MDLabel:
+                            DashboardLabel:
                                 id: remaining_label
                                 text: "0 cards remaining"
                                 theme_text_color: "Secondary"
                                 font_style: "Caption"
 
-                            MDLabel:
+                            DashboardLabel:
                                 id: completion_percent
                                 text: "0%"
                                 halign: "right"
@@ -164,14 +169,14 @@
                                     size: dp(16), dp(16)
                                     pos_hint: {"center_y": 0.5}
 
-                                MDLabel:
+                                DashboardLabel:
                                     text: "Streak"
                                     bold: True
                                     font_style: "Caption"
                                     size_hint_y: None
                                     height: self.texture_size[1]
                 
-                            MDLabel:
+                            DashboardLabel:
                                 id: streak_label
                                 text: "0 Days"
                                 font_style: "H5"
@@ -208,14 +213,14 @@
                                     size_hint: None, None
                                     size: dp(16), dp(16)
 
-                                MDLabel:
+                                DashboardLabel:
                                     text: "Due Today"
                                     bold: True
                                     font_style: "Caption"
                                     size_hint_y: None
                                     height: self.texture_size[1]
                 
-                            MDLabel:
+                            DashboardLabel:
                                 id: due_today_label
                                 text: "0"
                                 font_style: "H5"
@@ -252,14 +257,14 @@
                                     size_hint: None, None
                                     size: dp(16), dp(16)
 
-                                MDLabel:
+                                DashboardLabel:
                                     text: "Total Cards"
                                     bold: True
                                     font_style: "Caption"
                                     size_hint_y: None
                                     height: self.texture_size[1]
                 
-                            MDLabel:
+                            DashboardLabel:
                                 id: total_cards_label
                                 text: "0"
                                 font_style: "H5"
@@ -296,14 +301,14 @@
                                     size_hint: None, None
                                     size: dp(16), dp(16)
 
-                                MDLabel:
+                                DashboardLabel:
                                     text: "Mature"
                                     bold: True
                                     font_style: "Caption"
                                     size_hint_y: None
                                     height: self.texture_size[1]
                 
-                            MDLabel:
+                            DashboardLabel:
                                 id: mature_label
                                 text: "0"
                                 font_style: "H5"
@@ -340,14 +345,14 @@
                                     size_hint: None, None
                                     size: dp(16), dp(16)
 
-                                MDLabel:
+                                DashboardLabel:
                                     text: "Est. Time"
                                     bold: True
                                     font_style: "Caption"
                                     size_hint_y: None
                                     height: self.texture_size[1]
                 
-                            MDLabel:
+                            DashboardLabel:
                                 id: estimate_study_time_label
                                 text: "0"
                                 font_style: "H5"
@@ -384,7 +389,7 @@
                                     size_hint: None, None
                                     size: dp(16), dp(16)
 
-                                MDLabel:
+                                DashboardLabel:
                                     text: "Performance"
                                     bold: True
                                     font_style: "Caption"
@@ -445,7 +450,7 @@
                                             size_hint: None, None
                                             size: dp(14), dp(14)
 
-                                    MDLabel:
+                                    DashboardLabel:
                                         id: yesterday_performance_label
                                         text: "0.0 (0%)"
                                         adaptive_width: True
@@ -480,14 +485,14 @@
                                     size_hint: None, None
                                     size: dp(16), dp(16)
 
-                                MDLabel:
+                                DashboardLabel:
                                     text: "Reviewed"
                                     bold: True
                                     font_style: "Caption"
                                     size_hint_y: None
                                     height: self.texture_size[1]
                 
-                            MDLabel:
+                            DashboardLabel:
                                 id: reviewed_count_performance
                                 text: "0"
                                 font_style: "H5"
@@ -524,14 +529,14 @@
                                     size_hint: None, None
                                     size: dp(16), dp(16)
 
-                                MDLabel:
+                                DashboardLabel:
                                     text: "Study Time"
                                     bold: True
                                     font_style: "Caption"
                                     size_hint_y: None
                                     height: self.texture_size[1]
                 
-                            MDLabel:
+                            DashboardLabel:
                                 id: study_time
                                 text: "0"
                                 font_style: "H5"
@@ -554,7 +559,7 @@
                         padding: dp(14)
                         spacing: dp(8)
 
-                        MDLabel:
+                        DashboardLabel:
                             text: "Learning Progress"
                             font_style: "Subtitle1"
                             bold: True
@@ -581,11 +586,11 @@
                                 size_hint: None, None
                                 size: dp(18), dp(18)
 
-                            MDLabel:
+                            DashboardLabel:
                                 text: "New Cards"
                                 font_style: "Caption"
 
-                            MDLabel:
+                            DashboardLabel:
                                 id: new_count
                                 text: "0 (0%)"
                                 halign: "right"
@@ -617,11 +622,11 @@
                                 size_hint: None, None
                                 size: dp(18), dp(18)
 
-                            MDLabel:
+                            DashboardLabel:
                                 text: "Learning"
                                 font_style: "Caption"
 
-                            MDLabel:
+                            DashboardLabel:
                                 id: learning_count
                                 text: "0 (0%)"
                                 halign: "right"
@@ -653,11 +658,11 @@
                                 size_hint: None, None
                                 size: dp(18), dp(18)
 
-                            MDLabel:
+                            DashboardLabel:
                                 text: "Review"
                                 font_style: "Caption"
 
-                            MDLabel:
+                            DashboardLabel:
                                 id: review_count
                                 text: "0 (0%)"
                                 halign: "right"
@@ -689,11 +694,11 @@
                                 size_hint: None, None
                                 size: dp(18), dp(18)
 
-                            MDLabel:
+                            DashboardLabel:
                                 text: "Mature"
                                 font_style: "Caption"
 
-                            MDLabel:
+                            DashboardLabel:
                                 id: mature_count
                                 text: "0 (0%)"
                                 halign: "right"
@@ -721,7 +726,7 @@
                         padding: dp(14)
                         spacing: dp(8)
 
-                        MDLabel:
+                        DashboardLabel:
                             text: "Upcoming Reviews"
                             font_style: "Subtitle1"
                             bold: True
@@ -734,11 +739,11 @@
                             size_hint_y: None
                             height: dp(20)
 
-                            MDLabel:
+                            DashboardLabel:
                                 text: "Tomorrow"
                                 font_style: "Caption"
 
-                            MDLabel:
+                            DashboardLabel:
                                 id: tomorrow_label
                                 text: "0"
                                 halign: "right"
@@ -749,11 +754,11 @@
                             size_hint_y: None
                             height: dp(20)
 
-                            MDLabel:
+                            DashboardLabel:
                                 text: "Next 3 Days"
                                 font_style: "Caption"
 
-                            MDLabel:
+                            DashboardLabel:
                                 id: next3_label
                                 text: "0"
                                 halign: "right"
@@ -764,11 +769,11 @@
                             size_hint_y: None
                             height: dp(20)
 
-                            MDLabel:
+                            DashboardLabel:
                                 text: "Next 7 Days"
                                 font_style: "Caption"
 
-                            MDLabel:
+                            DashboardLabel:
                                 id: next7_label
                                 text: "0"
                                 halign: "right"
@@ -779,11 +784,11 @@
                             size_hint_y: None
                             height: dp(20)
 
-                            MDLabel:
+                            DashboardLabel:
                                 text: "Next 30 Days"
                                 font_style: "Caption"
 
-                            MDLabel:
+                            DashboardLabel:
                                 id: next30_label
                                 text: "0"
                                 halign: "right"
