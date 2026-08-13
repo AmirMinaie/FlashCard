@@ -1,7 +1,7 @@
 from pathlib import Path
 import re
 
-VERSION_FILE = Path("app/version.py")
+VERSION_FILE = Path("app/cmn/version.py")
 
 text = VERSION_FILE.read_text(encoding="utf-8")
 
