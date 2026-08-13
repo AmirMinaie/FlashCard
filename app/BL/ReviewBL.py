@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta , date
-from DA.models import flashcardDA , fileFlashcardDA , reviewFlashcardDA
+from app.DA.models import flashcardDA , fileFlashcardDA , reviewFlashcardDA
 from sqlalchemy import func, case , or_
 
 class ReviewBL:

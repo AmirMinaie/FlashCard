@@ -1,4 +1,4 @@
-<HomeScreen>
+<HomeScreen>:
     name: "HomeScreen"
 
     BoxLayout:
@@ -9,12 +9,33 @@
             name: "switch_tab"
             on_switch_tabs: root.on_tab_switch(*args)
 
+            ##################################################
+            # Dashboard
+            ##################################################
+
             MDBottomNavigationItemA:
                 name: "dashboard_tab"
                 icon: "view-dashboard-outline"
                 text: "Dashboard"
 
                 DashboardScreen:
+
+
+            ##################################################
+            # Today's Study
+            ##################################################
+
+            MDBottomNavigationItemA:
+                name: "today_study_tab"
+                icon: "book-open-page-variant-outline"
+                text: "Today's Study"
+
+                TodayStudyScreen:
+
+
+            ##################################################
+            # Review
+            ##################################################
 
             MDBottomNavigationItemA:
                 name: "review_tab"
@@ -23,12 +44,22 @@
 
                 ReviewScreen:
 
+
+            ##################################################
+            # Add Cards
+            ##################################################
+
             MDBottomNavigationItemA:
                 name: "add_tab"
                 icon: "plus-circle-outline"
                 text: "Add Cards"
 
                 AddFlashCardScreen:
+
+
+            ##################################################
+            # List Cards
+            ##################################################
 
             MDBottomNavigationItemA:
                 name: "list_tab"

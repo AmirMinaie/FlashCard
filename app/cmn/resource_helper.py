@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 import shutil
-from cmn.AppName import *
+from app.cmn.AppName import *
 
 class PathManager:
     

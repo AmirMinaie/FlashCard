@@ -1,7 +1,7 @@
 from kivy.lang import Builder
 from kivymd.uix.button import MDIconButton
 
-from widgets.AsyncBehavior import AsyncBehavior
+from app.widgets.AsyncBehavior import AsyncBehavior
 
 Builder.load_string("""
 <AsyncIconButton>:

@@ -1,15 +1,15 @@
 from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
 from kivy.core.text import LabelBase
-from widgets.MDLabelA import MDLabelA
+from app.widgets.MDLabelA import MDLabelA
 from kivy.properties import StringProperty , BooleanProperty , NumericProperty
 from kivymd.uix.bottomnavigation import  MDBottomNavigation , MDBottomNavigationItem 
 from kivymd.uix.screen import MDScreen
 from kivy.clock import Clock
 
-from Screens import *
-from widgets.MDBottomNavigationItemA import MDBottomNavigationItemA
-from cmn.logger import logger
+from app.Screens import *
+from app.widgets.MDBottomNavigationItemA import MDBottomNavigationItemA
+from app.cmn.logger import logger
 
 class HomeScreen(MDScreen):
     def on_tab_switch(self, bottom_navigation, tab, tab_item):

@@ -1,8 +1,8 @@
 from kivy.lang import Builder
 from kivy.properties import StringProperty , ObjectProperty
 from kivymd.uix.card import MDCard
-from cmn.resource_helper import PathManager
-from cmn.font_manage import FontManager
+from app.cmn.resource_helper import PathManager
+from app.cmn.font_manage import FontManager
 
 Builder.load_string(
     

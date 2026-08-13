@@ -1,7 +1,7 @@
 from urllib.parse import urlparse, unquote
 from pathlib import Path
-from cmn.config_reader import ConfigReader
-from cmn.logger import logger
+from app.cmn.config_reader import ConfigReader
+from app.cmn.logger import logger
 import os
 import re
 

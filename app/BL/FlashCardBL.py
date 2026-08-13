@@ -1,16 +1,16 @@
-from DA.session import get_session
-from DA.models import flashcardDA , fileFlashcardDA , constantDA , reviewFlashcardDA
+from app.DA.session import get_session
+from app.DA.models import flashcardDA , fileFlashcardDA , constantDA , reviewFlashcardDA
 from sqlalchemy.orm import selectinload
 from dataclasses import dataclass
 from typing import List, Optional
 from sqlalchemy import asc, desc, and_, or_
-from  BL.fileManager import FileManager
+from app.BL.fileManager import FileManager
 from sqlalchemy import func
 from datetime import datetime, date , timedelta
 from .SM2Algorithm import SM2Algorithm
-from cmn.logger import logger
-from cmn.config_reader import ConfigReader
-from BL.ReviewBL import ReviewBL
+from app.cmn.logger import logger
+from app.cmn.config_reader import ConfigReader
+from app.BL.ReviewBL import ReviewBL
 
 @dataclass
 class OrderByConfig:

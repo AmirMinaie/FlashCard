@@ -6,7 +6,7 @@ from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.list import OneLineIconListItem, IconLeftWidget
 from kivymd.uix.behaviors import RectangularRippleBehavior
 from kivymd.uix.button import MDFlatButton
-from widgets.ApplyFont import ApplyFont
+from app.widgets.ApplyFont import ApplyFont
 
 Builder.load_string('''
 <DropDownA>:

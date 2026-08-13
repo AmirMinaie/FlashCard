@@ -1,6 +1,6 @@
 import os
 import importlib
-from cmn.resource_helper import *
+from app.cmn.resource_helper import *
 from kivy.uix.screenmanager import Screen
 from kivymd.uix.screen import MDScreen
 
@@ -9,7 +9,8 @@ from .FlashCardListScreen import FlashCardListScreen
 from .HomeScreen import HomeScreen
 from .ReviewScreen import ReviewScreen
 from .DashboardScreen import DashboardScreen
-from cmn.logger import logger
+from .TodayStudyScreen import TodayStudyScreen
+from app.cmn.logger import logger
 
 __all__ = []
 

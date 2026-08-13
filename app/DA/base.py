@@ -4,7 +4,7 @@ from sqlalchemy.orm import as_declarative
 from sqlalchemy.sql import func
 from datetime import datetime
 from sqlalchemy.orm import validates
-from cmn.logger import logger
+from app.cmn.logger import logger
 
 def validate_datetime(value):
     try:

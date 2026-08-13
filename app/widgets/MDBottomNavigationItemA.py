@@ -2,7 +2,7 @@ from kivy.lang import Builder
 from kivy.properties import NumericProperty, StringProperty
 from kivymd.uix.bottomnavigation import MDBottomNavigationItem
 
-from cmn.font_manage import FontManager
+from app.cmn.font_manage import FontManager
 
 
 Builder.load_string('''

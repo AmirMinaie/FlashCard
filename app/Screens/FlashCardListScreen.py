@@ -1,14 +1,14 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
-from cmn.resource_helper import *
-from widgets.SnackbarManager import snackbar_manager , Msg_type
-from widgets.MDLabelA import MDLabelA
-from widgets.MDCardA import MDCardA
-from widgets.MDChipA import MDChipA
+from app.cmn.resource_helper import *
+from app.widgets.SnackbarManager import snackbar_manager , Msg_type
+from app.widgets.MDLabelA import MDLabelA
+from app.widgets.MDCardA import MDCardA
+from app.widgets.MDChipA import MDChipA
 from kivymd.uix.behaviors import RoundedRectangularElevationBehavior
 from kivy.properties import StringProperty, ListProperty, DictProperty, BooleanProperty, ObjectProperty 
-from BL.FlashCardBL import FlashCardBL, OrderByConfig
-from cmn.config_reader import ConfigReader
+from app.BL.FlashCardBL import FlashCardBL, OrderByConfig
+from app.cmn.config_reader import ConfigReader
 from kivy.metrics import dp
 from kivymd.app import MDApp
 from kivy.clock import Clock

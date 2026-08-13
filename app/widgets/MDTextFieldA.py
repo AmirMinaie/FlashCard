@@ -1,7 +1,7 @@
 from kivy.lang import Builder
 from kivy.properties import BooleanProperty, ColorProperty, StringProperty
 from kivymd.uix.textfield import MDTextField
-from widgets.ApplyFont import ApplyFont
+from app.widgets.ApplyFont import ApplyFont
 
 
 Builder.load_string('''

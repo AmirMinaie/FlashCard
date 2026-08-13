@@ -26,7 +26,7 @@ echo ==========================================
 set "PROJECT_DIR=%CD%"
 
 pyinstaller ^
-    "%PROJECT_DIR%\app\Main.py" ^
+    "%PROJECT_DIR%\main.py" ^
     --name DuckMemo ^
     --onefile ^
     --noconsole ^

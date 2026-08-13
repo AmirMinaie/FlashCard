@@ -1,13 +1,13 @@
 from kivy.lang import Builder
 from kivymd.uix.screen import MDScreen
-from BL.DashboardBL import DashboardBL
-from cmn.logger import logger
-from cmn.resource_helper import *
-from widgets.SnackbarManager import snackbar_manager , Msg_type
+from app.BL.DashboardBL import DashboardBL
+from app.cmn.logger import logger
+from app.cmn.resource_helper import *
+from app.widgets.SnackbarManager import snackbar_manager , Msg_type
 from kivy.clock import Clock
-from widgets.AsyncIconButton import AsyncIconButton
+from app.widgets.AsyncIconButton import AsyncIconButton
 from datetime import datetime , timedelta
-from cmn.utility import *
+from app.cmn.utility import *
 
 Builder.load_file(str(PathManager.app_path("Kv/DashboardScreen.kv")))
 

@@ -1,6 +1,6 @@
 # audio_player.py
 from enum import Enum
-from cmn.logger import logger
+from app.cmn.logger import logger
 import os
 
 import pygame

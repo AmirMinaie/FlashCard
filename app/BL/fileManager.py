@@ -4,15 +4,15 @@ import shutil
 from pathlib import Path
 import logging
 from datetime import datetime
-from cmn.resource_helper import PathManager
-from cmn.FilenameExtractor import FilenameExtractor
+from app.cmn.resource_helper import PathManager
+from app.cmn.FilenameExtractor import FilenameExtractor
 from fake_useragent import UserAgent
-from cmn.NetworkClient import NetworkClient
+from app.cmn.NetworkClient import NetworkClient
 from urllib.parse import urlparse, unquote
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import ID3, ID3NoHeaderError, TDRC
-from cmn.logger import logger
-from cmn.AppName import *
+from app.cmn.logger import logger
+from app.cmn.AppName import *
 import time
 
 class FileManager:

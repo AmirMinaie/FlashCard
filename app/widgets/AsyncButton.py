@@ -1,8 +1,8 @@
 from kivy.lang import Builder
 from kivy.metrics import dp
 
-from widgets.AsyncBehavior import AsyncBehavior
-from widgets.BaseButtonA import BaseButtonA
+from app.widgets.AsyncBehavior import AsyncBehavior
+from app.widgets.BaseButtonA import BaseButtonA
 
 Builder.load_string("""
 <AsyncButton>:

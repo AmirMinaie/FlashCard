@@ -1,7 +1,7 @@
 import logging
 import sys
 from pathlib import Path
-from cmn.resource_helper import PathManager
+from app.cmn.resource_helper import PathManager
 from logging.handlers import RotatingFileHandler
 import traceback
 import functools

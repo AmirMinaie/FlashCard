@@ -2,7 +2,6 @@ from ..base import Base , validate_datetime
 from sqlalchemy import Column, Float, Integer, Text , DateTime , ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import validates
-from sqlalchemy.orm import validates
 from datetime import datetime
 
 import datetime

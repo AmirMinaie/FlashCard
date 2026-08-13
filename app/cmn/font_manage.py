@@ -1,7 +1,7 @@
 from kivy.core.text import LabelBase
-from cmn.resource_helper import PathManager
-from cmn.config_reader import ConfigReader
-from cmn.logger import logger
+from app.cmn.resource_helper import PathManager
+from app.cmn.config_reader import ConfigReader
+from app.cmn.logger import logger
 
 
 class FontManager:

@@ -1,0 +1,184 @@
+<TodayStudyScreen>:
+    name: "TodayStudyScreen"
+
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: dp(12)
+        spacing: dp(8)
+
+        ##################################################
+        # Header
+        ##################################################
+
+        MDCard:
+            elevation: 1
+            radius: [16]
+            size_hint_y: None
+            height: dp(50)
+
+            MDBoxLayout:
+                padding: dp(10), dp(0)
+                spacing: dp(8)
+
+                MDLabelA:
+                    text: "Today's Study"
+                    font_style: "H6"
+                    bold: True
+                    valign: "middle"
+                    size_hint_x: 1
+
+                MDLabelA:
+                    text: f"{root.completed_tasks}/{root.total_tasks}"
+                    font_style: "Subtitle1"
+                    bold: True
+                    halign: "right"
+                    valign: "middle"
+                    size_hint_x: None
+                    width: dp(60)
+
+                MDIconButton:
+                    icon: "refresh"
+                    theme_icon_color: "Custom"
+                    icon_color: app.theme_cls.primary_color
+                    on_release: root.load_today_study()
+
+        ##################################################
+        # Progress
+        ##################################################
+
+        MDCard:
+            elevation: 1
+            radius: [16]
+            size_hint_y: None
+            height: dp(78)
+
+            MDBoxLayout:
+                orientation: "vertical"
+                padding: dp(12)
+                spacing: dp(4)
+
+                MDBoxLayout:
+                    adaptive_height: True
+
+                    MDLabelA:
+                        text: f"{root.completed_tasks} of {root.total_tasks} tasks completed"
+                        bold: True
+
+                    MDLabelA:
+                        text: f"{root.completed_pages}/{root.total_pages} pages"
+                        halign: "right"
+                        theme_text_color: "Secondary"
+
+                MDProgressBar:
+                    value: ( root.completed_tasks / root.total_tasks * 100 if root.total_tasks else 0)
+
+        ##################################################
+        # Running Study
+        ##################################################
+
+        MDCard:
+            id: running_study_box
+
+            orientation: "vertical"
+
+            size_hint_y: None
+            height: 0
+
+            opacity: 0
+            disabled: True
+
+            padding: dp(16)
+            spacing: dp(10)
+
+            radius: [16]
+            elevation: 2
+
+            MDBoxLayout:
+                adaptive_height: True
+                spacing: dp(10)
+
+                MDIcon:
+                    icon: "book-open-page-variant"
+                    theme_icon_color: "Custom"
+                    icon_color: app.theme_cls.primary_color
+
+                    size_hint_x: None
+                    width: dp(32)
+
+                MDBoxLayout:
+                    orientation: "vertical"
+                    adaptive_height: True
+
+                    MDLabelA:
+                        id: running_book_label
+                        text: ""
+                        bold: True
+                        font_style: "H6"
+                        max_lines: 1
+                        shorten: True
+
+                    MDLabelA:
+                        id: running_task_label
+                        text: ""
+                        theme_text_color: "Secondary"
+
+            MDSeparator:
+
+            MDBoxLayout:
+                adaptive_height: True
+
+                MDLabelA:
+                    id: running_pages_label
+                    text: "0 / 0 pages"
+
+                MDLabelA:
+                    id: running_timer_label
+                    text: "0s"
+                    halign: "right"
+                    bold: True
+
+            MDProgressBar:
+                id: running_progress
+                value: 0
+
+            MDLabelA:
+                id: running_remaining_label
+                text: "0 pages remaining"
+                theme_text_color: "Secondary"
+
+            MDBoxLayout:
+                adaptive_height: True
+                spacing: dp(8)
+
+                Widget:
+
+                BaseButtonA:
+                    text: "Skip"
+                    icon: "close"
+                    size_hint_x: None
+                    width: dp(100)
+                    on_release: root.skip_task()
+
+                BaseButtonA:
+                    text: "Finish"
+                    icon: "check"
+                    size_hint_x: None
+                    width: dp(110)
+                    on_release: root.finish_task()
+
+        ##################################################
+        # Tasks
+        ##################################################
+
+        ScrollView:
+
+            MDBoxLayout:
+                id: tasks_container
+
+                orientation: "vertical"
+
+                size_hint_y: None
+                height: self.minimum_height
+
+                spacing: dp(8)
+                padding: dp(4)

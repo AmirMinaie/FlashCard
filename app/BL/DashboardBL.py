@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from sqlalchemy import func, case , or_
 from datetime import datetime, timedelta , date
-from DA.session import get_session
-from DA.models import flashcardDA , fileFlashcardDA , constantDA , reviewFlashcardDA
-from cmn.config_reader import ConfigReader
-from BL.ReviewBL import ReviewBL
+from app.DA.session import get_session
+from app.DA.models import flashcardDA , fileFlashcardDA , constantDA , reviewFlashcardDA
+from app.cmn.config_reader import ConfigReader
+from app.BL.ReviewBL import ReviewBL
 
 @dataclass
 class DashboardSummary:

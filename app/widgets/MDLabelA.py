@@ -1,5 +1,5 @@
 from kivymd.uix.label import MDLabel
-from widgets.ApplyFont import ApplyFont
+from app.widgets.ApplyFont import ApplyFont
 
 class MDLabelA(ApplyFont, MDLabel):
 

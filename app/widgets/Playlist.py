@@ -1,22 +1,22 @@
 import os
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.lang import Builder
-from widgets.SnackbarManager import snackbar_manager , Msg_type
+from app.widgets.SnackbarManager import snackbar_manager , Msg_type
 from kivy.properties import ( StringProperty, NumericProperty, BooleanProperty, ListProperty, ObjectProperty)
-from BL.fileManager import FileManager
-from widgets.AudioPlayer import AudioPlayer , PlayerState
+from app.BL.fileManager import FileManager
+from app.widgets.AudioPlayer import AudioPlayer , PlayerState
 from kivymd.uix.slider import MDSlider
-from cmn.resource_helper import *
+from app.cmn.resource_helper import *
 from kivy.metrics import dp
 from kivy.clock import Clock
-from widgets.BaseButtonA import BaseButtonA
+from app.widgets.BaseButtonA import BaseButtonA
 from kivymd.uix.list import OneLineRightIconListItem, IconRightWidget
-from widgets.SongItem import SongItem
+from app.widgets.SongItem import SongItem
 import uuid
 import threading
-from BL.FlashCardBL import FlashCardBL
-from cmn.logger import logger
-from cmn.utility import *
+from app.BL.FlashCardBL import FlashCardBL
+from app.cmn.logger import logger
+from app.cmn.utility import *
 
 
 Builder.load_string(

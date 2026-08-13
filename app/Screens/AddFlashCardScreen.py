@@ -1,25 +1,25 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
-from cmn.resource_helper import *
-from widgets.MDLabelA import MDLabelA
-from widgets.MDTextFieldA import MDTextFieldA
-from widgets.DropDownA import DropDownA
-from BL.constantBL import constantBL
-from BL.FlashCardBL import FlashCardBL
+from app.cmn.resource_helper import *
+from app.widgets.MDLabelA import MDLabelA
+from app.widgets.MDTextFieldA import MDTextFieldA
+from app.widgets.DropDownA import DropDownA
+from app.BL.constantBL import constantBL
+from app.BL.FlashCardBL import FlashCardBL
 from kivymd.uix.list import OneLineIconListItem
 from kivymd.uix.button import MDIconButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.boxlayout import MDBoxLayout
-from widgets.BaseButtonA import BaseButtonA
+from app.widgets.BaseButtonA import BaseButtonA
 from kivy.core.audio import SoundLoader
-from cmn.resource_helper import PathManager
+from app.cmn.resource_helper import PathManager
 from urllib.parse import urlparse, unquote
 from os.path import basename
-from cmn.logger import logger
-from widgets.AsyncButton import AsyncButton
+from app.cmn.logger import logger
+from app.widgets.AsyncButton import AsyncButton
 from itertools import zip_longest
-from widgets.SnackbarManager import snackbar_manager , Msg_type
-from cmn.font_manage import FontManager
+from app.widgets.SnackbarManager import snackbar_manager , Msg_type
+from app.cmn.font_manage import FontManager
 
 import uuid
 from kivy.properties import StringProperty, NumericProperty, DictProperty, BooleanProperty , ObjectProperty 

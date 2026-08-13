@@ -20,6 +20,13 @@ class ConfigReader:
             self.load()
         return self._config.get(key, default)
 
+    def get_all(self):
+
+        if self._config is None:
+            self.load()
+
+        return self._config
+
     def set(self, key , value):
         if self._config is None:
             self.load()

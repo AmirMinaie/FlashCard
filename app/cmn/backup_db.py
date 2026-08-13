@@ -1,8 +1,8 @@
 import shutil
 from datetime import datetime
-from cmn.resource_helper import *
-from cmn.config_reader import ConfigReader
-from cmn.AppName import *
+from app.cmn.resource_helper import *
+from app.cmn.config_reader import ConfigReader
+from app.cmn.AppName import *
 
 def backup_database():
     config = ConfigReader("config.json")

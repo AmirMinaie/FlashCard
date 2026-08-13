@@ -1,2 +1,3 @@
 APP_NAME = "DuckMemo"
-VERSION = "1.0.0"
+APP_WIDTH = 700
+APP_HEIGHT = 875

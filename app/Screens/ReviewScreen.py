@@ -3,18 +3,18 @@ from kivy.lang import Builder
 from functools import partial
 import random
 import time
-from cmn.resource_helper import *
-from BL.FlashCardBL import FlashCardBL
-from BL.DashboardBL import DashboardBL
-from widgets.SnackbarManager import snackbar_manager , Msg_type
+from app.cmn.resource_helper import *
+from app.BL.FlashCardBL import FlashCardBL
+from app.BL.DashboardBL import DashboardBL
+from app.widgets.SnackbarManager import snackbar_manager , Msg_type
 from kivy.properties import BooleanProperty, NumericProperty , StringProperty
 from kivy.clock import Clock
 from kivy.metrics import dp
-from widgets.Playlist import Playlist
-from cmn.logger import logger
-from cmn.utility import  *
+from app.widgets.Playlist import Playlist
+from app.cmn.logger import logger
+from app.cmn.utility import  *
 from enum import Enum, auto
-from cmn.font_manage import FontManager
+from app.cmn.font_manage import FontManager
 
 Builder.load_file(str(PathManager.app_path("Kv/ReviewScreen.kv")))
 

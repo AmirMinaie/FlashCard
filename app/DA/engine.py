@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
-from cmn.config_reader import ConfigReader
-from cmn.resource_helper import PathManager
-from cmn.AppName import *
+from app.cmn.config_reader import ConfigReader
+from app.cmn.resource_helper import PathManager
+from app.cmn.AppName import *
 
 def create_db_engine():
     config_reader = ConfigReader("config.json")

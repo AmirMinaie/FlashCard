@@ -2,7 +2,7 @@ import ctypes
 import win32con
 import win32gui
 import win32api
-from cmn.logger import logger
+from app.cmn.logger import logger
 
 class WindowManager:
     _hwnd = None

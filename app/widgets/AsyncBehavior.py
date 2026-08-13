@@ -3,9 +3,9 @@ from threading import Thread
 from kivy.clock import Clock
 from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
 
-from cmn.logger import logger
+from app.cmn.logger import logger
 from kivymd.uix.dialog import MDDialog
-from widgets.BaseButtonA import BaseButtonA
+from app.widgets.BaseButtonA import BaseButtonA
 
 
 class AsyncBehavior:

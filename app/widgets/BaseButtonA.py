@@ -2,7 +2,7 @@ from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import BooleanProperty
 from kivymd.uix.button import MDRaisedButton
-from widgets.ApplyFont import ApplyFont
+from app.widgets.ApplyFont import ApplyFont
 
 class BaseButtonA(ApplyFont, MDRaisedButton):
 

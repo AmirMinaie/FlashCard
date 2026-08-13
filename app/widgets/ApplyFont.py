@@ -1,4 +1,4 @@
-from cmn.font_manage import FontManager
+from app.cmn.font_manage import FontManager
 
 class ApplyFont:
     def __init__(self, **kwargs):

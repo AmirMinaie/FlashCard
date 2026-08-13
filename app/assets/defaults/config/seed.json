@@ -4,6 +4,29 @@
     { "name": "grammar", "caption": "Grammar", "type": "FlashCardtype" },
     { "name": "past_tense", "caption": "Past Tense", "type": "FlashCardtype" },
 
+    {"name": "not_started", "caption": "Not Started","type": "BookStatus"},
+    {"name": "reading", "caption": "Reading","type": "BookStatus"},
+    {"name": "completed", "caption": "Completed", "type": "BookStatus"},
+    {"name": "paused", "caption": "Paused","type": "BookStatus"},
+    {"name": "abandoned", "caption": "Abandoned","type": "BookStatus"},
+
+    {"name": "active","caption": "Active","type": "StudyScheduleStatus"},
+    {"name": "paused","caption": "Paused","type": "StudyScheduleStatus"},
+    {"name": "completed","caption": "Completed","type": "StudyScheduleStatus"},
+    {"name": "archived","caption": "Archived","type": "StudyScheduleStatus"},
+
+    {"name": "monday","caption": "Monday","type": "Weekday"},
+    {"name": "tuesday","caption": "Tuesday","type": "Weekday"},
+    {"name": "wednesday","caption": "Wednesday","type": "Weekday"},
+    {"name": "thursday","caption": "Thursday","type": "Weekday"},
+    {"name": "friday","caption": "Friday","type": "Weekday"},
+    {"name": "saturday","caption": "Saturday","type": "Weekday"},
+    {"name": "sunday","caption": "Sunday","type": "Weekday"},
+
+    {"name": "in_progress","caption": "In Progress","type": "StudySessionStatus"},
+    {"name": "completed","caption": "Completed","type": "StudySessionStatus"},
+    {"name": "cancelled","caption": "Cancelled","type": "StudySessionStatus"},
+
     { "name": "tutorial", "caption": "tutorial", "type": "tutorial" },
 
     { "name": "online", "caption": "online", "type": "source_type" },

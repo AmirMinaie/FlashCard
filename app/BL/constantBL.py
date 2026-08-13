@@ -1,5 +1,5 @@
-from DA.session import get_session
-from DA.models import constantDA  
+from app.DA.session import get_session
+from app.DA.models import constantDA  
 
 class constantBL:
     def __init__(self):

@@ -1,18 +1,23 @@
 import os
 import threading
 import time
-
 import win32api
 import win32con
 import win32gui
-from cmn.logger import logger
+import random
+from app.cmn.logger import logger
+from app.cmn.AppName import *
+from app.cmn.resource_helper import PathManager
+from pathlib import Path
+
 
 
 class SplashScreen:
-    def __init__(self, image_path, width, height):
-        self.image_path = image_path
-        self.width = width
-        self.height = height
+    def __init__(self):
+        splash_dir = Path(PathManager.app_path("assets", "images", "splash"))
+        self.image_path = str(random.choice(list(splash_dir.iterdir())))
+        self.width = APP_WIDTH
+        self.height = APP_HEIGHT
         self.hwnd = None
         self.class_name = "FlashCardSplashScreen"
         self._thread = None

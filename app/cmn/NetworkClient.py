@@ -1,7 +1,7 @@
 import ctypes
 from ctypes import wintypes
 from urllib.parse import urlparse
-from cmn.config_reader import ConfigReader
+from app.cmn.config_reader import ConfigReader
 import logging
 
 

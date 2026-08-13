@@ -2,7 +2,7 @@ from kivymd.uix.button import MDIconButton
 from kivy.metrics import dp
 from kivy.clock import Clock
 from kivymd.uix.snackbar import ( MDSnackbar, MDSnackbarActionButton )
-from widgets.MDLabelA import MDLabelA
+from app.widgets.MDLabelA import MDLabelA
 
 class Msg_type:
     success =  "success"
