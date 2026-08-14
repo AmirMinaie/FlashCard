@@ -8,16 +8,14 @@ from app.cmn.resource_helper import PathManager
 from app.cmn.logger import logger
 from app.cmn.utility import format_time
 from app.BL.StudyBL import StudyBL
+from app.widgets.SnackbarManager import snackbar_manager , Msg_type
+from app.cmn.utility import *
 import time
+import math
 
 Builder.load_file(str(PathManager.app_path("Kv/TodayStudyScreen.kv")))
 
-
 class TodayStudyScreen(MDScreen):
-
-    # ==================================================
-    # Summary Properties
-    # ==================================================
 
     total_tasks = NumericProperty(0)
     completed_tasks = NumericProperty(0)
@@ -26,25 +24,15 @@ class TodayStudyScreen(MDScreen):
     completed_pages = NumericProperty(0)
     remaining_pages = NumericProperty(0)
 
-    # ==================================================
-    # Current Session
-    # ==================================================
-
     session_time = StringProperty("0s")
+    current_task = ObjectProperty( None, allownone=True )
 
-    current_task = ObjectProperty(None)
-
-    # ==================================================
-    # Initialization
-    # ==================================================
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.study_bl = StudyBL()
-
         self.tasks = []
 
-        # Timer
         self.session_timer = None
         self.session_start_time = None
         self.elapsed_time = 0
@@ -67,7 +55,9 @@ class TodayStudyScreen(MDScreen):
             self.display_tasks()
 
         except Exception as error:
-            logger.exception(f"Error loading today's study: {error}")
+            massge = f"Error loading today's study: {error}"
+            snackbar_manager.show_snackbar( message=massge, msg_type=Msg_type.error )
+            logger.exception(massge)
 
     # ==================================================
     # Summary
@@ -75,27 +65,10 @@ class TodayStudyScreen(MDScreen):
     def update_summary(self):
 
         self.total_tasks = len(self.tasks)
-
-        self.completed_tasks = sum(
-            1
-            for task in self.tasks
-            if task.get("status") == "completed"
-        )
-
-        self.total_pages = sum(
-            task.get("total_pages", 0)
-            for task in self.tasks
-        )
-
-        self.completed_pages = sum(
-            task.get("completed_pages", 0)
-            for task in self.tasks
-        )
-
-        self.remaining_pages = sum(
-            task.get("remaining_pages", 0)
-            for task in self.tasks
-        )
+        self.completed_tasks = sum( 1 for task in self.tasks if task.get("status") == "completed" )
+        self.total_pages = sum( task.get("total_pages", 0) for task in self.tasks )
+        self.completed_pages = sum( task.get("completed_pages", 0) for task in self.tasks )
+        self.remaining_pages = sum(task.get("remaining_pages", 0)for task in self.tasks)
 
     # ==================================================
     # Timer
@@ -106,11 +79,7 @@ class TodayStudyScreen(MDScreen):
             self.session_timer.cancel()
 
         self.session_start_time = time.perf_counter()
-
-        self.session_timer = Clock.schedule_interval(
-            self.update_session_time,
-            1
-        )
+        self.session_timer = Clock.schedule_interval( self.update_session_time, 1 )
 
     def stop_timer(self):
 
@@ -119,11 +88,7 @@ class TodayStudyScreen(MDScreen):
             self.session_timer = None
 
         if self.session_start_time is not None:
-            elapsed = int(
-                time.perf_counter()
-                - self.session_start_time
-            )
-
+            elapsed = int( time.perf_counter() - self.session_start_time)
             self.elapsed_time += elapsed
             self.session_start_time = None
 
@@ -132,22 +97,11 @@ class TodayStudyScreen(MDScreen):
         if self.session_start_time is None:
             return
 
-        current_elapsed = int(
-            time.perf_counter()
-            - self.session_start_time
-        )
-
-        total_elapsed = (
-            self.elapsed_time
-            + current_elapsed
-        )
-
-        self.session_time = format_time(
-            total_elapsed
-        )
+        current_elapsed = int( time.perf_counter() - self.session_start_time)
+        total_elapsed = ( self.elapsed_time + current_elapsed)
+        self.session_time = format_time(total_elapsed)
 
     def reset_timer(self):
-
         if self.session_timer:
             self.session_timer.cancel()
             self.session_timer = None
@@ -178,150 +132,72 @@ class TodayStudyScreen(MDScreen):
     # ==================================================
     def finish_task(self, task=None):
 
-        # Use passed task or current task
         if task is None:
             task = self.current_task
 
         if not task:
             return
 
-        # Stop timer
         self.stop_timer()
+    
+        start_page = task.get("next_page", 0)
+        end_page = math.floor(self.ids.running_progress.value)
 
-        # Remaining pages become completed
-        completed_pages = task.get(
-            "remaining_pages",
-            0
-        )
-
-        if completed_pages <= 0:
+        if start_page <= 0 or end_page < start_page:
+            massge = f"Invalid page range: " f"{start_page} -> {end_page}"
+            snackbar_manager.show_snackbar( message=massge, msg_type=Msg_type.warning )
+            logger.warning(massge)
 
             self.current_task = None
-
             self.reset_timer()
-
             self.load_today_study()
-
             return
 
-        # Save session
+        completed_pages = (end_page - start_page + 1)
+        remaining_pages = task.get("remaining_pages",0)
+
+        completed_pages = min(completed_pages,remaining_pages)
+
+        if completed_pages <= 0:
+            massge = f"No pages completed: "f"{start_page} -> {end_page}"
+            snackbar_manager.show_snackbar( message=massge, msg_type=Msg_type.warning )
+            logger.warning(massge)
+            return
+
+        actual_end_page = end_page
 
         try:
 
             success = self.study_bl.create_study_session(
                 schedule_item_id=task["item"].id,
-                completed_pages=completed_pages,
+                start_page=start_page,
+                end_page=actual_end_page,
                 study_date=None,
                 duration_seconds=self.elapsed_time,
             )
 
             if success is False:
-                logger.error(
-                    "Failed to create study session."
-                )
+                massge = "Failed to create study session."
+                snackbar_manager.show_snackbar( message=massge, msg_type=Msg_type.error )
+                logger.error(massge)
                 return
 
-            # 
-            # Clear current task
-            # 
+
+            massge = f"Study finished: \n" +\
+                f"pages {start_page}-{actual_end_page} \n" +\
+                f"({completed_pages} page(s))"
+            
+            snackbar_manager.show_snackbar( message=massge, msg_type=Msg_type.success )
+            logger.info(massge)
 
             self.current_task = None
-
             self.reset_timer()
-
-            # 
-            # Reload from database
-            # 
-
             self.load_today_study()
 
         except Exception as error:
-
-            logger.exception(
-                f"Error finishing study task: {error}"
-            )
-
-    # ==================================================
-    # Save Partial Progress
-    # ==================================================
-    def save_progress(self, completed_pages):
-
-        if not self.current_task:
-            return
-
-        task = self.current_task
-
-        # Validate pages
-
-        try:
-            completed_pages = int(completed_pages)
-
-        except (TypeError, ValueError):
-
-            logger.warning(
-                f"Invalid completed pages: {completed_pages}"
-            )
-
-            return
-
-        if completed_pages <= 0:
-            return
-
-        # Don't exceed remaining pages
-
-
-        completed_pages = min(
-            completed_pages,
-            task.get("remaining_pages", 0)
-        )
-
-        if completed_pages <= 0:
-            return
-
-        # Stop timer
-
-
-        self.stop_timer()
-
-
-        # Save session
-
-
-        try:
-
-            success = self.study_bl.create_study_session(
-                schedule_item_id=task["item"].id,
-                completed_pages=completed_pages,
-                study_date=None,
-                duration_seconds=self.elapsed_time,
-            )
-
-            if success is False:
-                logger.error(
-                    "Failed to save study progress."
-                )
-                return
-
-            # 
-            # Clear current task
-            # 
-
-            self.current_task = None
-
-            self.reset_timer()
-
-            # 
-            # Reload data
-            # 
-
-            self.load_today_study()
-
-        except Exception as error:
-
-            logger.exception(
-                f"Error saving study progress: {error}"
-            )
-
+            massge = f"Error finishing study task: {error}"
+            snackbar_manager.show_snackbar( message=massge, msg_type=Msg_type.error )
+            logger.exception(massge)
     # ==================================================
     # Skip Task
     # ==================================================
@@ -332,25 +208,10 @@ class TodayStudyScreen(MDScreen):
 
         if not task:
             return
-
-
-        # Stop current session
-
-
+        
         self.stop_timer()
-
-
-        # Clear current task
-
-
         self.current_task = None
-
         self.reset_timer()
-
-
-        # Show task list again
-
-
         self.display_tasks()
 
     # ==================================================
@@ -358,28 +219,14 @@ class TodayStudyScreen(MDScreen):
     # ==================================================
     def display_tasks(self):
 
-
-        # Hide running area
         self.show_running_area(False)
 
-
-        # Get container
-
-
         container = self.ids.tasks_container
-
         container.clear_widgets()
 
-
-        # Create cards
-
-
         for task in self.tasks:
-
             widget = self.create_task_widget(task)
-
             if widget:
-
                 container.add_widget(widget)
 
     # ==================================================
@@ -394,6 +241,8 @@ class TodayStudyScreen(MDScreen):
         total_pages = task.get("total_pages",0)
         completed_pages = task.get("completed_pages",0)
         remaining_pages = task.get("remaining_pages",0)
+        start_page = task.get("start_page",0)
+        end_page = task.get("end_page",0)
         book = task.get("book")
 
         if not book:
@@ -412,37 +261,25 @@ class TodayStudyScreen(MDScreen):
             task_text = "Ready to study"
 
         elif status == "in_progress":
-
             status_icon = "progress-clock"
-
             status_color = [1,0.55,0,1]
-
             button_text = "Continue"
             button_icon = "play"
 
             task_text = "Study in progress"
 
         elif status == "completed":
-
             status_icon = "check-circle"
-
             status_color = [0.3,0.7,0.3,1]
-
             button_text = "Done"
             button_icon = "check"
-
             task_text = "Completed"
 
         else:
 
-            status_icon = (
-                "book-open-page-variant-outline"
-            )
+            status_icon = ("book-open-page-variant-outline")
 
-            status_color = (
-                list(self.theme_cls.primary_color)
-            )
-
+            status_color = (list(self.theme_cls.primary_color))
             button_text = "Start"
             button_icon = "play"
 
@@ -451,22 +288,12 @@ class TodayStudyScreen(MDScreen):
         # ==================================================
         # Page Text
         # ==================================================
-
+        pages = (f" {start_page} - {end_page}")
         if status == "completed":
-
-            page_text = (
-                f"{completed_pages} / "
-                f"{total_pages} pages"
-            )
+            page_text = (f"{completed_pages} / "f"{total_pages} pages " + pages) 
 
         else:
-
-            page_text = (
-                f"{completed_pages} / "
-                f"{total_pages} pages"
-                f"  •  "
-                f"{remaining_pages} remaining"
-            )
+            page_text = ( f"{completed_pages} / " f"{total_pages} pages" f"  •  " f"{remaining_pages} remaining "+ pages) 
 
         # ==================================================
         # Time
@@ -488,11 +315,12 @@ class TodayStudyScreen(MDScreen):
             button_text=button_text,
             button_icon=button_icon,
             status_icon=status_icon,
-            status_color=status_color,
-            on_start=self.start_task,
-            on_finish=self.finish_task,
-            on_skip=self.skip_task,
-        )
+            status_color=status_color )
+
+
+        widget.on_start =self.start_task
+        widget.on_finish =self.finish_task
+        widget.on_skip =self.skip_task
 
         return widget
 
@@ -505,85 +333,13 @@ class TodayStudyScreen(MDScreen):
             return
 
         task = self.current_task
-
         book = task.get("book")
 
         if not book:
             return
 
-
-        # Show running area
-
-
         self.show_running_area(True)
-
-
-        # Book
-
-
-        self.ids.running_book_label.text = (
-            book.title or ""
-        )
-
-
-        # Task
-
-
-        self.ids.running_task_label.text = (
-            "Study in progress"
-        )
-
-
-        # Pages
-
-
-        completed_pages = task.get(
-            "completed_pages",
-            0
-        )
-
-        total_pages = task.get(
-            "total_pages",
-            0
-        )
-
-        remaining_pages = task.get(
-            "remaining_pages",
-            0
-        )
-
-        self.ids.running_pages_label.text = (
-            f"{completed_pages} / "
-            f"{total_pages} pages"
-        )
-
-        self.ids.running_remaining_label.text = (
-            f"{remaining_pages} pages remaining"
-        )
-
-
-        # Progress
-
-
-        progress = 0
-
-        if total_pages > 0:
-
-            progress = (
-                completed_pages
-                / total_pages
-                * 100
-            )
-
-        self.ids.running_progress.value = progress
-
-
-        # Timer
-
-
-        self.ids.running_timer_label.text = (
-            self.session_time
-        )
+        self.update_running_progress()
 
     # ==================================================
     # Show / Hide Running Area
@@ -594,7 +350,7 @@ class TodayStudyScreen(MDScreen):
 
         if visible:
 
-            running_box.height = dp(230)
+            running_box.height = dp(220)
             running_box.opacity = 1
             running_box.disabled = False
 
@@ -609,48 +365,26 @@ class TodayStudyScreen(MDScreen):
     # ==================================================
     def update_running_progress(self):
 
-        if not self.current_task:
-            return
-
         task = self.current_task
+        book = task.get("book")
+        total_pages = task.get("total_pages",0)
+        completed_pages = task.get("completed_pages",0)
+        remaining_pages = task.get( "remaining_pages", 0 )
 
-        total_pages = task.get(
-            "total_pages",
-            0
-        )
+        start_page = task.get("start_page",0)
+        end_page = task.get( "end_page",0)
+        next_page = task.get("next_page",0)
 
-        completed_pages = task.get(
-            "completed_pages",
-            0
-        )
+        self.ids.running_progress.min = next_page - 1
+        self.ids.running_progress.max = end_page + 2
+        self.ids.running_progress.value = next_page -1
 
-        remaining_pages = task.get(
-            "remaining_pages",
-            0
-        )
+        self.ids.running_pages_label.text = (f"{start_page} / "f"{end_page} pages")
+        self.ids.running_remaining_label.text = ( f"{completed_pages} / " f"{total_pages} pages" f"  •  " f"{remaining_pages} remaining")
 
-        if total_pages > 0:
-
-            progress = (
-                completed_pages
-                / total_pages
-                * 100
-            )
-
-        else:
-
-            progress = 0
-
-        self.ids.running_progress.value = progress
-
-        self.ids.running_pages_label.text = (
-            f"{completed_pages} / "
-            f"{total_pages} pages"
-        )
-
-        self.ids.running_remaining_label.text = (
-            f"{remaining_pages} pages remaining"
-        )
+        self.ids.running_book_label.text = ( book.title or "" )
+        self.ids.running_task_label.text = ("Study in progress")
+        self.ids.running_timer_label.text = (self.session_time)
 
     # ==================================================
     # Update Timer UI
@@ -661,10 +395,7 @@ class TodayStudyScreen(MDScreen):
             return
 
         if "running_timer_label" in self.ids:
-
-            self.ids.running_timer_label.text = (
-                self.session_time
-            )
+            self.ids.running_timer_label.text = (self.session_time)
 
     # ==================================================
     # Go Back To Task List

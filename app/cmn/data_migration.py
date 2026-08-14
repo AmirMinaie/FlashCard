@@ -43,14 +43,14 @@ class DataMigration:
 
             except Exception as e:
                 session.rollback()
-                logger.error(f"Old data migration failed: {e}")
+                logger.exception(f"Old data migration failed: {e}")
                 raise
 
             finally:
                 session.close()
 
         except Exception as e:
-            logger.error(f"Error loading OldData.json: {e}")
+            logger.exception(f"Error loading OldData.json: {e}")
 
     @staticmethod
     def _migrate(session, data):
@@ -89,7 +89,7 @@ class DataMigration:
                     logger.info(f"Migrated {entity_name}: "f"{old_id} -> {new_id}")
 
                 except Exception as e:
-                    logger.error(f"Error migrating "f"{entity_name} row {row}: {e}")
+                    logger.exception(f"Error migrating "f"{entity_name} row {row}: {e}")
                     raise
 
     @staticmethod

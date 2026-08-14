@@ -50,7 +50,7 @@ class AsyncBehavior:
                 return
 
         except Exception as e:
-            logger.error(str(e))
+            logger.exception(str(e))
 
             if callable(self.error_handler):
                 self.error_handler(e)

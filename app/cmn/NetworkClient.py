@@ -52,7 +52,7 @@ class NetworkClient:
             }
 
         except Exception as e:
-            logging.error(e)
+            logging.exception(e)
             return {"success": False, "error": str(e)}
 
     # ---------------------------
@@ -116,5 +116,5 @@ class NetworkClient:
             }
 
         except Exception as e:
-            logging.error(e)
+            logging.exception(e)
             return {"success": False, "error": str(e)}

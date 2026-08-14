@@ -21,7 +21,7 @@ def validate_datetime(value):
             except ValueError:
                 continue
     except Exception as e:
-        logger.e(f"Eror Convert {value}: {e}")
+        logger.exception(f"Eror Convert {value}: {e}")
 
 metadata = MetaData()
 

@@ -47,4 +47,4 @@ class WindowManager:
     
             logger.info("Window icon set successfully")
         except Exception as e:
-            logger.error(f"Error setting window icon: {e} : {win32api.GetLastError()}")
+            logger.exception(f"Error setting window icon: {e} : {win32api.GetLastError()}")

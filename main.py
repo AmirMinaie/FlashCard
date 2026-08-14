@@ -22,5 +22,5 @@ if __name__ == "__main__":
         app.run()
 
     except Exception as e:
-        logger.error(f"❌ Error initializing database: {e}")
+        logger.exception(f"❌ Error initializing database: {e}")
         sys.exit(1)

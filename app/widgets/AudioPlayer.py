@@ -70,7 +70,7 @@ class AudioPlayer:
             logger.info("Pygame mixer initialized")
 
         except Exception as e:
-            logger.error("Failed to initialize pygame mixer")
+            logger.exception("Failed to initialize pygame mixer")
             self._notify_error(e)
             self._change_state(PlayerState.ERROR)
 
@@ -122,7 +122,7 @@ class AudioPlayer:
 
         except Exception as e:
 
-            logger.error("Failed to load audio: %s",path,)
+            logger.exception("Failed to load audio: %s",path,)
 
             self._path = None
             self.duration = 0.0
@@ -180,8 +180,7 @@ class AudioPlayer:
             return True
 
         except Exception as e:
-
-            logger.error("Play error")
+            logger.exception("Play error")
 
             self._notify_error(e)
             self._change_state(PlayerState.ERROR)
@@ -206,7 +205,7 @@ class AudioPlayer:
             return True
 
         except Exception as e:
-            logger.error("Pause error")
+            logger.exception("Pause error")
             self._notify_error(e)
             return False
 
@@ -227,7 +226,7 @@ class AudioPlayer:
             return True
 
         except Exception as e:
-            logger.error("Resume error")
+            logger.exception("Resume error")
             self._notify_error(e)
             return False
 
@@ -253,7 +252,7 @@ class AudioPlayer:
             return True
 
         except Exception as e:
-            logger.error("Stop error")
+            logger.exception("Stop error")
             self._notify_error(e)
             return False
 
@@ -298,7 +297,7 @@ class AudioPlayer:
             return True
 
         except Exception as e:
-            logger.error("Seek error")
+            logger.exception("Seek error")
             self._notify_error(e)
             return False
 
@@ -325,8 +324,7 @@ class AudioPlayer:
             return True
 
         except Exception as e:
-
-            logger.error("Volume error")
+            logger.exception("Volume error")
 
             self._notify_error(e)
 
@@ -354,7 +352,7 @@ class AudioPlayer:
             return True
 
         except Exception as e:
-            logger.error("Mute error")
+            logger.exception("Mute error")
             self._notify_error(e)
             return False
 
@@ -514,7 +512,7 @@ class AudioPlayer:
                 self.on_state_changed(state)
 
             except Exception:
-                logger.error("State callback error")
+                logger.exception("State callback error")
 
     # =========================================================
     # ERROR
@@ -532,4 +530,4 @@ class AudioPlayer:
                 self.on_error(error)
 
             except Exception:
-                logger.error( "on_error callback error" )
+                logger.exception( "on_error callback error" )

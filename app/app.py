@@ -1,5 +1,6 @@
 from app.cmn.resource_helper import PathManager
 from app.cmn.AppName import *
+from app.cmn.version import *
 import sys
 import os
 
@@ -25,7 +26,7 @@ from kivy.core.window import Window
 
 class FlashCardApp (MDApp):
     title_icon = ""
-    title_text = APP_NAME
+    title_text = APP_NAME + " " + VERSION
     title = title_text
     _is_maximized = False
 

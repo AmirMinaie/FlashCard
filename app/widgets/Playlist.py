@@ -258,14 +258,8 @@ class Playlist(MDBoxLayout):
             return True
 
         except Exception as e:
-            logger.error(
-                f"Unexpected error while loading audio: {str(e)}"
-            )
-
-            snackbar_manager.show_snackbar(
-                message=f"Unexpected error while loading audio: {e}",
-                msg_type=Msg_type.error
-            )
+            logger.exception( f"Unexpected error while loading audio: {str(e)}" )
+            snackbar_manager.show_snackbar( message=f"Unexpected error while loading audio: {e}", msg_type=Msg_type.error )
 
             self.current_song = "Audio error"
             self.is_playing = False
@@ -320,7 +314,7 @@ class Playlist(MDBoxLayout):
                 self.is_playing = True
 
         except Exception as e:
-            logger.eror("Cannot play audio")
+            logger.exception("Cannot play audio")
 
             snackbar_manager.show_snackbar(
                 message="Cannot play this audio file",
@@ -335,7 +329,7 @@ class Playlist(MDBoxLayout):
             count = flashCard_BL.view_file(file_id)
             logger.debug(f"increment_view_count {count}")
         except Exception as e:
-            logger.error(f"Error incrementing view count: {e}")
+            logger.exception(f"Error incrementing view count: {e}")
 
     def stop_song(self):
         if self.audio_player is None:
@@ -346,10 +340,7 @@ class Playlist(MDBoxLayout):
             self.is_playing = False
 
         except Exception:
-            snackbar_manager.show_snackbar(
-                message="Error while stopping audio",
-                msg_type=Msg_type.error
-            )
+            snackbar_manager.show_snackbar( message="Error while stopping audio", msg_type=Msg_type.error )
             self.is_playing = False
 
     def next_song(self, auto_play=True):

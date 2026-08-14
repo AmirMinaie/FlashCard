@@ -46,7 +46,7 @@ class FilenameExtractor:
             return filename if filename else None
             
         except Exception as e:
-            logger.error(f"Error extracting filename from URL: {e}")
+            logger.exception(f"Error extracting filename from URL: {e}")
             return None
     
     @staticmethod

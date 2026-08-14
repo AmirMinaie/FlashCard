@@ -13,48 +13,91 @@ Builder.load_string("""
     orientation: "vertical"
 
     size_hint_y: None
-    adaptive_height: True
+    height: dp(166)
 
-    padding: dp(16)
-    spacing: dp(8)
+    padding: dp(12)
+    spacing: dp(6)
 
-    radius: [20]
+    radius: [16]
     elevation: 2
+
 
     # ==================================================
     # Header
     # ==================================================
 
     MDBoxLayout:
-        adaptive_height: True
+        orientation: "horizontal"
+
+        size_hint_y: None
+        height: dp(42)
+
         spacing: dp(10)
 
-        MDIcon:
-            icon: root.status_icon
 
-            theme_icon_color: "Custom"
-            icon_color: root.status_color
+        # ----------------------------------------------
+        # Status Icon
+        # ----------------------------------------------
 
+        MDBoxLayout:
             size_hint_x: None
             width: dp(32)
 
+            MDIcon:
+                icon: root.status_icon
+
+                theme_icon_color: "Custom"
+                icon_color: root.status_color
+
+                size_hint: None, None
+                size: dp(28), dp(28)
+
+                pos_hint:
+                    {"center_x": .5, "center_y": .5}
+
+
+        # ----------------------------------------------
+        # Book Information
+        # ----------------------------------------------
+
         MDBoxLayout:
             orientation: "vertical"
-            adaptive_height: True
-            spacing: dp(2)
+
+            size_hint_x: 1
+            size_hint_y: None
+            height: dp(40)
+
+            spacing: 0
+
+            pos_hint:
+                {"center_y": .5}
+
 
             MDLabelA:
                 text: root.book_title
+
                 font_style: "H6"
                 bold: True
 
+                size_hint_y: None
+                height: dp(35)
+
+                valign: "middle"
+
                 max_lines: 1
                 shorten: True
                 shorten_from: "right"
+
 
             MDLabelA:
                 text: root.task_text
+
                 theme_text_color: "Secondary"
+
+                size_hint_y: None
+                height: dp(19)
+
+                valign: "middle"
 
                 max_lines: 1
                 shorten: True
@@ -62,51 +105,69 @@ Builder.load_string("""
 
 
     # ==================================================
-    # Page / Time
+    # Separator
     # ==================================================
-
     MDSeparator:
 
+    # ==================================================
+    # Page Information
+    # ==================================================
 
     MDBoxLayout:
-        adaptive_height: True
+        orientation: "horizontal"
+
+        size_hint_y: None
+        height: dp(28)
+
         spacing: dp(8)
+
 
         MDLabelA:
             text: root.page_text
+
+            size_hint_x: 1
+
+            valign: "middle"
+            halign: "left"
 
             max_lines: 1
             shorten: True
             shorten_from: "right"
 
+
         MDLabelA:
             text: root.time_text
 
+            size_hint_x: None
+            width: dp(55)
+
+            valign: "middle"
             halign: "right"
+
             theme_text_color: "Secondary"
 
             max_lines: 1
             shorten: True
             shorten_from: "left"
 
-
     # ==================================================
     # Action
     # ==================================================
 
     MDBoxLayout:
-        adaptive_height: True
+        orientation: "horizontal"
+        size_hint_y: None
+        height: dp(36) 
         spacing: dp(8)
 
         Widget:
-
 
         BaseButtonA:
             text: root.button_text
             icon: root.button_icon
 
-            size_hint_x: None
-            width: dp(120)
+            size_hint: None, None
+            size: dp(106), dp(36)
 
             on_release: root.handle_action()
 """)
@@ -115,24 +176,13 @@ Builder.load_string("""
 class StudyTaskCard(MDCard):
 
     # ==================================================
-    # Data
+    # Task
     # ==================================================
 
-    # Complete task dictionary returned by StudyBL
-    #
-    # {
-    #     "item": studyScheduleItemDA,
-    #     "book": bookDA,
-    #     "total_pages": 10,
-    #     "completed_pages": 4,
-    #     "remaining_pages": 6,
-    #     "status": "in_progress"
-    # }
     item = ObjectProperty(None)
 
-
     # ==================================================
-    # Display
+    # Text
     # ==================================================
 
     book_title = StringProperty("")
@@ -140,47 +190,35 @@ class StudyTaskCard(MDCard):
     page_text = StringProperty("")
     time_text = StringProperty("")
 
-
     # ==================================================
-    # Action Button
+    # Button
     # ==================================================
 
     button_text = StringProperty("")
     button_icon = StringProperty("")
-
 
     # ==================================================
     # Status
     # ==================================================
 
     status_icon = StringProperty("")
-
-    # Kivy colors are RGBA lists:
-    #
-    # [1, 1, 1, 1]
-    # [0, 1, 0, 1]
-    #
     status_color = ListProperty([1, 1, 1, 1])
-
 
     # ==================================================
     # Callbacks
     # ==================================================
+    def __init__(self, **kwargs):
 
-    on_start = ObjectProperty(None)
-    on_finish = ObjectProperty(None)
-    on_skip = ObjectProperty(None)
+        self.on_start = None
+        self.on_finish = None
+        self.on_skip = None
 
+        super().__init__(**kwargs)
 
     # ==================================================
-    # Action Handler
+    # Action
     # ==================================================
-
     def handle_action(self):
-
-        # ----------------------------------------------
-        # Start / Continue
-        # ----------------------------------------------
 
         if self.button_text in ("Start", "Continue"):
 
@@ -189,22 +227,12 @@ class StudyTaskCard(MDCard):
 
             return
 
-
-        # ----------------------------------------------
-        # Finish
-        # ----------------------------------------------
-
         if self.button_text == "Finish":
 
             if self.on_finish:
                 self.on_finish(self.item)
 
             return
-
-
-        # ----------------------------------------------
-        # Skip
-        # ----------------------------------------------
 
         if self.button_text == "Skip":
 

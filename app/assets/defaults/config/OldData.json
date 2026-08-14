@@ -14,7 +14,6 @@
             "box_id": "Tutorial",
             "createAt": "2026-07-01T00:00:00",
             "updatedAt": "2026-07-03T00:00:00",
-            
             "notion_content": ""
         },
         {
@@ -31,7 +30,6 @@
             "box_id": "Tutorial",
             "createAt": "2026-07-01T00:00:00",
             "updatedAt": "2026-07-03T00:00:00",
-            
             "notion_content": ""
         },
         {
@@ -48,7 +46,6 @@
             "box_id": "Tutorial",
             "createAt": "2026-07-01T00:00:00",
             "updatedAt": "2026-07-03T00:00:00",
-            
             "notion_content": ""
         },
         {
@@ -65,7 +62,6 @@
             "box_id": "Tutorial",
             "createAt": "2026-07-01T00:00:00",
             "updatedAt": "2026-07-03T00:00:00",
-            
             "notion_content": ""
         },
         {
@@ -82,7 +78,6 @@
             "box_id": "Tutorial",
             "createAt": "2026-07-01T00:00:00",
             "updatedAt": "2026-07-03T00:00:00",
-            
             "notion_content": ""
         },
         {
@@ -99,7 +94,6 @@
             "box_id": "Tutorial",
             "createAt": "2026-07-01T00:00:00",
             "updatedAt": "2026-07-03T00:00:00",
-            
             "notion_content": ""
         },
         {
@@ -116,7 +110,6 @@
             "box_id": "Tutorial",
             "createAt": "2026-07-01T00:00:00",
             "updatedAt": "2026-07-03T00:00:00",
-            
             "notion_content": ""
         },
         {
@@ -133,7 +126,6 @@
             "box_id": "Tutorial",
             "createAt": "2026-07-01T00:00:00",
             "updatedAt": "2026-07-03T00:00:00",
-            
             "notion_content": ""
         },
         {
@@ -150,7 +142,6 @@
             "box_id": "Tutorial",
             "createAt": "2026-07-01T00:00:00",
             "updatedAt": "2026-07-03T00:00:00",
-            
             "notion_content": ""
         },
         {
@@ -167,11 +158,9 @@
             "box_id": "Tutorial",
             "createAt": "2026-07-01T00:00:00",
             "updatedAt": "2026-07-03T00:00:00",
-            
             "notion_content": ""
         }
     ],
-
     "reviewFlashcards": [
         {
             "id": 1,
@@ -183,7 +172,6 @@
             "review_date": "2026-07-01T00:00:00"
         },
         {
-            
             "id": 2,
             "flashcard_id": 2,
             "quality": null,
@@ -193,7 +181,6 @@
             "review_date": "2026-07-01T00:00:00"
         },
         {
-            
             "id": 3,
             "flashcard_id": 3,
             "quality": null,
@@ -203,7 +190,6 @@
             "review_date": "2026-07-01T00:00:00"
         },
         {
-            
             "id": 4,
             "flashcard_id": 4,
             "quality": null,
@@ -213,7 +199,6 @@
             "review_date": "2026-07-01T00:00:00"
         },
         {
-            
             "id": 5,
             "flashcard_id": 5,
             "quality": null,
@@ -223,7 +208,6 @@
             "review_date": "2026-07-01T00:00:00"
         },
         {
-            
             "id": 6,
             "flashcard_id": 6,
             "quality": null,
@@ -233,7 +217,6 @@
             "review_date": "2026-07-01T00:00:00"
         },
         {
-            
             "id": 7,
             "flashcard_id": 7,
             "quality": null,
@@ -243,7 +226,6 @@
             "review_date": "2026-07-01T00:00:00"
         },
         {
-            
             "id": 8,
             "flashcard_id": 8,
             "quality": null,
@@ -253,7 +235,6 @@
             "review_date": "2026-07-01T00:00:00"
         },
         {
-            
             "id": 9,
             "flashcard_id": 9,
             "quality": null,
@@ -263,7 +244,6 @@
             "review_date": "2026-07-01T00:00:00"
         },
         {
-            
             "id": 10,
             "flashcard_id": 10,
             "quality": null,
@@ -273,75 +253,106 @@
             "review_date": "2026-07-01T00:00:00"
         }
     ],
-
     "books": [
         {
             "id": 1,
-            "title": "English Grammar in Use",
-            "author": "Raymond Murphy",
-            "totalPages": 320,
-            "currentPage": 1,
+            "title": "English File 4th Pre-Intermediate",
+            "author": "Christina Latham-Koenig, Clive Oxenden, Jerry Lambert",
+            "totalPages": 101,
+            "currentPage": 53,
             "status_id": "reading"
         },
         {
             "id": 2,
-            "title": "English Vocabulary in Use",
-            "author": "Michael McCarthy",
-            "totalPages": 260,
-            "currentPage": 1,
+            "title": "English Vocabulary in Use Pre-Intermediate & Intermediate 4th Edition",
+            "author": "Michael McCarthy, Felicity O'Dell",
+            "totalPages": 205,
+            "currentPage": 34,
             "status_id": "reading"
-        },
-        {
-            "id": 3,
-            "title": "Atomic Habits",
-            "author": "James Clear",
-            "totalPages": 320,
-            "currentPage": 1,
-            "status_id": "not_started"
         }
     ],
-
     "studySchedules": [
         {
             "id": 1,
             "title": "English Daily Reading",
-            "description": "Daily English reading plan",
-            "start_date": "2026-08-13T00:00:00",
-            "end_date": "2026-09-30T00:00:00",
+            "description": "Daily English study plan with reading and weekly review. Monday to Wednesday and Saturday to Sunday: 2 pages per book. Thursday: 4 pages per book. Friday: weekly review only.",
+            "start_date": "2026-08-14T00:00:00",
+            "end_date": "2026-09-14T00:00:00",
             "status_id": "active"
         }
     ],
-
     "studyScheduleItems": [
         {
             "schedule_id": 1,
             "book_id": 1,
+            "weekday_id": "saturday",
+            "pages": 2
+        },
+        {
+            "schedule_id": 1,
+            "book_id": 2,
+            "weekday_id": "saturday",
+            "pages": 2
+        },
+        {
+            "schedule_id": 1,
+            "book_id": 1,
+            "weekday_id": "sunday",
+            "pages": 2
+        },
+        {
+            "schedule_id": 1,
+            "book_id": 2,
+            "weekday_id": "sunday",
+            "pages": 2
+        },
+        {
+            "schedule_id": 1,
+            "book_id": 1,
+            "weekday_id": "monday",
+            "pages": 2
+        },
+        {
+            "schedule_id": 1,
+            "book_id": 2,
+            "weekday_id": "monday",
+            "pages": 2
+        },
+        {
+            "schedule_id": 1,
+            "book_id": 1,
+            "weekday_id": "tuesday",
+            "pages": 2
+        },
+        {
+            "schedule_id": 1,
+            "book_id": 2,
+            "weekday_id": "tuesday",
+            "pages": 2
+        },
+        {
+            "schedule_id": 1,
+            "book_id": 1,
+            "weekday_id": "wednesday",
+            "pages": 2
+        },
+        {
+            "schedule_id": 1,
+            "book_id": 2,
+            "weekday_id": "wednesday",
+            "pages": 2
+        },
+        {
+            "schedule_id": 1,
+            "book_id": 1,
             "weekday_id": "thursday",
-            "pages": 3
+            "pages": 4
         },
         {
             "schedule_id": 1,
             "book_id": 2,
             "weekday_id": "thursday",
             "pages": 4
-        },
-        {
-            "schedule_id": 1,
-            "book_id": 3,
-            "weekday_id": "friday",
-            "pages": 6
-        },
-        {
-            "schedule_id": 1,
-            "book_id": 2,
-            "weekday_id": "friday",
-            "pages": 7
-        },
-        {
-            "schedule_id": 1,
-            "book_id": 1,
-            "weekday_id": "saturday",
-            "pages": 9
         }
     ]
 }

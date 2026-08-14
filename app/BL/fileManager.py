@@ -67,7 +67,7 @@ class FileManager:
             }
             
         except Exception as e:
-            logging.error(f"Error saving audio file: {e}")
+            logging.Exception(f"Error saving audio file: {e}")
             raise
     
     def delete_audio_file(self, file_path):
@@ -91,7 +91,7 @@ class FileManager:
             
             return False
         except Exception as e:
-            logging.error(f"Error deleting audio file: {e}")
+            logging.Exception(f"Error deleting audio file: {e}")
             return False
     
     def cleanup_temp_files(self):
@@ -99,12 +99,12 @@ class FileManager:
         temp_dir = self.sub_dirs['temp']
         for file in temp_dir.glob("*"):
             try:
-                # حذف فایل‌های قدیمی‌تر از ۲۴ ساعت
+
                 file_age = datetime.now() - datetime.fromtimestamp(file.stat().st_mtime)
                 if file_age.total_seconds() > 24 * 3600:
                     file.unlink()
             except Exception as e:
-                logging.warning(f"Could not delete temp file {file}: {e}")
+                logging.Exception(f"Could not delete temp file {file}: {e}")
 
     def download_online(self, source_path , filename , timeout=30 ):
         """

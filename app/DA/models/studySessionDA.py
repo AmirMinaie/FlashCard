@@ -11,9 +11,14 @@ class studySessionDA(Base):
     study_date = Column(Date,nullable=False)
     start_page = Column( Integer, nullable=False )
     end_page = Column( Integer, nullable=False )
-    minutes = Column( Integer, nullable=True )
+    duration_seconds = Column( Integer, nullable=True )
     note = Column( Text, nullable=True )
-    status_id = Column( Integer, ForeignKey("constant.id"), nullable=False )
 
     schedule_item = relationship( "studyScheduleItemDA", foreign_keys=[schedule_item_id], backref="study_sessions", lazy="joined" )
-    status = relationship( "constantDA", foreign_keys=[status_id], backref="study_session_statuses", lazy="joined" )
+
+    @property
+    def completedPages(self):
+        if self.start_page is None or self.end_page is None:
+            return 0
+
+        return max(self.end_page - self.start_page + 1,0)

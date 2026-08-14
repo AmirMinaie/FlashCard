@@ -125,7 +125,7 @@ class FlashCardBL:
         
         except Exception as e:
             session.rollback()
-            logger.error(str(e))
+            logger.exception(str(e))
 
             for item in saved_files:
                 try:
@@ -260,7 +260,7 @@ class FlashCardBL:
                 try:
                     file_manager.delete_audio_file(path)
                 except Exception as e:
-                    logger.error(e)
+                    logger.exception(e)
 
             return {
                 "id": card.id,
@@ -297,7 +297,7 @@ class FlashCardBL:
             return file.view_count
             
         except Exception as e:
-            logger.error(f"error view file bl {str(e)}")
+            logger.exception(f"error view file bl {str(e)}")
             session.rollback()
             return False
             
@@ -400,7 +400,7 @@ class FlashCardBL:
             return card_data
         
         except Exception as e:
-            logger.error(f"Error getting next card for review: {e}")
+            logger.exception(f"Error getting next card for review: {e}")
             return None
 
     def mark_card_reviewed(self, card_id, quality_Answer ,thinking_time, answer_time, total_time):
@@ -443,7 +443,7 @@ class FlashCardBL:
             return review_card_saved
             
         except Exception as e:
-            logger.error(f"Error marking card reviewed: {e}")
+            logger.exception(f"Error marking card reviewed: {e}")
             return False
 
 

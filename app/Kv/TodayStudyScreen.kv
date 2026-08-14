@@ -3,182 +3,276 @@
 
     MDBoxLayout:
         orientation: "vertical"
-        padding: dp(12)
-        spacing: dp(8)
 
-        ##################################################
-        # Header
-        ##################################################
+        padding: dp(14)
+        spacing: dp(10)
 
+        # ==================================================
+        # Page Header
+        # ==================================================
         MDCard:
+            size_hint_y: None
+            height: dp(52)
+
             elevation: 1
             radius: [16]
-            size_hint_y: None
-            height: dp(50)
 
             MDBoxLayout:
-                padding: dp(10), dp(0)
-                spacing: dp(8)
+                orientation: "horizontal"
+
+                padding: dp(8), 0
+                spacing: dp(6)
 
                 MDLabelA:
                     text: "Today's Study"
                     font_style: "H6"
                     bold: True
-                    valign: "middle"
                     size_hint_x: 1
+                    valign: "middle"
+                    halign: "left"
+                    max_lines: 1
+                    shorten: True
+                    shorten_from: "right"
 
                 MDLabelA:
-                    text: f"{root.completed_tasks}/{root.total_tasks}"
+                    text: f"{root.completed_tasks}/{root.total_tasks} task"
                     font_style: "Subtitle1"
                     bold: True
-                    halign: "right"
-                    valign: "middle"
                     size_hint_x: None
-                    width: dp(60)
+                    width: dp(72)
+                    valign: "middle"
+                    halign: "right"
+                    max_lines: 1
+
+
+                MDLabelA:
+                    text: f"{root.completed_pages}/{root.total_pages} pages"
+                    theme_text_color: "Secondary"
+                    size_hint_x: None
+                    valign: "middle"
+                    halign: "right"
+                    max_lines: 1
+                    shorten: True
+                    shorten_from: "left"
 
                 MDIconButton:
                     icon: "refresh"
                     theme_icon_color: "Custom"
                     icon_color: app.theme_cls.primary_color
+                    size_hint: None, None
+                    size: dp(40), dp(40)
+                    pos_hint: {"center_y": .5}
                     on_release: root.load_today_study()
 
-        ##################################################
-        # Progress
-        ##################################################
-
-        MDCard:
-            elevation: 1
-            radius: [16]
+        # ==================================================
+        # Today's Progress
+        # ==================================================
+        MDBoxLayout:
+            orientation: "vertical"
             size_hint_y: None
-            height: dp(78)
+            height: dp(20)
+            padding: 0
 
-            MDBoxLayout:
-                orientation: "vertical"
-                padding: dp(12)
-                spacing: dp(4)
+            MDSlider:
+                id: progress_slider
+                min: 0
+                max: 100
+                value: (root.completed_pages /root.total_pages * 100if root.total_pages else 0)
+                disabled: True
+                size_hint_y: None
+                height: dp(20)
 
-                MDBoxLayout:
-                    adaptive_height: True
-
-                    MDLabelA:
-                        text: f"{root.completed_tasks} of {root.total_tasks} tasks completed"
-                        bold: True
-
-                    MDLabelA:
-                        text: f"{root.completed_pages}/{root.total_pages} pages"
-                        halign: "right"
-                        theme_text_color: "Secondary"
-
-                MDProgressBar:
-                    value: ( root.completed_tasks / root.total_tasks * 100 if root.total_tasks else 0)
-
-        ##################################################
+        # ==================================================
         # Running Study
-        ##################################################
-
+        # ==================================================
         MDCard:
             id: running_study_box
-
             orientation: "vertical"
-
             size_hint_y: None
-            height: 0
-
+            height: dp(193)
             opacity: 0
             disabled: True
-
-            padding: dp(16)
-            spacing: dp(10)
-
+            padding: dp(12)
+            spacing: dp(6)
             radius: [16]
             elevation: 2
 
+            # ----------------------------------------------
+            # Book Header
+            # ----------------------------------------------
+
             MDBoxLayout:
-                adaptive_height: True
+                orientation: "horizontal"
+                size_hint_y: None
+                height: dp(46)
                 spacing: dp(10)
 
                 MDIcon:
                     icon: "book-open-page-variant"
-                    theme_icon_color: "Custom"
-                    icon_color: app.theme_cls.primary_color
-
-                    size_hint_x: None
-                    width: dp(32)
+                    size_hint: None, None
+                    size: dp(28), dp(28)
+                    pos_hint:{"center_y": .5}
 
                 MDBoxLayout:
                     orientation: "vertical"
-                    adaptive_height: True
+
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: dp(40)
+                    spacing: dp(2)
+                    pos_hint: {"center_y": .5}
+
 
                     MDLabelA:
                         id: running_book_label
                         text: ""
-                        bold: True
                         font_style: "H6"
+                        bold: True
+                        size_hint_y: None
+                        height: dp(33)
+                        valign: "middle"
                         max_lines: 1
                         shorten: True
+                        shorten_from: "right"
 
                     MDLabelA:
                         id: running_task_label
-                        text: ""
+                        text: "Study in progress"
                         theme_text_color: "Secondary"
+                        size_hint_y: None
+                        height: dp(17)
+                        valign: "middle"
+                        max_lines: 1
+                        shorten: True
+                        shorten_from: "right"
 
+            # ----------------------------------------------
+            # Separator
+            # ----------------------------------------------
             MDSeparator:
+            # ----------------------------------------------
+            # Pages / Timer
+            # ----------------------------------------------
 
             MDBoxLayout:
-                adaptive_height: True
+                orientation: "horizontal"
+                size_hint_y: None
+                height: dp(28)
+                spacing: dp(8)
 
                 MDLabelA:
                     id: running_pages_label
                     text: "0 / 0 pages"
+                    size_hint_x: 1
+                    valign: "middle"
+                    halign: "left"
+                    max_lines: 1
+                    shorten: True
+                    shorten_from: "right"
 
                 MDLabelA:
                     id: running_timer_label
-                    text: "0s"
+                    text: root.session_time
+                    size_hint_x: None
+                    
+                    valign: "middle"
                     halign: "right"
                     bold: True
+                    max_lines: 1
 
-            MDProgressBar:
-                id: running_progress
-                value: 0
+            # ----------------------------------------------
+            # Progress
+            # ----------------------------------------------
+
+            MDBoxLayout:
+                orientation: "horizontal"
+                spacing: dp(8)
+                size_hint_y: None
+                height: dp(40)
+
+                MDSlider:
+                    id: running_progress
+                    min: 0
+                    max: 100
+                    value: 0
+                    size_hint_y: None
+                    height: dp(20)
+
+                MDLabel:
+                    text: str(int(running_progress.value))
+                    size_hint_x: None
+                    width: dp(35)
+                    halign: "center"
+                    valign: "middle"
+
+            # ----------------------------------------------
+            # Remaining
+            # ----------------------------------------------
 
             MDLabelA:
                 id: running_remaining_label
+
                 text: "0 pages remaining"
+
                 theme_text_color: "Secondary"
 
+                size_hint_y: None
+                height: dp(20)
+
+                max_lines: 1
+                shorten: True
+                shorten_from: "right"
+
+
+            # ----------------------------------------------
+            # Actions
+            # ----------------------------------------------
+
             MDBoxLayout:
-                adaptive_height: True
+                orientation: "horizontal"
+
+                size_hint_y: None
+                height: dp(36)
+
                 spacing: dp(8)
 
+
                 Widget:
+
 
                 BaseButtonA:
                     text: "Skip"
                     icon: "close"
-                    size_hint_x: None
-                    width: dp(100)
+
+                    size_hint: None, None
+                    size: dp(88), dp(36)
+
                     on_release: root.skip_task()
+
 
                 BaseButtonA:
                     text: "Finish"
                     icon: "check"
-                    size_hint_x: None
-                    width: dp(110)
+
+                    size_hint: None, None
+                    size: dp(96), dp(36)
+
                     on_release: root.finish_task()
 
-        ##################################################
+        # ==================================================
         # Tasks
-        ##################################################
+        # ==================================================
 
         ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+
+            bar_width: dp(3)
 
             MDBoxLayout:
                 id: tasks_container
-
                 orientation: "vertical"
-
                 size_hint_y: None
                 height: self.minimum_height
-
-                spacing: dp(8)
-                padding: dp(4)
+                spacing: dp(10)
+                padding: dp(6)
