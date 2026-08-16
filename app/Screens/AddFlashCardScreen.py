@@ -359,7 +359,7 @@ MDBoxLayout:
         self.reset_form()
 
     def handle_delete(self , e):
-        logger.error(str(e))
+        logger.exception(f"AddFlashCardScreen {str(e)}")
         self.show_generic_error("Delete failed")
 
     def delete_card(self):

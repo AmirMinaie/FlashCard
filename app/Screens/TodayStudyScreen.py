@@ -147,10 +147,7 @@ class TodayStudyScreen(MDScreen):
             massge = f"Invalid page range: " f"{start_page} -> {end_page}"
             snackbar_manager.show_snackbar( message=massge, msg_type=Msg_type.warning )
             logger.warning(massge)
-
-            self.current_task = None
-            self.reset_timer()
-            self.load_today_study()
+            
             return
 
         completed_pages = (end_page - start_page + 1)

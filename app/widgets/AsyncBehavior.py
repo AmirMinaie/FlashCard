@@ -50,7 +50,7 @@ class AsyncBehavior:
                 return
 
         except Exception as e:
-            logger.exception(str(e))
+            logger.exception(f"_start_task {str(e)}")
 
             if callable(self.error_handler):
                 self.error_handler(e)

@@ -1,18 +1,17 @@
 {
-  "REVIEW_THRESHOLD" : 3,
-  "MATURE_INTERVAL_DAYS" : 21,
+  "config_file_vertion": 1,
+  "REVIEW_THRESHOLD": 3,
+  "MATURE_INTERVAL_DAYS": 21,
   "NEW_CARD_TIME": 120,
   "LEARNING_CARD_TIME": 60,
   "REVIEW_CARD_TIME": 30,
-
-  "DEFAULT_FONT" : "Segoe_Print",
-  "IPA_FONT" : "NotoSans",
-  
-  "CardsPerPage": 30 ,
-
+  "DEFAULT_FONT": "Segoe_Print",
+  "IPA_FONT": "NotoSans",
+  "CardsPerPage": 30,
   "network_backend": "wininet",
   "database": {
-    "driver": "sqlite"
+    "driver": "sqlite",
+    "version": 3
   },
   "loadSeedData": 1,
   "loadOldData": 1,

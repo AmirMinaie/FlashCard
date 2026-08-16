@@ -19,8 +19,12 @@ handlers = [
     )
 ]
 
-if hasattr(sys, "__stdout__") and sys.__stdout__:
-    handlers.append(logging.StreamHandler(sys.__stdout__))
+try :
+    if hasattr(sys, "__stdout__") and sys.__stdout__:
+        handlers.append(logging.StreamHandler(sys.__stdout__))
+except:
+    pass
+
 
 logging.basicConfig(
     level=logging.INFO,

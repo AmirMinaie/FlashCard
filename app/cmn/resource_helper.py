@@ -11,19 +11,10 @@ class PathManager:
 
     @classmethod
     def base_dir(cls) -> Path:
-        """
-        ریشه پروژه در حالت توسعه.
-        فرض: این فایل دو پوشه پایین‌تر از ریشه پروژه است.
-        """
         return Path(__file__).resolve().parents[2]
 
     @classmethod
     def bundled_path(cls , *relative_path: str) -> Path:
-        """
-        مسیر فایل‌های همراه برنامه:
-        - در exe: داخل _MEIPASS
-        - در توسعه: داخل ریشه پروژه
-        """
         if getattr(sys, "frozen", False):
             return Path(sys._MEIPASS, *relative_path)
 
@@ -31,10 +22,6 @@ class PathManager:
 
     @classmethod
     def app_path(cls, *relative_path: str) -> Path:
-        """
-        فقط برای فایل‌های داخل app در حالت توسعه.
-        در بیلد، app حذف شده و محتوا مستقیم داخل bundle قرار می‌گیرد.
-        """
         if getattr(sys, "frozen", False):
             return Path(sys._MEIPASS).joinpath(*relative_path)
 
@@ -62,14 +49,11 @@ class PathManager:
 
     @classmethod
     def initialize(cls) -> None:
-        # مسیر قابل‌نوشتن کاربر
         cls.DATA_DIR = cls.get_data_dir()
         cls.DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-        # config قابل‌تغییر کاربر
         cls.CONFIG_DIR = cls.DATA_DIR / "config"
 
-        # configهای اولیه که همراه برنامه بیلد شده‌اند
         default_config_dir = cls.app_path(
             "assets",
             "defaults",
@@ -78,7 +62,6 @@ class PathManager:
 
         cls.copy_missing_files(default_config_dir, cls.CONFIG_DIR)
 
-        # سایر فایل‌های قابل‌تغییر کاربر
         cls.FILES_DIR = cls.DATA_DIR / "files"
         cls.BACKUP_DIR = cls.DATA_DIR / "backups"
         cls.log_DIR = cls.DATA_DIR / "logs"
@@ -86,6 +69,5 @@ class PathManager:
         cls.FILES_DIR.mkdir(parents=True, exist_ok=True)
         cls.BACKUP_DIR.mkdir(parents=True, exist_ok=True)
         cls.log_DIR.mkdir(parents=True, exist_ok=True)
-
 
 PathManager.initialize()

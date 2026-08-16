@@ -125,7 +125,7 @@ class FlashCardBL:
         
         except Exception as e:
             session.rollback()
-            logger.exception(str(e))
+            logger.exception(f"flashcardBl add card {str(e)}")
 
             for item in saved_files:
                 try:

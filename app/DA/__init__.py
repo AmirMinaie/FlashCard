@@ -15,7 +15,16 @@ __all__ = [
 
 def init_db():
     from .base import Base
-    from .models import constantDA, flashcardDA , reviewFlashcardDA , fileFlashcardDA
+    from .models import (
+        constantDA, 
+        flashcardDA , 
+        reviewFlashcardDA , 
+        fileFlashcardDA,
+        bookDA,
+        studyScheduleDA,
+        studyScheduleItemDA,
+        studySessionDA)
+    
     from .seed import Create_SeedData
     engine = create_db_engine()
     Base.metadata.create_all(bind=engine)

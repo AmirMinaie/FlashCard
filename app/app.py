@@ -26,7 +26,7 @@ from kivy.core.window import Window
 
 class FlashCardApp (MDApp):
     title_icon = ""
-    title_text = APP_NAME + " " + VERSION
+    title_text = APP_NAME + " V" + VERSION
     title = title_text
     _is_maximized = False
 

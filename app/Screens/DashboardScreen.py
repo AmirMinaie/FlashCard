@@ -184,7 +184,7 @@ class DashboardScreen(MDScreen):
 
     def handle_load_dashboard(self, e):
         snackbar_manager.show_snackbar( message=f"load data Error: {str(e)}", msg_type=Msg_type.error )
-        logger.error(str(e))
+        logger.exception(f"handle_load_dashboard {str(e)}")
 
     def arrow(self, difference):
         if difference > 0:

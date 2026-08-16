@@ -55,11 +55,11 @@ class DashboardBL:
     def __init__(self):
         self.today = datetime.now().date()
         Config = ConfigReader()
-        self.REVIEW_THRESHOLD = Config.get("REVIEW_THRESHOLD")
-        self.MATURE_INTERVAL_DAYS = Config.get("MATURE_INTERVAL_DAYS")
-        self.NEW_CARD_TIME = Config.get( "NEW_CARD_TIME")
-        self.LEARNING_CARD_TIME = Config.get( "LEARNING_CARD_TIME")
-        self.REVIEW_CARD_TIME = Config.get( "REVIEW_CARD_TIME")
+        self.REVIEW_THRESHOLD = Config.get("REVIEW_THRESHOLD" , 0)
+        self.MATURE_INTERVAL_DAYS = Config.get("MATURE_INTERVAL_DAYS" , 0)
+        self.NEW_CARD_TIME = Config.get( "NEW_CARD_TIME" , 0)
+        self.LEARNING_CARD_TIME = Config.get( "LEARNING_CARD_TIME" , 0)
+        self.REVIEW_CARD_TIME = Config.get( "REVIEW_CARD_TIME" , 0)
         return
 
     def get_summary(self):
