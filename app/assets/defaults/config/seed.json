@@ -1,85 +1,352 @@
 {
-  "constant": [
-    { "name": "vocabulary", "caption": "Vocab", "type": "FlashCardtype" },
-    { "name": "grammar", "caption": "Grammar", "type": "FlashCardtype" },
-    { "name": "past_tense", "caption": "Past Tense", "type": "FlashCardtype" },
-
-    {"name": "not_started", "caption": "Not Started","type": "BookStatus"},
-    {"name": "reading", "caption": "Reading","type": "BookStatus"},
-    {"name": "completed", "caption": "Completed", "type": "BookStatus"},
-    {"name": "paused", "caption": "Paused","type": "BookStatus"},
-    {"name": "abandoned", "caption": "Abandoned","type": "BookStatus"},
-
-    {"name": "active","caption": "Active","type": "StudyScheduleStatus"},
-    {"name": "paused","caption": "Paused","type": "StudyScheduleStatus"},
-    {"name": "completed","caption": "Completed","type": "StudyScheduleStatus"},
-    {"name": "archived","caption": "Archived","type": "StudyScheduleStatus"},
-
-    {"name": "monday","caption": "Monday","type": "Weekday"},
-    {"name": "tuesday","caption": "Tuesday","type": "Weekday"},
-    {"name": "wednesday","caption": "Wednesday","type": "Weekday"},
-    {"name": "thursday","caption": "Thursday","type": "Weekday"},
-    {"name": "friday","caption": "Friday","type": "Weekday"},
-    {"name": "saturday","caption": "Saturday","type": "Weekday"},
-    {"name": "sunday","caption": "Sunday","type": "Weekday"},
-
-    {"name": "in_progress","caption": "In Progress","type": "StudySessionStatus"},
-    {"name": "completed","caption": "Completed","type": "StudySessionStatus"},
-    {"name": "cancelled","caption": "Cancelled","type": "StudySessionStatus"},
-
-    { "name": "tutorial", "caption": "tutorial", "type": "tutorial" },
-
-    { "name": "online", "caption": "online", "type": "source_type" },
-    { "name": "local", "caption": "local", "type": "source_type" },
-
-    { "name": "box_0", "caption": "No box", "type": "Box" },
-    { "name": "box_1", "caption": "First Box", "type": "Box" },
-    { "name": "box_2", "caption": "Second Box", "type": "Box" },
-    { "name": "box_3", "caption": "three Box", "type": "Box" },
-    { "name": "box_4", "caption": "Foure Box", "type": "Box" },
-    { "name": "box_5", "caption": "Five Box", "type": "Box" },
-    { "name": "final", "caption": "final Box", "type": "Box" },
-
-    { "name": "noun", "caption": "Noun", "type": "POS" },
-    { "name": "pronoun", "caption": "Pronoun", "type": "POS" },
-    { "name": "verb", "caption": "Verb", "type": "POS" },
-    { "name": "adjective", "caption": "Adjective", "type": "POS" },
-    { "name": "adverb", "caption": "Adverb", "type": "POS" },
-    { "name": "preposition", "caption": "Preposition", "type": "POS" },
-    { "name": "conjunction", "caption": "Conjunction", "type": "POS" },
-    { "name": "interjection", "caption": "Interjection", "type": "POS" },
-    { "name": "determiner", "caption": "Determiner", "type": "POS" },
-    { "name": "article", "caption": "Article", "type": "POS" },
-    { "name": "numeral", "caption": "Numeral", "type": "POS" },
-    { "name": "modalVerb", "caption": "Modal Verb", "type": "POS" },
-    { "name": "auxiliary_verb", "caption": "Auxiliary Verb", "type": "POS" },
-    { "name": "phrasal_verb", "caption": "Phrasal Verb", "type": "POS" },
-    { "name": "gerund", "caption": "Gerund", "type": "POS" },
-    { "name": "infinitive", "caption": "Infinitive", "type": "POS" },
-    { "name": "participle", "caption": "Participle", "type": "POS" },
-    { "name": "idiom", "caption": "Idiom", "type": "POS" },
-    { "name": "expression", "caption": "Expression", "type": "POS" },
-    { "name": "collocation", "caption": "Collocation", "type": "POS" },
-    { "name": "abbreviation", "caption": "Abbreviation", "type": "POS" },
-    { "name": "acronym", "caption": "Acronym", "type": "POS" },
-    { "name": "prefix", "caption": "Prefix", "type": "POS" },
-    { "name": "suffix", "caption": "Suffix", "type": "POS" },
-    { "name": "contraction", "caption": "Contraction", "type": "POS" },
-    { "name": "spoken", "caption": "spoken", "type": "POS" },
-    { "name": "ows", "caption": "ows", "type": "POS" },
-    { "name": "modalverb", "caption": "modalverb", "type": "POS" },
-    { "name": "predeterminer", "caption": "predeterminer", "type": "POS" },
-    
-
-    { "name": "beginner", "caption": "Beginner", "type": "Level" },
-    { "name": "intermediate", "caption": "Intermediate", "type": "Level" },
-    { "name": "advanced", "caption": "Advanced", "type": "Level" },
-
-    { "name": "success", "caption": "Successful", "type": "ReviewStatus" },
-    { "name": "fail", "caption": "Failed", "type": "ReviewStatus" },
-
-    { "name": "image", "caption": "Image File", "type": "Filetype" },
-    { "name": "audio", "caption": "audio", "type": "Filetype" },
-    { "name": "video", "caption": "video", "type": "Filetype" }
-  ]
+  "file_vertion": 1,
+  "data": {
+    "constant": [
+      {
+        "name": "vocabulary",
+        "caption": "Vocab",
+        "type": "FlashCardtype"
+      },
+      {
+        "name": "grammar",
+        "caption": "Grammar",
+        "type": "FlashCardtype"
+      },
+      {
+        "name": "past_tense",
+        "caption": "Past Tense",
+        "type": "FlashCardtype"
+      },
+      {
+        "name": "not_started",
+        "caption": "Not Started",
+        "type": "BookStatus"
+      },
+      {
+        "name": "reading",
+        "caption": "Reading",
+        "type": "BookStatus"
+      },
+      {
+        "name": "completed",
+        "caption": "Completed",
+        "type": "BookStatus"
+      },
+      {
+        "name": "paused",
+        "caption": "Paused",
+        "type": "BookStatus"
+      },
+      {
+        "name": "abandoned",
+        "caption": "Abandoned",
+        "type": "BookStatus"
+      },
+      {
+        "name": "active",
+        "caption": "Active",
+        "type": "StudyScheduleStatus"
+      },
+      {
+        "name": "paused",
+        "caption": "Paused",
+        "type": "StudyScheduleStatus"
+      },
+      {
+        "name": "completed",
+        "caption": "Completed",
+        "type": "StudyScheduleStatus"
+      },
+      {
+        "name": "archived",
+        "caption": "Archived",
+        "type": "StudyScheduleStatus"
+      },
+      {
+        "name": "monday",
+        "caption": "Monday",
+        "type": "Weekday"
+      },
+      {
+        "name": "tuesday",
+        "caption": "Tuesday",
+        "type": "Weekday"
+      },
+      {
+        "name": "wednesday",
+        "caption": "Wednesday",
+        "type": "Weekday"
+      },
+      {
+        "name": "thursday",
+        "caption": "Thursday",
+        "type": "Weekday"
+      },
+      {
+        "name": "friday",
+        "caption": "Friday",
+        "type": "Weekday"
+      },
+      {
+        "name": "saturday",
+        "caption": "Saturday",
+        "type": "Weekday"
+      },
+      {
+        "name": "sunday",
+        "caption": "Sunday",
+        "type": "Weekday"
+      },
+      {
+        "name": "in_progress",
+        "caption": "In Progress",
+        "type": "StudySessionStatus"
+      },
+      {
+        "name": "completed",
+        "caption": "Completed",
+        "type": "StudySessionStatus"
+      },
+      {
+        "name": "cancelled",
+        "caption": "Cancelled",
+        "type": "StudySessionStatus"
+      },
+      {
+        "name": "tutorial",
+        "caption": "tutorial",
+        "type": "tutorial"
+      },
+      {
+        "name": "online",
+        "caption": "online",
+        "type": "source_type"
+      },
+      {
+        "name": "local",
+        "caption": "local",
+        "type": "source_type"
+      },
+      {
+        "name": "box_0",
+        "caption": "No box",
+        "type": "Box"
+      },
+      {
+        "name": "box_1",
+        "caption": "First Box",
+        "type": "Box"
+      },
+      {
+        "name": "box_2",
+        "caption": "Second Box",
+        "type": "Box"
+      },
+      {
+        "name": "box_3",
+        "caption": "three Box",
+        "type": "Box"
+      },
+      {
+        "name": "box_4",
+        "caption": "Foure Box",
+        "type": "Box"
+      },
+      {
+        "name": "box_5",
+        "caption": "Five Box",
+        "type": "Box"
+      },
+      {
+        "name": "final",
+        "caption": "final Box",
+        "type": "Box"
+      },
+      {
+        "name": "noun",
+        "caption": "Noun",
+        "type": "POS"
+      },
+      {
+        "name": "pronoun",
+        "caption": "Pronoun",
+        "type": "POS"
+      },
+      {
+        "name": "verb",
+        "caption": "Verb",
+        "type": "POS"
+      },
+      {
+        "name": "adjective",
+        "caption": "Adjective",
+        "type": "POS"
+      },
+      {
+        "name": "adverb",
+        "caption": "Adverb",
+        "type": "POS"
+      },
+      {
+        "name": "preposition",
+        "caption": "Preposition",
+        "type": "POS"
+      },
+      {
+        "name": "conjunction",
+        "caption": "Conjunction",
+        "type": "POS"
+      },
+      {
+        "name": "interjection",
+        "caption": "Interjection",
+        "type": "POS"
+      },
+      {
+        "name": "determiner",
+        "caption": "Determiner",
+        "type": "POS"
+      },
+      {
+        "name": "article",
+        "caption": "Article",
+        "type": "POS"
+      },
+      {
+        "name": "numeral",
+        "caption": "Numeral",
+        "type": "POS"
+      },
+      {
+        "name": "modalVerb",
+        "caption": "Modal Verb",
+        "type": "POS"
+      },
+      {
+        "name": "auxiliary_verb",
+        "caption": "Auxiliary Verb",
+        "type": "POS"
+      },
+      {
+        "name": "phrasal_verb",
+        "caption": "Phrasal Verb",
+        "type": "POS"
+      },
+      {
+        "name": "gerund",
+        "caption": "Gerund",
+        "type": "POS"
+      },
+      {
+        "name": "infinitive",
+        "caption": "Infinitive",
+        "type": "POS"
+      },
+      {
+        "name": "participle",
+        "caption": "Participle",
+        "type": "POS"
+      },
+      {
+        "name": "idiom",
+        "caption": "Idiom",
+        "type": "POS"
+      },
+      {
+        "name": "expression",
+        "caption": "Expression",
+        "type": "POS"
+      },
+      {
+        "name": "collocation",
+        "caption": "Collocation",
+        "type": "POS"
+      },
+      {
+        "name": "abbreviation",
+        "caption": "Abbreviation",
+        "type": "POS"
+      },
+      {
+        "name": "acronym",
+        "caption": "Acronym",
+        "type": "POS"
+      },
+      {
+        "name": "prefix",
+        "caption": "Prefix",
+        "type": "POS"
+      },
+      {
+        "name": "suffix",
+        "caption": "Suffix",
+        "type": "POS"
+      },
+      {
+        "name": "contraction",
+        "caption": "Contraction",
+        "type": "POS"
+      },
+      {
+        "name": "spoken",
+        "caption": "spoken",
+        "type": "POS"
+      },
+      {
+        "name": "ows",
+        "caption": "ows",
+        "type": "POS"
+      },
+      {
+        "name": "modalverb",
+        "caption": "modalverb",
+        "type": "POS"
+      },
+      {
+        "name": "predeterminer",
+        "caption": "predeterminer",
+        "type": "POS"
+      },
+      {
+        "name": "beginner",
+        "caption": "Beginner",
+        "type": "Level"
+      },
+      {
+        "name": "intermediate",
+        "caption": "Intermediate",
+        "type": "Level"
+      },
+      {
+        "name": "advanced",
+        "caption": "Advanced",
+        "type": "Level"
+      },
+      {
+        "name": "success",
+        "caption": "Successful",
+        "type": "ReviewStatus"
+      },
+      {
+        "name": "fail",
+        "caption": "Failed",
+        "type": "ReviewStatus"
+      },
+      {
+        "name": "image",
+        "caption": "Image File",
+        "type": "Filetype"
+      },
+      {
+        "name": "audio",
+        "caption": "audio",
+        "type": "Filetype"
+      },
+      {
+        "name": "video",
+        "caption": "video",
+        "type": "Filetype"
+      }
+    ]
+  }
 }

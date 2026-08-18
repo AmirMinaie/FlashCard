@@ -19,14 +19,16 @@ class DataMigration:
 
         if not old_data_path.exists():
             return
+        odlData = ConfigReader("OldData.json")
 
-        load_old_data = ConfigReader("config.json").get("loadOldData",1)
+        Curent_data_vertion = ConfigReader("config.json").get("database.OldData_version",0)
+        new_data_vertion = odlData.get("file_vertion")
 
-        if load_old_data != 1:
+        if Curent_data_vertion >= new_data_vertion:
             return
 
         try:
-            data = ConfigReader("OldData.json").get_all()
+            data = odlData.load()
 
             if not isinstance(data, dict):
                 logger.error("OldData.json must contain a JSON object.")
@@ -38,7 +40,7 @@ class DataMigration:
                 DataMigration._migrate( session=session, data=data )
 
                 session.commit()
-                ConfigReader("config.json").set("loadOldData",0)
+                ConfigReader("config.json").get("database.OldData_version",new_data_vertion)
                 logger.info("Old data migration completed successfully.")
 
             except Exception as e:
@@ -150,31 +152,15 @@ class DataMigration:
 
         return None
 
-    # ---------------------------------------------------------
-    # Foreign Key resolver
-    # ---------------------------------------------------------
-
     @staticmethod
     def _resolve_foreign_key(session,key,value,column,id_maps):
 
         if value is None:
             return None
 
-        # ---------------------------------------------
-        # Already numeric
-        # ---------------------------------------------
-
         if isinstance(value, int):
             return value
-
-        # ---------------------------------------------
-        # Example:
-        #
-        # flashcard_id = 10
-        # book_id = 2
-        # schedule_id = 1
-        # ---------------------------------------------
-
+        
         if key.endswith("_id"):
 
             referenced_table = (
@@ -211,10 +197,6 @@ class DataMigration:
 
         return value
 
-    # ---------------------------------------------------------
-    # Constant
-    # ---------------------------------------------------------
-
     @staticmethod
     def _get_constant_id(session,value,column_name=None):
 
@@ -234,10 +216,6 @@ class DataMigration:
             raise ValueError(f"Constant not found: "f"{name} "f"(field={column_name})")
 
         return constant.id
-
-    # ---------------------------------------------------------
-    # Discover all DA models
-    # ---------------------------------------------------------
 
     @staticmethod
     def _discover_models():
@@ -260,31 +238,14 @@ class DataMigration:
 
         return models
 
-    # ---------------------------------------------------------
-    # Find model from JSON entity name
-    # ---------------------------------------------------------
-
     @staticmethod
-    def _find_model(
-        entity_name,
-        models
-    ):
+    def _find_model(entity_name,models):
 
-        table_name = DataMigration._entity_to_table(
-            entity_name
-        )
-
+        table_name = DataMigration._entity_to_table( entity_name )
         return models.get(table_name)
-
-    # ---------------------------------------------------------
-    # JSON entity -> DB table
-    # ---------------------------------------------------------
 
     @staticmethod
     def _entity_to_table(entity_name):
-
-        # studyScheduleItems
-        # -> studyScheduleItem
 
         if entity_name.endswith("ies"):
             entity_name = (
@@ -296,11 +257,6 @@ class DataMigration:
 
         return entity_name
 
-    # ---------------------------------------------------------
-    # DB table -> JSON entity
-    # ---------------------------------------------------------
-
     @staticmethod
     def _table_to_entity(table_name):
-
         return table_name + "s"

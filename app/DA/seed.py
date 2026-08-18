@@ -1,20 +1,54 @@
 from cmn.config_reader import ConfigReader
-from sqlalchemy import insert, inspect , MetaData, select
+from sqlalchemy import insert, MetaData, select
 from .base import Base
 from cmn.logger import logger
 
+
 def Create_SeedData(engine):
-    
-    data = ConfigReader("seed.json").load()
-    loadSeedData = ConfigReader("config.json").get("loadSeedData" , 1 )
-    if loadSeedData == 1:
-        for table_name, rows in data.items():
-            with engine.begin() as conn:
-                metadata = Base.metadata
-                metadata.reflect(bind=engine, only=[t for t in data.keys() if t not in metadata.tables])
-                seed_table(conn, metadata, table_name, rows)
-        
-        ConfigReader("config.json").set("loadSeedData" , 0 )
+
+    config = ConfigReader("config.json")
+    seed_config = ConfigReader("seed.json")
+    data = seed_config.get("data", {})
+
+    current_seed_version = config.get( "database.seed_version", 0 )
+    seed_version = seed_config.get("file_vertion",0)
+
+    logger.info( f"Seed version: " f"database={current_seed_version}, " f"seed_file={seed_version}" )
+
+
+    if current_seed_version >= seed_version:
+        logger.info("Seed data is already up to date.")
+        return False
+
+    logger.info( f"Loading seed data: " f"version {seed_version}" )
+
+    metadata = Base.metadata
+
+    metadata.reflect(
+        bind=engine,
+        only=[
+            table_name
+            for table_name in data.keys()
+            if table_name not in metadata.tables
+        ]
+    )
+
+    try:
+
+        with engine.begin() as conn:
+
+            for table_name, rows in data.items():
+                seed_table( conn, metadata, table_name, rows )
+
+        config.set("database.seed_version",seed_version)
+
+        logger.info( f"Seed data loaded successfully. " f"Version updated to {seed_version}" )
+
+        return True
+
+    except Exception:
+        logger.exception("Failed to load seed data.")
+        raise
 
 def seed_table(conn, metadata, table_name, rows):
     table = metadata.tables[table_name]
@@ -66,8 +100,6 @@ def insert_row(row ,conn, metadata, table , table_name):
                 
     except Exception as e:
             logger.info(f"Error insert seed data: {e}")
-
-
 
 def resolve_reference(conn, metadata: MetaData, source_table, id_field_name: str, ref_value: str) -> int:
     if hasattr(source_table.c, id_field_name):
