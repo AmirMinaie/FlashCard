@@ -1,5 +1,5 @@
 from kivy.lang import Builder
-from kivy.properties import StringProperty, BooleanProperty, ObjectProperty
+from kivy.properties import StringProperty, BooleanProperty, ObjectProperty , NumericProperty
 from kivymd.uix.boxlayout import MDBoxLayout
 
 Builder.load_string('''
@@ -25,7 +25,7 @@ Builder.load_string('''
         valign: "middle"
     
         MDLabelA:
-            text: root.text
+            text: root.display_text
             adaptive_height: True
             height: self.texture_size[1]  
             text_size: self.width, None
@@ -47,17 +47,27 @@ Builder.load_string('''
 class SongItem(MDBoxLayout):
 
     text = StringProperty("")
+    play_count = NumericProperty(0)
+    display_text = StringProperty("")
     allow_delete = BooleanProperty(False)
-
     song = ObjectProperty(allownone=True)
-
     select_callback = ObjectProperty(None)
     delete_callback = ObjectProperty(None)
+
+    def on_text(self, instance, value):
+        self._update_display_text()
+
+    def on_play_count(self, instance, value):
+        self._update_display_text()
+
+    def _update_display_text(self):
+        self.display_text = f"{self.play_count} - {self.text}"
 
     def on_touch_up(self, touch):
         if self.collide_point(*touch.pos):
             if self.select_callback:
                 self.select_callback(self.song)
+
         return super().on_touch_up(touch)
 
     def on_delete(self):

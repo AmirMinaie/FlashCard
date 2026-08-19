@@ -2,7 +2,8 @@ import os
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.lang import Builder
 from app.widgets.SnackbarManager import snackbar_manager, Msg_type
-from kivy.properties import (StringProperty, NumericProperty, BooleanProperty, ListProperty, ObjectProperty)
+from kivy.properties import (
+    StringProperty, NumericProperty, BooleanProperty, ListProperty, ObjectProperty)
 from app.BL.fileManager import FileManager
 from app.widgets.AudioPlayer import AudioPlayer, PlayerState
 from kivymd.uix.slider import MDSlider
@@ -342,8 +343,19 @@ class Playlist(MDBoxLayout):
             flashCard_BL = FlashCardBL()
             count = flashCard_BL.view_file(file_id)
             logger.debug(f"increment_view_count {count}")
+            Clock.schedule_once(
+                lambda dt: self._update_song_view_count(file_id, count))
         except Exception as e:
             logger.exception(f"Error incrementing view count: {e}")
+
+    def _update_song_view_count(self, file_id, count):
+        widget = self.song_widgets.get(file_id)
+        if not widget:
+            logger.warning(f"Song widget not found for file_id={file_id}")
+            return
+
+        widget.song["view_count"] = count
+        widget.play_count = count
 
     def stop_song(self):
         if self.audio_player is None:
@@ -454,16 +466,15 @@ class Playlist(MDBoxLayout):
 
     def create_song_widget(self, song):
 
-        fileName = song["fileName"]
+        file_name = song["fileName"]
         title = song.get("title", "")
+        play_count = song.get("view_count", 0)
 
-        if title and title.strip():
-            text = title
-        else:
-            text = fileName
+        display_name = (
+            title.strip() if title and title.strip() else file_name)
 
-        text = f'{song.get("view_count", "0")} - {text}'
-        item = SongItem(text=text, song=song, allow_delete=self.allow_delete, )
+        item = SongItem(text=display_name, play_count=play_count, song=song,
+                        allow_delete=self.allow_delete, )
 
         item.song = song
 
@@ -494,11 +505,8 @@ class Playlist(MDBoxLayout):
         if file_id is None:
             return
 
-        threading.Thread(
-            target=self._increment_view_count,
-            args=(file_id,),
-            daemon=True
-        ).start()
+        threading.Thread(target=self._increment_view_count, args=(
+            file_id,), name="increment_view_count", daemon=True).start()
 
     def _on_player_error(self, error):
         self.is_playing = False
@@ -532,7 +540,6 @@ class Playlist(MDBoxLayout):
 
     def start_seek(self):
         self.is_seeking = True
-
 
     def seek_relative(self, seconds):
         if not self.audio_player:
