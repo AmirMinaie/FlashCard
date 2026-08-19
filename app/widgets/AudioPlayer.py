@@ -2,7 +2,7 @@
 from enum import Enum
 from app.cmn.logger import logger
 import os
-
+import time
 import pygame
 from kivy.clock import Clock
 
@@ -43,6 +43,8 @@ class AudioPlayer:
         self._end_event_registered = False
 
         self._last_position = 0.0
+        self._position_base = 0.0
+        self._position_started_at = None
 
         self._init_mixer()
         pygame.mixer.music.set_endevent(self.END_EVENT)
@@ -170,21 +172,23 @@ class AudioPlayer:
             return False
 
         try:
-            pygame.mixer.music.play(loops=-1 if self.loop else 0)
+            pygame.mixer.music.play( -1 if self.loop else 0, 0.0 )
 
             self.position = 0.0
             self._last_position = 0.0
 
+            self._position_base = 0.0
+            self._position_started_at = time.monotonic()
+
             self._start_monitor()
             self._change_state(PlayerState.PLAYING)
+
             return True
 
         except Exception as e:
             logger.exception("Play error")
-
             self._notify_error(e)
             self._change_state(PlayerState.ERROR)
-
             return False
 
     # =========================================================
@@ -192,16 +196,20 @@ class AudioPlayer:
     # =========================================================
 
     def pause(self):
-        """Pause playback."""
-
         if not self._has_audio():
             return False
 
         try:
+            if self.state == PlayerState.PLAYING:
+                self._update_position_from_clock()
 
             pygame.mixer.music.pause()
+
+            self._position_started_at = None
+
             self._stop_monitor()
             self._change_state(PlayerState.PAUSED)
+
             return True
 
         except Exception as e:
@@ -214,15 +222,18 @@ class AudioPlayer:
     # =========================================================
 
     def resume(self):
-        """Resume paused playback."""
-
         if not self._has_audio():
             return False
 
         try:
             pygame.mixer.music.unpause()
+
+            self._position_base = self.position
+            self._position_started_at = time.monotonic()
+
             self._start_monitor()
             self._change_state(PlayerState.PLAYING)
+
             return True
 
         except Exception as e:
@@ -281,20 +292,30 @@ class AudioPlayer:
             if not was_playing and not was_paused:
                 self.position = seconds
                 self._last_position = seconds
+                self._position_base = seconds
+                self._position_started_at = None
                 return True
 
-            if was_paused:
-                pygame.mixer.music.unpause()
-
-            pygame.mixer.music.set_pos(seconds)
+            pygame.mixer.music.play( -1 if self.loop else 0, seconds )
 
             self.position = seconds
             self._last_position = seconds
+            self._position_base = seconds
 
-            if was_paused:
+            if was_playing:
+                self._position_started_at = time.monotonic()
+
+            else:
                 pygame.mixer.music.pause()
+                self._position_started_at = None
+                self._position_base = seconds
 
             return True
+
+        except NotImplementedError:
+            logger.exception("Seek is not supported for this audio format")
+            self._notify_error("Seeking is not supported for this audio format")
+            return False
 
         except Exception as e:
             logger.exception("Seek error")
@@ -388,19 +409,27 @@ class AudioPlayer:
             return
 
         try:
-            pos = pygame.mixer.music.get_pos()
-
-            if pos < 0:
-                if self.state == PlayerState.PLAYING:
-                    self._handle_finished()
-                return
-
-            self.position = pos / 1000.0
+            if self.state == PlayerState.PLAYING:
+                self._update_position_from_clock()
 
             self._process_pygame_events()
 
-        except Exception as e:
+        except Exception:
             logger.exception("Monitor error")
+
+    def _update_position_from_clock(self):
+        if self._position_started_at is None:
+            return
+
+        elapsed = time.monotonic() - self._position_started_at
+
+        self.position = self._position_base + elapsed
+
+        if self.duration > 0:
+            self.position = min(
+                self.position,
+                self.duration
+            )
 
     # =========================================================
     # EVENTS

@@ -108,8 +108,6 @@ class ReviewScreen(MDScreen):
                 self.show_session_status(SessionState.STOPPED)
                 self.update_layout(False)
 
-        self.update_toggle_button()
-
     def toggle_session(self):
 
         next_state = {
@@ -123,6 +121,8 @@ class ReviewScreen(MDScreen):
 
         if next_session_state is not None:
             self.set_session_state(next_session_state)
+
+        self.update_toggle_button()
 
     def update_session_time(self, dt):
         current_elapsed = int(time.perf_counter() - self.session_start_time)

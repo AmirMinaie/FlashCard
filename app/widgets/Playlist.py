@@ -1,10 +1,10 @@
 import os
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.lang import Builder
-from app.widgets.SnackbarManager import snackbar_manager , Msg_type
-from kivy.properties import ( StringProperty, NumericProperty, BooleanProperty, ListProperty, ObjectProperty)
+from app.widgets.SnackbarManager import snackbar_manager, Msg_type
+from kivy.properties import (StringProperty, NumericProperty, BooleanProperty, ListProperty, ObjectProperty)
 from app.BL.fileManager import FileManager
-from app.widgets.AudioPlayer import AudioPlayer , PlayerState
+from app.widgets.AudioPlayer import AudioPlayer, PlayerState
 from kivymd.uix.slider import MDSlider
 from app.cmn.resource_helper import *
 from kivy.metrics import dp
@@ -20,8 +20,8 @@ from app.cmn.utility import *
 
 
 Builder.load_string(
-    
-"""
+
+    """
 <Playlist>:
     orientation: "vertical"
     padding: dp(12)
@@ -92,14 +92,25 @@ Builder.load_string(
         # -----------------------------------------------------
 
         MDBoxLayout:
-            size_hint_x: 0.28
+            size_hint_x: None
+            width: dp(220)
             spacing: dp(2)
             padding: 0
             pos_hint: {"center_y": 0.5}
+            
+            MDIconButton:
+                icon: "rewind-5"
+                icon_size: dp(24)
+                size_hint: None, None
+                size: dp(40), dp(48)
+                pos_hint: {"center_y": 0.5}
+                on_release: root.seek_relative(-5)
 
             MDIconButton:
                 icon: "skip-previous"
-                icon_size: dp(27)
+                icon_size: dp(24)
+                size_hint: None, None
+                size: dp(40), dp(48)
                 pos_hint: {"center_y": 0.5}
                 on_release: root.prev_song()
 
@@ -113,7 +124,9 @@ Builder.load_string(
 
             MDIconButton:
                 icon: "skip-next"
-                icon_size: dp(27)
+                icon_size: dp(24)
+                size_hint: None, None
+                size: dp(40), dp(48)
                 pos_hint: {"center_y": 0.5}
                 on_release: root.next_song()
 
@@ -221,8 +234,8 @@ class Playlist(MDBoxLayout):
             self.current_position = self.audio_player.position
         self.current_duration = self.audio_player.duration
 
-        self.current_time_text = format_time( self.current_position )
-        self.duration_text = format_time( self.current_duration )   
+        self.current_time_text = format_time(self.current_position)
+        self.duration_text = format_time(self.current_duration)
 
         self.is_playing = self.audio_player.is_playing()
 
@@ -258,14 +271,15 @@ class Playlist(MDBoxLayout):
             return True
 
         except Exception as e:
-            logger.exception( f"Unexpected error while loading audio: {str(e)}" )
-            snackbar_manager.show_snackbar( message=f"Unexpected error while loading audio: {e}", msg_type=Msg_type.error )
+            logger.exception(f"Unexpected error while loading audio: {str(e)}")
+            snackbar_manager.show_snackbar(
+                message=f"Unexpected error while loading audio: {e}", msg_type=Msg_type.error)
 
             self.current_song = "Audio error"
             self.is_playing = False
 
             return False
-    
+
     def toggle_play(self):
         if not self.songs:
             snackbar_manager.show_snackbar(
@@ -340,7 +354,8 @@ class Playlist(MDBoxLayout):
             self.is_playing = False
 
         except Exception:
-            snackbar_manager.show_snackbar( message="Error while stopping audio", msg_type=Msg_type.error )
+            snackbar_manager.show_snackbar(
+                message="Error while stopping audio", msg_type=Msg_type.error)
             self.is_playing = False
 
     def next_song(self, auto_play=True):
@@ -408,7 +423,7 @@ class Playlist(MDBoxLayout):
 
     def on_stop(self):
         self.stop_player()
-    
+
     def delete_song(self, song):
         try:
             self.songs.remove(song)
@@ -426,7 +441,7 @@ class Playlist(MDBoxLayout):
 
         if loaded:
             self.play_song()
-    
+
     def add_song(self, song):
         if 'id' not in song:
             song['id'] = f"new_{uuid.uuid4()}"
@@ -441,22 +456,22 @@ class Playlist(MDBoxLayout):
 
         fileName = song["fileName"]
         title = song.get("title", "")
-        
+
         if title and title.strip():
             text = title
         else:
             text = fileName
-    
+
         text = f'{song.get("view_count", "0")} - {text}'
-        item = SongItem( text=text, song=song, allow_delete=self.allow_delete, )
+        item = SongItem(text=text, song=song, allow_delete=self.allow_delete, )
 
         item.song = song
-        
+
         item.select_callback = self.select_song
-        
+
         if self.allow_delete:
             item.delete_callback = self.delete_song
-    
+
         return item
 
     def clear(self):
@@ -496,10 +511,46 @@ class Playlist(MDBoxLayout):
         logger.error(f"AudioPlayer error: {error}")
 
     def finish_seek(self, value):
-        self.is_seeking = False
+        value = float(value)
+        self.current_position = value
+        self.current_time_text = format_time(value)
 
         if self.audio_player:
             self.audio_player.seek(float(value))
 
+        Clock.schedule_once(self._finish_seek_update, 0.1)
+
+    def _finish_seek_update(self, dt):
+        if not self.audio_player:
+            self.is_seeking = False
+            return
+
+        self.current_position = self.audio_player.position
+        self.current_time_text = format_time(self.current_position)
+
+        self.is_seeking = False
+
     def start_seek(self):
         self.is_seeking = True
+
+
+    def seek_relative(self, seconds):
+        if not self.audio_player:
+            return
+
+        current = self.audio_player.position
+        target = current + float(seconds)
+
+        if self.audio_player.duration > 0:
+            target = max(
+                0.0,
+                min(target, self.audio_player.duration)
+            )
+        else:
+            target = max(0.0, target)
+
+        if self.audio_player.seek(target):
+            self.current_position = self.audio_player.position
+            self.current_time_text = format_time(
+                self.current_position
+            )
