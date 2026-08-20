@@ -6,17 +6,18 @@ import time
 from app.cmn.resource_helper import *
 from app.BL.FlashCardBL import FlashCardBL
 from app.BL.DashboardBL import DashboardBL
-from app.widgets.SnackbarManager import snackbar_manager , Msg_type
-from kivy.properties import BooleanProperty, NumericProperty , StringProperty
+from app.widgets.SnackbarManager import snackbar_manager, Msg_type
+from kivy.properties import BooleanProperty, NumericProperty, StringProperty
 from kivy.clock import Clock
 from kivy.metrics import dp
 from app.widgets.Playlist import Playlist
 from app.cmn.logger import logger
-from app.cmn.utility import  *
+from app.cmn.utility import *
 from enum import Enum, auto
 from app.cmn.font_manage import FontManager
 
 Builder.load_file(str(PathManager.app_path("Kv/ReviewScreen.kv")))
+
 
 class SessionState(Enum):
     STOPPED = auto()
@@ -24,10 +25,12 @@ class SessionState(Enum):
     PAUSED = auto()
     COMPLETED = auto()
 
+
 class FieldMode:
     init = 1
     show_answer = 2
     hide_answer = 3
+
 
 class ReviewScreen(MDScreen):
     show_answer = BooleanProperty(False)
@@ -36,7 +39,7 @@ class ReviewScreen(MDScreen):
     remaining_cards = NumericProperty(0)
     session_time = StringProperty("0s")
     IPA_FONT = None
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.flashcard_bl = FlashCardBL()
@@ -72,8 +75,10 @@ class ReviewScreen(MDScreen):
                 if old_state == SessionState.PAUSED and self.current_card:
                     self.update_layout(True)
 
-                    self.set_widget_state(self.ids.button_box,visible=True,height=dp(46))
-                    self.set_widget_state(self.ids.answer_button_box,visible=False,height=0)
+                    self.set_widget_state(
+                        self.ids.button_box, visible=True, height=dp(46))
+                    self.set_widget_state(
+                        self.ids.answer_button_box, visible=False, height=0)
 
                     return
 
@@ -115,11 +120,11 @@ class ReviewScreen(MDScreen):
         }
 
         next_session_state = next_state.get(self.session_state)
-    
+
         if next_session_state is not None:
             self.set_session_state(next_session_state)
 
-    def update_session_time(self , dt):
+    def update_session_time(self, dt):
         current_elapsed = int(time.perf_counter() - self.session_start_time)
         total_elapsed = self.elapsed_time + current_elapsed
 
@@ -131,7 +136,8 @@ class ReviewScreen(MDScreen):
             self.session_timer.cancel()
 
         self.session_start_time = time.perf_counter()
-        self.session_timer = Clock.schedule_interval(self.update_session_time, 1)
+        self.session_timer = Clock.schedule_interval(
+            self.update_session_time, 1)
 
     def stop_session_timer(self):
         if self.session_timer:
@@ -139,7 +145,8 @@ class ReviewScreen(MDScreen):
             self.session_timer = None
 
             if self.session_start_time is not None:
-                current_elapsed = int(time.perf_counter() - self.session_start_time)
+                current_elapsed = int(
+                    time.perf_counter() - self.session_start_time)
                 self.elapsed_time += current_elapsed
                 self.session_start_time = None
 
@@ -157,7 +164,7 @@ class ReviewScreen(MDScreen):
         """وقتی صفحه به والد اضافه شد"""
         if parent:
             self.parent_tab = parent
-    
+
     def on_kv_post(self, *args):
         """هر بار که وارد صفحه می‌شود"""
         self.show_answer = False
@@ -167,10 +174,11 @@ class ReviewScreen(MDScreen):
             self.Avg = 1
 
         self.arrow = f"{arrow(0)}"
-        self.set_widget_state( self.ids.counter_label, color=get_progress_color(self.total_today_reviews / self.Avg), )
+        self.set_widget_state(self.ids.counter_label, color=get_progress_color(
+            self.total_today_reviews / self.Avg), )
         self.reset_session_timer()
         self.set_session_state(SessionState.STOPPED)
-  
+
     def load_next_card(self):
         try:
             self.stop_playlist()
@@ -184,7 +192,6 @@ class ReviewScreen(MDScreen):
 
         except Exception as error:
             logger.exception(f"Error loading next card: {error}")
-
             snackbar_manager.show_snackbar(
                 message="Error loading card. Please try again.",
                 msg_type=Msg_type.error
@@ -208,12 +215,12 @@ class ReviewScreen(MDScreen):
         for file in card.files or []:
             playlist.add_song({
                 "id": file.id,
-                "title" :file.title,
+                "title": file.title,
                 "fileName": file.fileName,
                 "value": file.filePath,
                 "from_type_id": file.sourceType_id,
                 "from_type_caption": file.sourceType.caption,
-                "view_count" : file.view_count
+                "view_count": file.view_count
             })
 
     def show_answer_data(self):
@@ -223,8 +230,6 @@ class ReviewScreen(MDScreen):
 
         self.ids.pos_chip.text = card.pos.caption if card.pos else ""
         self.ids.type_chip.text = card.type_.caption if card.type_ else ""
-        self.ids.level_chip.text = card.level.caption if card.level else ""
-        self.ids.box_chip.text = card.box.caption if card.box else ""
 
         self.ids.past_tense_label.text = card.pastTense or ""
         self.ids.past_participle_label.text = card.pastParticiple or ""
@@ -235,8 +240,6 @@ class ReviewScreen(MDScreen):
         for widget in (
             self.ids.pos_chip,
             self.ids.type_chip,
-            self.ids.level_chip,
-            self.ids.box_chip,
             self.ids.past_tense_label,
             self.ids.past_participle_label,
             self.ids.definition_label,
@@ -256,35 +259,37 @@ class ReviewScreen(MDScreen):
 
     def update_layout(self, show_card: bool):
         """تنها متد مسئول نمایش Layout صفحه"""
-    
+
         self.set_widget_state(
             self.ids.flashcard_box,
             visible=show_card,
             size_hint_y=1 if show_card else None,
             height=0,
         )
-    
+
         self.set_widget_state(
             self.ids.compleat_Session_Box,
             visible=not show_card,
             size_hint_y=None if show_card else 1,
             height=0,
         )
-    
+
         self.set_widget_state(
             self.ids.button_area,
             visible=show_card,
-            height= dp(52) if show_card else 0,
+            height=dp(52) if show_card else 0,
         )
 
     def hide_answer_fields(self):
         self.set_fields(FieldMode.hide_answer)
-        self.set_widget_state(self.ids.button_box,visible=True,height=dp(46),)
-        self.set_widget_state( self.ids.answer_button_box, visible=False, height=0, )
-        self.set_widget_state( self.ids.button_area, height=dp(52), )
+        self.set_widget_state(self.ids.button_box,
+                              visible=True, height=dp(46),)
+        self.set_widget_state(self.ids.answer_button_box,
+                              visible=False, height=0, )
+        self.set_widget_state(self.ids.button_area, height=dp(52), )
 
         self.show_answer = False
-     
+
     def show_session_status(self, state):
 
         if state == SessionState.STOPPED:
@@ -303,12 +308,14 @@ class ReviewScreen(MDScreen):
             icon = "check-decagram"
             icon_color = "#4CAF50"
             title = "Session Completed"
-            description = self.get_motivational_text(state , self.total_today_reviews)
+            description = self.get_motivational_text(
+                state, self.total_today_reviews)
 
         else:
             return
 
-        self.set_widget_state(self.ids.session_status_icon, icon=icon , icon_color = icon_color)
+        self.set_widget_state(self.ids.session_status_icon,
+                              icon=icon, icon_color=icon_color)
         self.set_widget_state(self.ids.session_title, text=title)
         self.set_widget_state(self.ids.session_description, text=description)
 
@@ -318,41 +325,6 @@ class ReviewScreen(MDScreen):
             self.ids.songs_playlist.on_stop()
         except:
             pass
-    
-    def before_skip_card(self):
-        self.stop_playlist()
-        return True
-
-    def skip_card(self):
-        if not self.current_card:
-            return False
-
-        success= self.flashcard_bl.mark_card_reviewed(
-            card_id=self.current_card.id,
-            quality_Answer=-1,
-            thinking_time=-1,
-            answer_time=-1,
-            total_time=-1
-        )
-
-        return {
-                    "success": success,
-                    "answer_time": -1,
-                    "total_time": -1,
-                }
-
-    def after_skip_card(self, result):
-        if not result:
-            snackbar_manager.show_snackbar( message="Could not skip card.", msg_type=Msg_type.error )
-            return
-
-        snackbar_manager.show_snackbar( message="⏭ Skipped", msg_type=Msg_type.success )
-        Clock.schedule_once( self.move_to_next_card, 0.01 )
-
-    def handle_skip_card_error(self, error):
-        logger.error(f"Skip error: {error}")
-
-        self.set_session_state(SessionState.RUNNING)
 
     def show_answer_fields(self):
 
@@ -361,9 +333,10 @@ class ReviewScreen(MDScreen):
 
         self.set_fields(mode=FieldMode.show_answer)
 
-        self.set_widget_state(self.ids.button_box,visible=False,height=0)
-        self.set_widget_state(self.ids.answer_button_box,visible=True,height=dp(46))
-        self.set_widget_state( self.ids.button_area, height=dp(52))
+        self.set_widget_state(self.ids.button_box, visible=False, height=0)
+        self.set_widget_state(self.ids.answer_button_box,
+                              visible=True, height=dp(46))
+        self.set_widget_state(self.ids.button_area, height=dp(52))
 
         self.show_answer = True
         self.thinking_time = (time.perf_counter() - self.card_start_time)
@@ -388,15 +361,18 @@ class ReviewScreen(MDScreen):
 
     def quality_after(self, result):
         return partial(self.after_mark_quality, result)
-    
+
     def mark_card_quality(self, quality):
         if not self.current_card:
             return False
 
-        if self.answer_show_time is None:
+        if self.answer_show_time is None and quality != -1:
             raise RuntimeError("Answer must be shown before rating the card.")
 
-        answer_time = time.perf_counter() - self.answer_show_time
+        answer_time = 0
+        if self.answer_show_time:
+            answer_time = time.perf_counter() - self.answer_show_time
+
         total_time = self.thinking_time + answer_time
 
         success = self.flashcard_bl.mark_card_reviewed(
@@ -407,15 +383,21 @@ class ReviewScreen(MDScreen):
             total_time=total_time
         )
 
+        Next_Card = self.flashcard_bl.get_next_card_for_review()
+        remaining_reviews = self.dashboard_bl.get_summary()
+
         return {
             "success": success,
             "answer_time": answer_time,
             "total_time": total_time,
+            "Next_Card": Next_Card,
+            "remaining_reviews": remaining_reviews
         }
 
     def after_mark_quality(self, quality, result):
         if not result or not result.get("success"):
-            snackbar_manager.show_snackbar( message="Review was not saved.", msg_type=Msg_type.error )
+            snackbar_manager.show_snackbar(
+                message="Review was not saved.", msg_type=Msg_type.error)
             return
 
         self.answer_time = result["answer_time"]
@@ -428,16 +410,37 @@ class ReviewScreen(MDScreen):
         self.ids.counter_label.color = get_progress_color(progress)
 
         snackbar_manager.show_snackbar(
-            message=(f"✓ Saved {quality}\n"f"Thinking {format_time(self.thinking_time)}\n"f"Answer {format_time(self.answer_time)}"),
+            message=(
+                f"✓ Saved {quality}\n"f"Thinking {format_time(self.thinking_time)}\n"f"Answer {format_time(self.answer_time)}"),
             msg_type=Msg_type.success
         )
 
-        Clock.schedule_once(self.move_to_next_card,0.01)
+        if self.session_state != SessionState.RUNNING:
+            return
+
+        self.current_card = None
+
+        self.stop_playlist()
+        card = result["Next_Card"]
+        self.summary = result["remaining_reviews"]
+
+        self.remaining_cards = self.summary.remaining_reviews
+
+        self.set_widget_state(self.ids.button_box, visible=True, height=dp(46))
+        self.set_widget_state(self.ids.answer_button_box,
+                              visible=False, height=0)
+
+        if card:
+            self.current_card = card
+            self.display_current_card()
+        else:
+            self.set_session_state(SessionState.COMPLETED)
 
     def handle_mark_quality_error(self, error):
         logger.error(f"Quality error: {error}")
-        snackbar_manager.show_snackbar( message=f"Error saving review {str(error)}", msg_type=Msg_type.error )
-    
+        snackbar_manager.show_snackbar(
+            message=f"Error saving review {str(error)}", msg_type=Msg_type.error)
+
     def before_refresh_session(self):
         self.stop_playlist()
         self.hide_answer_fields()
@@ -445,24 +448,29 @@ class ReviewScreen(MDScreen):
 
     def refresh_session(self):
         current_card = self.flashcard_bl.get_next_card_for_review()
-        return current_card
-        
+        summary = self.dashboard_bl.get_summary()
+        return {
+            "current_card": current_card,
+            "summary": summary
+        }
+
     def after_refresh_session(self, result):
         if not result:
             self.current_card = None
             self.set_session_state(SessionState.COMPLETED)
             return
 
-        self.current_card = result
+        self.current_card = result["current_card"]
 
-        self.summary = self.dashboard_bl.get_summary()
+        self.summary = result["summary"]
         self.remaining_cards = self.summary.remaining_reviews
 
         self.display_current_card()
-        
-    def handle_refresh_session_error(self,error):
+
+    def handle_refresh_session_error(self, error):
         logger.error(f"Refresh error: {error}")
-        snackbar_manager.show_snackbar( message="Cannot refresh session", msg_type=Msg_type.error )
+        snackbar_manager.show_snackbar(
+            message="Cannot refresh session", msg_type=Msg_type.error)
 
     def display_current_card(self):
         if not self.current_card:
@@ -487,7 +495,8 @@ class ReviewScreen(MDScreen):
             self.current_card = result
             self.display_current_card()
         else:
-            snackbar_manager.show_snackbar(message="Card not found in database.", msg_type=Msg_type.error)
+            snackbar_manager.show_snackbar(
+                message="Card not found in database.", msg_type=Msg_type.error)
 
     def handle_reload_card_error(self, error):
         logger.error(f"Reload card error: {error}")
@@ -503,8 +512,9 @@ class ReviewScreen(MDScreen):
 
         card = self.load_next_card()
 
-        self.set_widget_state(self.ids.button_box,visible=True,height=dp(46))
-        self.set_widget_state(self.ids.answer_button_box,visible=False,height=0)
+        self.set_widget_state(self.ids.button_box, visible=True, height=dp(46))
+        self.set_widget_state(self.ids.answer_button_box,
+                              visible=False, height=0)
 
         if card:
             self.current_card = card
@@ -519,7 +529,7 @@ class ReviewScreen(MDScreen):
             disabled=False,
         )
 
-    def get_motivational_text(self ,SessionState: SessionState, value: int | None = None) -> str:
+    def get_motivational_text(self, SessionState: SessionState, value: int | None = None) -> str:
         _MOTIVATIONAL_TEXTS = {
             SessionState.STOPPED: [
                 "Every review strengthens your memory.",

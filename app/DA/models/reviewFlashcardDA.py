@@ -21,7 +21,7 @@ class reviewFlashcardDA(Base):
     flashcard = relationship(
         "flashcardDA",
         foreign_keys=[flashcard_id],
-        backref="reviewFlashcard"
+        back_populates="reviews"
     )
 
 

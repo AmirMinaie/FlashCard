@@ -1,5 +1,5 @@
 {
-  "file_vertion": 1,
+  "file_vertion": 2,
   "data": {
     "constant": [
       {
@@ -126,41 +126,6 @@
         "name": "local",
         "caption": "local",
         "type": "source_type"
-      },
-      {
-        "name": "box_0",
-        "caption": "No box",
-        "type": "Box"
-      },
-      {
-        "name": "box_1",
-        "caption": "First Box",
-        "type": "Box"
-      },
-      {
-        "name": "box_2",
-        "caption": "Second Box",
-        "type": "Box"
-      },
-      {
-        "name": "box_3",
-        "caption": "three Box",
-        "type": "Box"
-      },
-      {
-        "name": "box_4",
-        "caption": "Foure Box",
-        "type": "Box"
-      },
-      {
-        "name": "box_5",
-        "caption": "Five Box",
-        "type": "Box"
-      },
-      {
-        "name": "final",
-        "caption": "final Box",
-        "type": "Box"
       },
       {
         "name": "noun",
@@ -306,21 +271,6 @@
         "name": "predeterminer",
         "caption": "predeterminer",
         "type": "POS"
-      },
-      {
-        "name": "beginner",
-        "caption": "Beginner",
-        "type": "Level"
-      },
-      {
-        "name": "intermediate",
-        "caption": "Intermediate",
-        "type": "Level"
-      },
-      {
-        "name": "advanced",
-        "caption": "Advanced",
-        "type": "Level"
       },
       {
         "name": "success",

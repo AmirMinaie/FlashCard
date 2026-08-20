@@ -166,14 +166,6 @@
                             id: type_chip
                             icon: "shape"
 
-                        MDChipA:
-                            id: level_chip
-                            icon: "chart-bar"
-
-                        MDChipA:
-                            id: box_chip
-                            icon: "package-variant"
-
                     MDSeparator:
 
                     ##################################################
@@ -359,10 +351,9 @@
                     icon: "skip-next"
                     size_hint_x: 0.28
                     md_bg_color: app.theme_cls.primary_light
-                    before: root.before_skip_card
-                    task: root.skip_card
-                    after: root.after_skip_card
-                    error_handler: root.handle_skip_card_error
+                    task: root.quality_task(-1)
+                    after: root.quality_after(-1)
+                    error_handler: root.handle_mark_quality_error
         
                 BaseButtonA:
                     id: show_answer_btn

@@ -31,8 +31,6 @@ class FlashCardBL:
                  ,pronunciation
                  ,pos_id
                  ,type_id
-                 ,box_id
-                 ,level_id
                  ,files
                  ,notion_content = None
                  ,createAt = None
@@ -77,8 +75,6 @@ class FlashCardBL:
                         pronunciation= pronunciation,
                         pos_id= pos_id,
                         type_id= type_id,
-                        box_id= box_id,
-                        level_id= level_id,
                         notion_content = notion_content,
                         createAt = createAt,
                         updatedAt = updatedAt)
@@ -145,8 +141,6 @@ class FlashCardBL:
                         options(
                             selectinload(flashcardDA.pos),
                             selectinload(flashcardDA.type_),
-                            selectinload(flashcardDA.box),
-                            selectinload(flashcardDA.level),
                             selectinload(flashcardDA.files),
                             selectinload(flashcardDA.files).selectinload(fileFlashcardDA.sourceType)).\
                         filter( flashcardDA.id == card_id).\
@@ -214,8 +208,6 @@ class FlashCardBL:
             card.pronunciation = data["pronunciation"]
             card.pos_id = data["pos_id"]
             card.type_id = data["type_id"]
-            card.box_id = data["box_id"]
-            card.level_id = data["level_id"]
 
             # -------------------------
             # Delete removed files
@@ -332,9 +324,7 @@ class FlashCardBL:
         )
         query = query.options(
             selectinload(flashcardDA.pos),
-            selectinload(flashcardDA.type_),
-            selectinload(flashcardDA.box),
-            selectinload(flashcardDA.level),
+            selectinload(flashcardDA.type_)
         )
 
         order_expressions = self._get_order_expressions(order)
@@ -389,8 +379,6 @@ class FlashCardBL:
                 options(
                     selectinload(flashcardDA.pos),
                     selectinload(flashcardDA.type_),
-                    selectinload(flashcardDA.box),
-                    selectinload(flashcardDA.level),
                     selectinload(flashcardDA.files),
                     selectinload(flashcardDA.files).selectinload(fileFlashcardDA.sourceType),).\
                 order_by(func.random()).\
@@ -460,8 +448,6 @@ class FlashCardBL:
             "pronunciation": flashcardDA.pronunciation,
             "pos_id": flashcardDA.pos_id,
             "type_id": flashcardDA.type_id,
-            "box_id": flashcardDA.box_id,
-            "level_id": flashcardDA.level_id,
             "last_review_date":flashcardDA.last_review_date,
             "last_review_quality": flashcardDA.last_review_quality,
             "created_at": getattr(flashcardDA, 'createAt', flashcardDA.id),

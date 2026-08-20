@@ -29,7 +29,7 @@ class SplashScreen:
         logger.info(f"SPLASH path: {self.image_path}")
         logger.info(f"SPLASH exists: {os.path.isfile(self.image_path)}")
 
-        self._thread = threading.Thread(target=self._run, daemon=True)
+        self._thread = threading.Thread(target=self._run,name="FlashCardSplashScreen", daemon=True)
         self._thread.start()
         self._ready.wait()
 

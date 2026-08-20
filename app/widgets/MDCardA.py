@@ -71,16 +71,6 @@ Builder.load_string(
                 id: type_chip
                 text: root.type_
                 icon: "format-list-bulleted-type"
-
-            MDChipA:
-                id: level_chip
-                text: root.level
-                icon: "chart-bar"
-
-            MDChipA:
-                id: box_chip
-                text: root.box
-                icon: "package-variant"
             
             MDChipA:
                 id: quality_chip
@@ -171,8 +161,6 @@ class MDCardA(MDCard):
     pronunciation = StringProperty()
     partOfSpeach = StringProperty()
     type_ = StringProperty()
-    box = StringProperty()
-    level = StringProperty()
     last_review_quality = StringProperty()
     last_review_date = StringProperty()
     edit_card = ObjectProperty(None)

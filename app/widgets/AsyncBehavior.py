@@ -1,5 +1,5 @@
 from threading import Thread
-
+from functools import partial
 from kivy.clock import Clock
 from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
 
@@ -46,7 +46,7 @@ class AsyncBehavior:
         try:
             if self.before and not self.before():
                 self.loading = False
-                self.disabled = False 
+                self.disabled = False
                 return
 
         except Exception as e:
@@ -57,7 +57,9 @@ class AsyncBehavior:
 
             return
 
-        Thread( target=self._run_task, daemon=True ).start()
+        thread_name = self._get_task_name()
+
+        Thread(target=self._run_task, name=thread_name, daemon=True).start()
 
     def _show_confirm_dialog(self):
         self.dialog = MDDialog(
@@ -90,17 +92,17 @@ class AsyncBehavior:
         try:
             result = self.task() if callable(self.task) else None
 
-            Clock.schedule_once( lambda dt: self._finish(result) )
+            Clock.schedule_once(lambda dt: self._finish(result))
 
         except Exception as e:
-            Clock.schedule_once( lambda dt, err=e: self._error(err) )
+            Clock.schedule_once(lambda dt, err=e: self._error(err))
 
     def _finish(self, result):
         if callable(self.after):
             self.after(result)
-        
+
         self.loading = False
-        self.disabled = False 
+        self.disabled = False
 
     def _error(self, e):
         self.loading = False
@@ -108,3 +110,22 @@ class AsyncBehavior:
 
         if callable(self.error_handler):
             self.error_handler(e)
+
+    def _get_task_name(self):
+        task = self.task
+
+        if task is None:
+            return "AsyncBehaviorTask"
+
+        if isinstance(task, partial):
+            func = task.func
+
+            if hasattr(func, "__name__"):
+                return func.__name__
+
+            return func.__class__.__name__
+
+        if hasattr(task, "__name__"):
+            return task.__name__
+
+        return task.__class__.__name__

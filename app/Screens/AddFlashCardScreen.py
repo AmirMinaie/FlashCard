@@ -65,10 +65,7 @@ class AddFlashCardScreen(MDScreen):
 
         self.ids.part_of_speech_field.set_selected_by_id(card.pos_id)
         self.ids.type_field.set_selected_by_id(card.type_id)
-        self.ids.box_field.set_selected_by_id(card.box_id)
 
-        if card.level_id:
-            self.ids.level_field.set_selected_by_id(card.level_id)  
         self.ids.songs_playlist.clear()
         for file in card.files:
             item = {
@@ -168,8 +165,6 @@ class AddFlashCardScreen(MDScreen):
         required_dropdowns = [
             ('part_of_speech_field', 'Part of Speech'),
             ('type_field', 'Type'),
-            ('level_field', 'Level'),
-            ('box_field', 'Box'),
         ]
 
         for field_id, field_name in required_dropdowns:
@@ -217,8 +212,6 @@ class AddFlashCardScreen(MDScreen):
             'pronunciation': self.ids.pronunciation_field.text.strip() if hasattr(self.ids, 'pronunciation_field') else "",
             'pos_id': self.ids.part_of_speech_field.selected_Id or 0,
             'type_id': self.ids.type_field.selected_Id or 0,
-            'box_id': self.ids.box_field.selected_Id or 0,
-            'level_id': self.ids.level_field.selected_Id or 0,
             'files': self.ids.songs_playlist.songs,
         }
 
@@ -339,8 +332,7 @@ MDBoxLayout:
                     field.helper_text = ""
 
         dropdowns = [
-            'part_of_speech_field', 'type_field', 
-            'level_field', 'box_field'
+            'part_of_speech_field', 'type_field'
         ]
 
         for field_id in dropdowns:

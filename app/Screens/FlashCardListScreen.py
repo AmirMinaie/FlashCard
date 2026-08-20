@@ -164,8 +164,6 @@ class FlashCardListScreen(MDScreen):
                 'pronunciation': flashcard.pronunciation or "",
                 'partOfSpeach': getattr(flashcard.pos, 'caption', 'N/A'),
                 'type_': getattr(flashcard.type_, 'caption', 'N/A'),
-                'box': getattr(flashcard.box, 'caption', 'N/A'),
-                'level': getattr(flashcard.level, 'caption', 'N/A'),
                 'last_review_quality': str(flashcard.last_review_quality or ""),
                 'last_review_date': (
                     flashcard.last_review_date.strftime("%Y-%m-%d")
